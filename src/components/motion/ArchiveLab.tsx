@@ -1,12 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { projects } from "../../constant/data";
 import ArchivePoster from "../three/ArchivePoster";
+import type { ArchivePoseName } from "../three/archive-poses";
 import type { ArchiveStats } from "../three/ArchiveScene";
 
 /*
- * DEV-ONLY lab harness for the isolated archive prototype (Step 8).
+ * DEV-ONLY lab harness for the isolated archive prototype (Steps 8–9).
  * Rendered on /specimen; never ships in production UI.
  */
 const ArchiveScene = dynamic(() => import("../three/ArchiveScene"), {
@@ -16,29 +18,55 @@ const ArchiveScene = dynamic(() => import("../three/ArchiveScene"), {
 
 type BackendOption = "auto" | "webgl" | "failed";
 
-const OPTIONS: ReadonlyArray<{ value: BackendOption; label: string }> = [
+const BACKEND_OPTIONS: ReadonlyArray<{ value: BackendOption; label: string }> = [
   { value: "auto", label: "WebGPU, WebGL2 fallback" },
   { value: "webgl", label: "Force WebGL2" },
   { value: "failed", label: "Simulate failure" },
 ];
 
 export default function ArchiveLab() {
-  const [option, setOption] = useState<BackendOption>("auto");
+  const [backend, setBackend] = useState<BackendOption>("auto");
+  const [pose, setPose] = useState<ArchivePoseName>("hero");
   const [stats, setStats] = useState<ArchiveStats | null>(null);
+  const frameSlugs = useMemo(() => projects.map((project) => project.slug), []);
+  const poseOptions = useMemo<ReadonlyArray<{ value: ArchivePoseName; label: string }>>(
+    () => [
+      { value: "hero", label: "Hero" },
+      ...projects.map((project) => ({
+        value: `project:${project.slug}` as ArchivePoseName,
+        label: project.title,
+      })),
+      { value: "final-mark", label: "Final mark" },
+    ],
+    [],
+  );
 
   return (
     <div className="flow">
       <div className="btn-row" role="group" aria-label="Renderer backend">
-        {OPTIONS.map((entry) => (
+        {BACKEND_OPTIONS.map((entry) => (
           <button
             key={entry.value}
             type="button"
-            aria-pressed={option === entry.value}
-            className={option === entry.value ? "btn btn-primary" : "btn btn-secondary"}
+            aria-pressed={backend === entry.value}
+            className={backend === entry.value ? "btn btn-primary" : "btn btn-secondary"}
             onClick={() => {
-              setOption(entry.value);
+              setBackend(entry.value);
               setStats(null);
             }}
+          >
+            {entry.label}
+          </button>
+        ))}
+      </div>
+      <div className="btn-row" role="group" aria-label="Scene pose">
+        {poseOptions.map((entry) => (
+          <button
+            key={entry.value}
+            type="button"
+            aria-pressed={pose === entry.value}
+            className={pose === entry.value ? "btn btn-primary" : "btn btn-secondary"}
+            onClick={() => setPose(entry.value)}
           >
             {entry.label}
           </button>
@@ -47,11 +75,11 @@ export default function ArchiveLab() {
       <p role="status" className="mono">
         {stats
           ? `Backend ${stats.backend} — ${stats.calls} draw calls, ${stats.triangles} triangles, ${stats.geometries} geometries, ${stats.textures} textures.`
-          : option === "failed"
+          : backend === "failed"
             ? "Renderer failed as requested — static poster fallback shown, layout unchanged."
             : "Waiting for the first frame…"}
       </p>
-      {option === "failed" ? (
+      {backend === "failed" ? (
         <ArchiveScene
           key="failed"
           backend="auto"
@@ -59,7 +87,13 @@ export default function ArchiveLab() {
           onStats={setStats}
         />
       ) : (
-        <ArchiveScene key={option} backend={option} onStats={setStats} />
+        <ArchiveScene
+          key={backend}
+          backend={backend}
+          pose={pose}
+          frameSlugs={frameSlugs}
+          onStats={setStats}
+        />
       )}
     </div>
   );

@@ -3,6 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three/webgpu";
 import { resolveArchiveQuality } from "../../lib/three-quality";
+import {
+  createArchiveMaterials,
+  disposeArchiveMaterials,
+} from "./archive-materials";
+import {
+  createArchivePoseState,
+  getArchivePoseTarget,
+  type ArchivePoseName,
+  type ArchivePoseState,
+} from "./archive-poses";
 import ArchivePoster from "./ArchivePoster";
 
 export type ArchiveBackend = "webgpu" | "webgl2" | "unavailable";
@@ -22,28 +32,52 @@ type ArchiveSceneProps = {
   readonly simulateFailure?: boolean;
   readonly onStats?: (stats: ArchiveStats) => void;
   readonly label?: string;
+  /** Active named pose; the loop damps toward its target every frame. */
+  readonly pose?: ArchivePoseName;
+  /** Frame order for `project:<slug>` poses. */
+  readonly frameSlugs?: readonly string[];
 };
 
+/** Strict pointer-tilt limits (radians). */
+const MAX_TILT_X = 0.1;
+const MAX_TILT_Y = 0.15;
+/** Exponential damping rates (per second). */
+const TILT_LAMBDA = 4;
+const POSE_LAMBDA = 3;
+
+function damp(current: number, target: number, delta: number, lambda: number) {
+  return current + (target - current) * (1 - Math.exp(-delta * lambda));
+}
+
 /**
- * Isolated Orbital Archive prototype (Step 8). Procedural scene graph from
- * plan.md, WebGPURenderer with setAnimationLoop, DPR tiers, off-screen and
- * hidden-tab pause, reduced-motion single frame, and full teardown.
- * Ambient motion only — interaction and named poses arrive in Step 9.
+ * Isolated Orbital Archive prototype. Procedural scene graph from plan.md,
+ * WebGPURenderer with setAnimationLoop, DPR tiers, off-screen and hidden-tab
+ * pause, reduced-motion single frame, and full teardown. Step 9 adds the
+ * material system, damped fine-pointer tilt, and named poses.
  */
 export default function ArchiveScene({
   backend,
   simulateFailure = false,
   onStats,
   label = "Orbital archive prototype",
+  pose = "hero",
+  frameSlugs = [],
 }: ArchiveSceneProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [failed, setFailed] = useState(false);
   const onStatsRef = useRef(onStats);
+  const poseRef = useRef<ArchivePoseName>(pose);
+  const slugsRef = useRef<readonly string[]>(frameSlugs);
 
   useEffect(() => {
     onStatsRef.current = onStats;
   }, [onStats]);
+
+  useEffect(() => {
+    poseRef.current = pose;
+    slugsRef.current = frameSlugs;
+  }, [pose, frameSlugs]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -64,6 +98,9 @@ export default function ArchiveScene({
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
+      const finePointer =
+        !reduceMotion &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
       const renderer = new THREE.WebGPURenderer({
         canvas,
@@ -79,7 +116,7 @@ export default function ArchiveScene({
       }
 
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.05;
+      renderer.toneMappingExposure = 1.0;
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.setClearColor(0x000000, 0);
 
@@ -88,74 +125,72 @@ export default function ArchiveScene({
       camera.position.set(0, 0.9, 7.4);
       camera.lookAt(0, 0.1, 0);
 
+      // Pointer tilt owns tiltGroup; poses own root/camera — never the same property.
+      const tiltGroup = new THREE.Group();
+      tiltGroup.name = "TiltGroup";
+      scene.add(tiltGroup);
       const root = new THREE.Group();
       root.name = "ArchiveRoot";
-      scene.add(root);
+      tiltGroup.add(root);
 
-      // Shared within this mount; every geometry/material is disposed below.
-      const monolith = new THREE.Mesh(
-        new THREE.BoxGeometry(0.55, 2.3, 0.55),
-        new THREE.MeshStandardMaterial({
-          color: 0x15171b,
-          roughness: 0.55,
-          metalness: 0.35,
-        }),
-      );
+      const materials = createArchiveMaterials(quality.tier === "high");
+
+      const monolithGeo = new THREE.BoxGeometry(0.55, 2.3, 0.55);
+      const monolith = new THREE.Mesh(monolithGeo, materials.monolithFace);
       monolith.position.y = 0.15;
-      root.add(monolith);
+      const monolithEdge = new THREE.LineSegments(
+        new THREE.EdgesGeometry(monolithGeo),
+        materials.monolithEdge,
+      );
+      monolithEdge.position.copy(monolith.position);
+      root.add(monolith, monolithEdge);
+
+      if (materials.glass) {
+        const sheath = new THREE.Mesh(
+          new THREE.BoxGeometry(0.72, 2.5, 0.72),
+          materials.glass,
+        );
+        sheath.position.y = 0.15;
+        root.add(sheath);
+      }
 
       const ORBIT_RX = 2.6;
       const ORBIT_RZ = 1.72;
       const ORBIT_Y = 0.35;
+      const FRAME_COUNT = 3;
       const frameGeo = new THREE.BoxGeometry(1.7, 1.05, 0.05);
-      const frameFace = new THREE.MeshStandardMaterial({
-        color: 0xf7f8fc,
-        roughness: 0.5,
-        metalness: 0.05,
-      });
-      const frameEdge = new THREE.LineBasicMaterial({
-        color: 0x635bff,
-        transparent: true,
-        opacity: 0.9,
-      });
       const frameEdgeGeo = new THREE.EdgesGeometry(frameGeo);
-      const frames: Array<{ group: THREE.Group; phase: number }> = [];
-      for (let index = 0; index < 3; index += 1) {
+      const frames: Array<{
+        group: THREE.Group;
+        phase: number;
+        index: number;
+        scale: number;
+      }> = [];
+      for (let index = 0; index < FRAME_COUNT; index += 1) {
         const group = new THREE.Group();
-        group.add(new THREE.Mesh(frameGeo, frameFace));
-        group.add(new THREE.LineSegments(frameEdgeGeo, frameEdge));
-        const phase = (index / 3) * Math.PI * 2;
+        group.add(new THREE.Mesh(frameGeo, materials.frameFace));
+        group.add(new THREE.LineSegments(frameEdgeGeo, materials.frameEdge));
+        const phase = (index / FRAME_COUNT) * Math.PI * 2;
         group.position.set(
           Math.cos(phase) * ORBIT_RX,
           ORBIT_Y,
           Math.sin(phase) * ORBIT_RZ,
         );
         root.add(group);
-        frames.push({ group, phase });
+        frames.push({ group, phase, index, scale: 1 });
       }
 
       const orbitGeo = new THREE.BufferGeometry().setFromPoints(
         new THREE.EllipseCurve(0, 0, ORBIT_RX, ORBIT_RZ).getPoints(128),
       );
-      const orbit = new THREE.LineLoop(
-        orbitGeo,
-        new THREE.LineBasicMaterial({
-          color: 0x9aa0ab,
-          transparent: true,
-          opacity: 0.55,
-        }),
-      );
+      const orbit = new THREE.LineLoop(orbitGeo, materials.orbit);
       orbit.rotation.x = -Math.PI / 2;
       orbit.position.y = -0.55;
       root.add(orbit);
 
       const dust = new THREE.InstancedMesh(
         new THREE.SphereGeometry(0.012, 6, 6),
-        new THREE.MeshBasicMaterial({
-          color: 0x6f737b,
-          transparent: true,
-          opacity: 0.5,
-        }),
+        materials.dust,
         quality.dustCount,
       );
       const dummy = new THREE.Object3D();
@@ -181,6 +216,8 @@ export default function ArchiveScene({
       rim.position.set(-1, 3, -5);
       scene.add(key, fill, rim, new THREE.AmbientLight(0xffffff, 0.55));
 
+      const poseState: ArchivePoseState = createArchivePoseState();
+      const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
       const clock = new THREE.Clock();
       const loop = { visible: true, pageVisible: !document.hidden };
 
@@ -205,22 +242,46 @@ export default function ArchiveScene({
 
       const ORBIT_SPEED = 0.1;
       const tick = () => {
-        // Advance the clock and clamp the delta so tab-switch gaps never
-        // teleport the orbit; poses below read elapsed time, not delta.
-        clock.getDelta();
+        const delta = Math.min(clock.getDelta(), 0.05);
         const t = clock.elapsedTime;
+
+        const target = getArchivePoseTarget(poseRef.current, slugsRef.current);
+        poseState.orbitOffset = damp(poseState.orbitOffset, target.orbitOffset, delta, POSE_LAMBDA);
+        poseState.spread = damp(poseState.spread, target.spread, delta, POSE_LAMBDA);
+        poseState.cameraZ = damp(poseState.cameraZ, target.cameraZ, delta, POSE_LAMBDA);
+        poseState.cameraY = damp(poseState.cameraY, target.cameraY, delta, POSE_LAMBDA);
+        poseState.stackMix = damp(poseState.stackMix, target.stackMix, delta, POSE_LAMBDA);
+        poseState.focusIndex = target.focusIndex;
+
+        camera.position.set(0, poseState.cameraY, poseState.cameraZ);
+        camera.lookAt(0, 0.1, 0);
+
         for (const frame of frames) {
           const angle = frame.phase + t * ORBIT_SPEED;
+          const orbitX = Math.cos(angle) * ORBIT_RX * poseState.spread;
+          const orbitZ = Math.sin(angle) * ORBIT_RZ * poseState.spread;
+          const orbitY = ORBIT_Y + Math.sin(t * 0.5 + frame.phase) * 0.22;
+          const stackY = 0.8 - frame.index * 0.8;
           frame.group.position.set(
-            Math.cos(angle) * ORBIT_RX,
-            ORBIT_Y + Math.sin(t * 0.5 + frame.phase) * 0.22,
-            Math.sin(angle) * ORBIT_RZ,
+            orbitX * (1 - poseState.stackMix),
+            orbitY + (stackY - orbitY) * poseState.stackMix,
+            orbitZ * (1 - poseState.stackMix) + 0.6 * poseState.stackMix,
           );
           frame.group.lookAt(camera.position);
+          const targetScale = frame.index === poseState.focusIndex ? 1.08 : 1;
+          frame.scale = damp(frame.scale, targetScale, delta, POSE_LAMBDA);
+          frame.group.scale.setScalar(frame.scale);
         }
         monolith.rotation.y = t * 0.05;
-        root.rotation.y = Math.sin(t * 0.08) * 0.06;
+        root.rotation.y =
+          poseState.orbitOffset + Math.sin(t * 0.08) * 0.06;
         dust.rotation.y = -t * 0.02;
+
+        tilt.x = damp(tilt.x, tilt.targetX, delta, TILT_LAMBDA);
+        tilt.y = damp(tilt.y, tilt.targetY, delta, TILT_LAMBDA);
+        tiltGroup.rotation.x = tilt.x;
+        tiltGroup.rotation.y = tilt.y;
+
         renderFrame();
       };
 
@@ -259,6 +320,30 @@ export default function ArchiveScene({
       const resizer = new ResizeObserver(applySize);
       resizer.observe(host);
 
+      let detachPointer: (() => void) | null = null;
+      if (finePointer) {
+        const onPointerMove = (event: PointerEvent) => {
+          const rect = host.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) {
+            return;
+          }
+          const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+          tilt.targetY = THREE.MathUtils.clamp(nx, -1, 1) * MAX_TILT_Y;
+          tilt.targetX = THREE.MathUtils.clamp(ny, -1, 1) * MAX_TILT_X;
+        };
+        const onPointerLeave = () => {
+          tilt.targetX = 0;
+          tilt.targetY = 0;
+        };
+        host.addEventListener("pointermove", onPointerMove);
+        host.addEventListener("pointerleave", onPointerLeave);
+        detachPointer = () => {
+          host.removeEventListener("pointermove", onPointerMove);
+          host.removeEventListener("pointerleave", onPointerLeave);
+        };
+      }
+
       if (reduceMotion) {
         renderFrame();
       } else {
@@ -281,12 +366,10 @@ export default function ArchiveScene({
         observer.disconnect();
         resizer.disconnect();
         document.removeEventListener("visibilitychange", onVisibility);
+        detachPointer?.();
         renderer.setAnimationLoop(null);
         scene.traverse((object) => {
-          if (
-            object instanceof THREE.Mesh ||
-            object instanceof THREE.Line
-          ) {
+          if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
             object.geometry.dispose();
             const material = object.material as
               | THREE.Material
@@ -303,6 +386,7 @@ export default function ArchiveScene({
             object.dispose();
           }
         });
+        disposeArchiveMaterials(materials);
         renderer.dispose();
         if (process.env.NODE_ENV !== "production") {
           console.info("[archive] scene disposed");

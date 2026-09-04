@@ -708,6 +708,8 @@ html.js .menu-panel[data-open="true"] .menu-item {
   width: 100%;
   height: 100%;
   display: block;
+  /* Decorative canvas: never captures scroll, touch, or keyboard focus. */
+  pointer-events: none;
 }
 
 @media (forced-colors: active) {
