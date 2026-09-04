@@ -1,12 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 
 const ArchiveScene = dynamic(() => import("../three/ArchiveScene"), {
   ssr: false,
-  loading: () => <ArchivePoster label="Loading orbital archive…" />,
+  loading: () => null,
 });
 
 type HeroArchiveProps = {
@@ -21,13 +22,25 @@ type HeroArchiveProps = {
  */
 export default function HeroArchive({ frameSlugs }: HeroArchiveProps) {
   const [ready, setReady] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="hero-archive" data-ready={String(ready)}>
-      <div className="hero-archive-poster" aria-hidden={ready || undefined}>
+      <motion.div
+        className="hero-archive-poster"
+        aria-hidden={ready || undefined}
+        initial={false}
+        animate={{ opacity: ready ? 0 : 1 }}
+        transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
         <ArchivePoster label="Orbital archive of selected work" />
-      </div>
-      <div className="hero-archive-scene">
+      </motion.div>
+      <motion.div
+        className="hero-archive-scene"
+        initial={false}
+        animate={{ opacity: ready ? 1 : 0 }}
+        transition={{ duration: reduceMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+      >
         <ArchiveScene
           backend="auto"
           pose="hero"
@@ -35,6 +48,10 @@ export default function HeroArchive({ frameSlugs }: HeroArchiveProps) {
           label="Orbital archive of selected work"
           onFirstFrame={() => setReady(true)}
         />
+      </motion.div>
+      <div className="archive-readout" aria-hidden="true">
+        <span><i /> Interactive archive</span>
+        <span>Three selected systems</span>
       </div>
     </div>
   );

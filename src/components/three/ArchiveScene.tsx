@@ -53,6 +53,15 @@ function damp(current: number, target: number, delta: number, lambda: number) {
   return current + (target - current) * (1 - Math.exp(-delta * lambda));
 }
 
+/** Deterministic particle placement keeps remounts visually stable. */
+function seededRandom(seed: number) {
+  let value = seed >>> 0;
+  return () => {
+    value = (value * 1664525 + 1013904223) >>> 0;
+    return value / 4294967296;
+  };
+}
+
 /**
  * Isolated Orbital Archive prototype. Procedural scene graph from plan.md,
  * WebGPURenderer with setAnimationLoop, DPR tiers, off-screen and hidden-tab
@@ -118,8 +127,34 @@ export default function ArchiveScene({
         forceWebGL: backend === "webgl",
         powerPreference: "high-performance",
       });
+      const prepareRendererDisposal = () => {
+        // The WebGL fallback deliberately calls WEBGL_lose_context from its
+        // disposer. Detach its context-lost listener first so an expected
+        // teardown is not reported to Next's error overlay as a GPU failure.
+        const fallbackBackend = renderer.backend as unknown as {
+          _onContextLost?: EventListener;
+          extensions?: {
+            get: (name: string) => unknown;
+          };
+        };
+        if (fallbackBackend._onContextLost) {
+          renderer.domElement.removeEventListener(
+            "webglcontextlost",
+            fallbackBackend._onContextLost,
+          );
+        }
+        if (fallbackBackend.extensions) {
+          const getExtension = fallbackBackend.extensions.get.bind(
+            fallbackBackend.extensions,
+          );
+          fallbackBackend.extensions.get = (name: string) =>
+            name === "WEBGL_lose_context" ? null : getExtension(name);
+        }
+        renderer.onDeviceLost = () => {};
+      };
       await renderer.init();
       if (disposed) {
+        prepareRendererDisposal();
         renderer.dispose();
         return;
       }
@@ -169,6 +204,10 @@ export default function ArchiveScene({
       const FRAME_COUNT = 3;
       const frameGeo = new THREE.BoxGeometry(1.7, 1.05, 0.05);
       const frameEdgeGeo = new THREE.EdgesGeometry(frameGeo);
+      const screenGeo = new THREE.BoxGeometry(1.4, 0.72, 0.065);
+      const accentRailGeo = new THREE.BoxGeometry(0.035, 0.5, 0.022);
+      const infoBarGeo = new THREE.BoxGeometry(0.56, 0.032, 0.022);
+      const infoBarShortGeo = new THREE.BoxGeometry(0.34, 0.032, 0.022);
       const frames: Array<{
         group: THREE.Group;
         phase: number;
@@ -179,6 +218,16 @@ export default function ArchiveScene({
         const group = new THREE.Group();
         group.add(new THREE.Mesh(frameGeo, materials.frameFace));
         group.add(new THREE.LineSegments(frameEdgeGeo, materials.frameEdge));
+        const screen = new THREE.Mesh(screenGeo, materials.screen);
+        screen.position.z = 0.06;
+        const accentRail = new THREE.Mesh(accentRailGeo, materials.screenAccent);
+        accentRail.position.set(-0.58, 0, 0.105);
+        const infoBar = new THREE.Mesh(infoBarGeo, materials.screenAccent);
+        infoBar.position.set(-0.2, 0.16, 0.105);
+        const infoBarShort = new THREE.Mesh(infoBarShortGeo, materials.screenAccent);
+        infoBarShort.position.set(-0.31, 0.03, 0.105);
+        infoBarShort.scale.x = 0.72 + index * 0.1;
+        group.add(screen, accentRail, infoBar, infoBarShort);
         const phase = (index / FRAME_COUNT) * Math.PI * 2;
         group.position.set(
           Math.cos(phase) * ORBIT_RX,
@@ -200,18 +249,25 @@ export default function ArchiveScene({
       orbit.position.y = -0.55;
       root.add(orbit);
 
+      const orbitUpper = new THREE.Line(orbitGeo, materials.orbit);
+      orbitUpper.rotation.set(-Math.PI / 2.15, 0.18, -0.08);
+      orbitUpper.scale.setScalar(0.72);
+      orbitUpper.position.y = 0.34;
+      root.add(orbitUpper);
+
       const dust = new THREE.InstancedMesh(
         new THREE.SphereGeometry(0.012, 6, 6),
         materials.dust,
         quality.dustCount,
       );
       const dummy = new THREE.Object3D();
+      const random = seededRandom(1508);
       for (let index = 0; index < quality.dustCount; index += 1) {
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 1.5 + Math.random() * 2;
+        const angle = random() * Math.PI * 2;
+        const radius = 1.5 + random() * 2;
         dummy.position.set(
           Math.cos(angle) * radius,
-          -1 + Math.random() * 2.5,
+          -1 + random() * 2.5,
           Math.sin(angle) * radius,
         );
         dummy.updateMatrix();
@@ -220,13 +276,13 @@ export default function ArchiveScene({
       dust.instanceMatrix.needsUpdate = true;
       root.add(dust);
 
-      const key = new THREE.DirectionalLight(0xffffff, 2.2);
-      key.position.set(3, 5, 4);
-      const fill = new THREE.DirectionalLight(0xdde4ff, 0.7);
-      fill.position.set(-4, 1, 2);
-      const rim = new THREE.DirectionalLight(0xb9b6ff, 1.2);
-      rim.position.set(-1, 3, -5);
-      scene.add(key, fill, rim, new THREE.AmbientLight(0xffffff, 0.55));
+      const key = new THREE.DirectionalLight(0xffffff, 2.6);
+      key.position.set(3.5, 5, 4.5);
+      const fill = new THREE.DirectionalLight(0x9da8cf, 0.65);
+      fill.position.set(-4, 0.8, 2);
+      const rim = new THREE.DirectionalLight(0x8c83ff, 1.75);
+      rim.position.set(-1.5, 3, -4.5);
+      scene.add(key, fill, rim, new THREE.AmbientLight(0xbfc5d8, 0.34));
 
       const poseState: ArchivePoseState = createArchivePoseState();
       const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
@@ -277,15 +333,22 @@ export default function ArchiveScene({
             orbitZ * (1 - poseState.stackMix) + 0.6 * poseState.stackMix,
           );
           frame.group.lookAt(camera.position);
+          if (!instant) {
+            frame.group.rotateZ(Math.sin(t * 0.24 + frame.phase) * 0.025);
+          }
           const targetScale = frame.index === poseState.focusIndex ? 1.08 : 1;
           frame.scale = instant
             ? targetScale
             : damp(frame.scale, targetScale, delta, POSE_LAMBDA);
           frame.group.scale.setScalar(frame.scale);
         }
-        monolith.rotation.y = instant ? 0 : t * 0.05;
+        monolith.rotation.y = instant ? 0 : t * 0.07;
+        monolith.position.y = 0.15 + (instant ? 0 : Math.sin(t * 0.42) * 0.045);
+        monolithEdge.rotation.y = monolith.rotation.y;
+        monolithEdge.position.y = monolith.position.y;
         root.rotation.y =
           poseState.orbitOffset + (instant ? 0 : Math.sin(t * 0.08) * 0.06);
+        root.rotation.x = instant ? 0 : Math.sin(t * 0.11) * 0.022;
         dust.rotation.y = instant ? 0 : -t * 0.02;
       };
 
@@ -408,25 +471,20 @@ export default function ArchiveScene({
         detachPointer?.();
         renderer.setAnimationLoop(null);
         timer.dispose();
+        const geometries = new Set<THREE.BufferGeometry>();
         scene.traverse((object) => {
           if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
-            object.geometry.dispose();
-            const material = object.material as
-              | THREE.Material
-              | THREE.Material[];
-            if (Array.isArray(material)) {
-              for (const entry of material) {
-                entry.dispose();
-              }
-            } else {
-              material.dispose();
-            }
+            geometries.add(object.geometry);
           }
           if (object instanceof THREE.InstancedMesh) {
             object.dispose();
           }
         });
+        for (const geometry of geometries) {
+          geometry.dispose();
+        }
         disposeArchiveMaterials(materials);
+        prepareRendererDisposal();
         renderer.dispose();
         if (process.env.NODE_ENV !== "production") {
           console.info("[archive] scene disposed");

@@ -1,6 +1,7 @@
 import { contact, profile, projects } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import FinaleMark from "../motion/FinaleMark";
+import MotionReveal from "../motion/MotionReveal";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
 
@@ -15,7 +16,8 @@ export default function ContactFinale() {
 
   return (
     <section id="contact" aria-labelledby="contact-heading">
-      <Container className="finale flow">
+      <Container className="finale">
+        <MotionReveal className="finale-copy flow">
         <p className="meta">Contact</p>
         <h2 id="contact-heading" className="display">
           {contact.heading}
@@ -39,6 +41,7 @@ export default function ContactFinale() {
             </li>
           ))}
         </ul>
+        </MotionReveal>
         <FinaleMark frameSlugs={frameSlugs} />
       </Container>
     </section>

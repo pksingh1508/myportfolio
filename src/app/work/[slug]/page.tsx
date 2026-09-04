@@ -77,23 +77,23 @@ export default async function ProjectPage({
   const next = index < projects.length - 1 ? projects[index + 1] : undefined;
 
   return (
-    <main id="main-content">
-      <Container className="flow">
-        <nav aria-label="Breadcrumb">
+    <main id="main-content" className="project-page">
+      <Container className="flow project-shell">
+        <nav aria-label="Breadcrumb" className="breadcrumbs">
           <p className="meta">
             <Link href="/">Home</Link> / <Link href="/#work">Work</Link> /{" "}
             <span aria-current="page">{project.title}</span>
           </p>
         </nav>
 
-        <header className="flow">
+        <header className="flow project-hero">
           <p className="meta">
             {project.category} — {project.dateLabel}
           </p>
           <h1>{project.title}</h1>
           <p className="lede">{project.summary}</p>
-          <dl>
-            <div className="item-head">
+          <dl className="project-meta">
+            <div className="project-meta-grid">
               <div>
                 <dt className="meta">Role</dt>
                 <dd>{project.role}</dd>
@@ -121,16 +121,16 @@ export default async function ProjectPage({
         </header>
 
         {project.media.length > 0 ? (
-          <section aria-label={`${project.title} media`}>
+          <section aria-label={`${project.title} media`} className="project-media">
             {project.media.map((media) => (
               <ProjectMediaFigure key={media.src} media={media} />
             ))}
           </section>
         ) : null}
 
-        <section aria-labelledby="contribution-heading">
+        <section aria-labelledby="contribution-heading" className="project-section">
           <h2 id="contribution-heading">Contribution</h2>
-          <ul>
+          <ul className="detail-list">
             {project.highlights.map((highlight) => (
               <li key={highlight}>{highlight}</li>
             ))}
@@ -138,7 +138,7 @@ export default async function ProjectPage({
         </section>
 
         {project.metrics.length > 0 ? (
-          <section aria-labelledby="outcome-heading">
+          <section aria-labelledby="outcome-heading" className="project-section">
             <h2 id="outcome-heading">Outcome</h2>
             <ul className="metrics-grid">
               {project.metrics.map((metric) => (
@@ -151,14 +151,14 @@ export default async function ProjectPage({
           </section>
         ) : null}
 
-        <section aria-labelledby="stack-heading">
+        <section aria-labelledby="stack-heading" className="project-section">
           <h2 id="stack-heading">Stack</h2>
           <p className="mono stack">{project.techStack.join(", ")}</p>
         </section>
 
         <Divider />
 
-        <nav aria-label="More projects">
+        <nav aria-label="More projects" className="project-nav">
           <ul className="link-row">
             {previous ? (
               <li>
@@ -175,7 +175,7 @@ export default async function ProjectPage({
           </ul>
         </nav>
 
-        <section aria-labelledby="project-contact-heading" className="flow">
+        <section aria-labelledby="project-contact-heading" className="flow project-contact">
           <h2 id="project-contact-heading">{contact.heading}</h2>
           <p>{contact.body}</p>
           <p className="btn-row">

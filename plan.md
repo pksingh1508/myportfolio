@@ -106,7 +106,7 @@ Rules:
 ### Layout system
 
 - Twelve-column desktop grid, six-column tablet grid, and four-column mobile grid.
-- Content shell: `min(100% - 2rem, 90rem)` with larger gutters at wider breakpoints.
+- Content shell: Tailwind `max-w-7xl`, implemented as `min(100% - 2rem, 80rem)`, with larger gutters at wider breakpoints.
 - Text is predominantly left-aligned. Centering is reserved for the final contact statement.
 - Sections use generous vertical rhythm, typically `clamp(6rem, 12vw, 12rem)`.
 - Hairline dividers encode changes in information; cards are used only when a real contained object exists.
@@ -200,11 +200,11 @@ Rules:
 ### Ownership by technology
 
 - **CSS transitions:** buttons, links, focus/hover/pressed states, nav backdrop, menu icon, and simple disclosure transitions.
-- **GSAP core + `@gsap/react`:** the one-time hero orchestration and coordinated multi-element timelines.
-- **GSAP ScrollTrigger:** pinned project chapter, progress rail, archive-to-project transformations, and a small number of section-specific scroll reveals.
+- **Motion for React:** the one-time hero orchestration, poster-to-canvas presence handoff, and a deliberately small number of one-shot section reveals. Motion is used at leaf client boundaries and respects reduced motion.
+- **GSAP ScrollTrigger:** the pinned project chapter, progress rail, and archive-to-project transformations where a single imperative scroll timeline is the clearer owner.
 - **Three.js animation loop:** ambient object drift, material time uniforms, and damped pointer response.
 - **GSAP-to-Three bridge:** GSAP animates camera/group values for discrete or scroll-linked narrative poses; the Three.js loop renders the interpolated state.
-- **No Motion dependency in v1:** GSAP plus CSS cover the current needs. Add `motion` only if a future interaction needs spring-based layout/presence behavior that GSAP does not already own.
+- **Motion is intentionally adopted for v1:** the owner explicitly requested it. It owns React-native presence and entrance choreography; CSS continues to own frequent interaction states and GSAP continues to own the existing pinned scroll sequence, preventing competing animation owners.
 
 ### Motion tokens
 

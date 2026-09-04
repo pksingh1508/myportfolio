@@ -1,12 +1,13 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 
 const ArchiveScene = dynamic(() => import("../three/ArchiveScene"), {
   ssr: false,
-  loading: () => <ArchivePoster label="Loading personal mark…" />,
+  loading: () => null,
 });
 
 type FinaleMarkProps = {
@@ -23,13 +24,25 @@ type FinaleMarkProps = {
  */
 export default function FinaleMark({ frameSlugs }: FinaleMarkProps) {
   const [ready, setReady] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="finale-mark" data-ready={String(ready)}>
-      <div className="finale-mark-poster" aria-hidden={ready || undefined}>
+      <motion.div
+        className="finale-mark-poster"
+        aria-hidden={ready || undefined}
+        initial={false}
+        animate={{ opacity: ready ? 0 : 1 }}
+        transition={{ duration: reduceMotion ? 0 : 0.4 }}
+      >
         <ArchivePoster label="Archive resolving into the personal mark" />
-      </div>
-      <div className="finale-mark-scene">
+      </motion.div>
+      <motion.div
+        className="finale-mark-scene"
+        initial={false}
+        animate={{ opacity: ready ? 1 : 0 }}
+        transition={{ duration: reduceMotion ? 0 : 0.5 }}
+      >
         <ArchiveScene
           backend="auto"
           pose="final-mark"
@@ -37,7 +50,7 @@ export default function FinaleMark({ frameSlugs }: FinaleMarkProps) {
           label="Personal mark resolving from the orbital archive"
           onFirstFrame={() => setReady(true)}
         />
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -12,19 +12,20 @@ export default function Hero() {
     .map((project) => project.slug);
 
   return (
-    <section aria-labelledby="intro-heading">
+    <section aria-labelledby="intro-heading" className="hero-section">
       <Container className="hero-grid">
         <HeroIntro>
-          <p data-intro className="meta">
+          <p data-intro className="hero-kicker meta">
+            <span aria-hidden="true" className="status-pulse" />
             {profile.roles.join(", ")}
           </p>
           <h1 data-intro id="intro-heading" className="display">
             {profile.fullName}
           </h1>
-          <p data-intro className="lede">
+          <p data-intro className="hero-headline lede">
             {profile.headline}
           </p>
-          <p data-intro>{profile.shortBio}</p>
+          <p data-intro className="hero-bio">{profile.shortBio}</p>
           <p data-intro className="btn-row">
             <SmartLink href="/#work" className="btn btn-primary">
               View selected work
@@ -33,7 +34,7 @@ export default function Hero() {
               Contact me
             </SmartLink>
           </p>
-          <ul data-intro className="link-row" aria-label="Contact and profiles">
+          <ul data-intro className="link-row hero-links" aria-label="Contact and profiles">
             {profile.links.map((link) => (
               <li key={link.href}>
                 <SmartLink href={link.href} external={link.external}>

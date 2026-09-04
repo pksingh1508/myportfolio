@@ -175,11 +175,11 @@ Use `frontend-design`, `ui-animation`, `scroll-animations`, `gsap-scrolltrigger`
 
 ## Step 7 — Choreograph the hero intro
 
-**Skills:** `ui-animation`, `frontend-design`, GSAP core patterns available through the repository's animation skills.
+**Skills:** `ui-animation`, `frontend-design`, `motion`.
 
 **Work**
 
-- Animate an existing, visible server-rendered hero into its resting pose; never ship HTML with essential content permanently at `opacity: 0`.
+- Animate an existing, visible server-rendered hero into its resting pose with Motion for React; never ship HTML with essential content permanently at `opacity: 0`.
 - Sequence name/role, supporting copy, CTAs, status, and a placeholder archive poster in hierarchy order.
 - Keep total first-load choreography at or below approximately `1.2s` and make it run once per visit/session as decided.
 - Use transform/opacity only. Avoid animating keyboard-initiated focus movement.

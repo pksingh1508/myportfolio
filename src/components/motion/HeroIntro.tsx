@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
-import { gsap, useGSAP } from "./gsap";
+import { stagger, useAnimate, useReducedMotion } from "motion/react";
+import { useLayoutEffect, type ReactNode } from "react";
 
 const PLAYED_KEY = "orbital-archive:hero-intro-played";
 
@@ -34,40 +34,41 @@ type HeroIntroProps = {
  * JavaScript all resolve to the final readable pose.
  */
 export default function HeroIntro({ children }: HeroIntroProps) {
-  const scope = useRef<HTMLDivElement>(null);
+  const [scope, animate] = useAnimate();
+  const reduceMotion = useReducedMotion();
 
-  useGSAP(
-    () => {
-      if (alreadyPlayed()) {
-        return;
+  useLayoutEffect(() => {
+    if (reduceMotion || alreadyPlayed()) {
+      return;
+    }
+
+    let cancelled = false;
+    const play = async () => {
+      await animate(
+        "[data-intro]",
+        {
+          opacity: [0, 1],
+          transform: ["translateY(22px)", "translateY(0px)"],
+        },
+        {
+          delay: stagger(0.075),
+          duration: 0.72,
+          ease: [0.19, 1, 0.22, 1],
+        },
+      );
+      if (!cancelled) {
+        markPlayed();
       }
-      const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const tween = gsap.fromTo(
-          "[data-intro]",
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-            stagger: 0.09,
-            onComplete: markPlayed,
-          },
-        );
-        return () => {
-          tween.kill();
-        };
-      });
-      return () => {
-        mm.revert();
-      };
-    },
-    { scope },
-  );
+    };
+
+    void play();
+    return () => {
+      cancelled = true;
+    };
+  }, [animate, reduceMotion]);
 
   return (
-    <div ref={scope} className="flow">
+    <div ref={scope} className="hero-copy flow">
       {children}
     </div>
   );

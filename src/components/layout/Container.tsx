@@ -5,7 +5,7 @@ type ContainerProps = {
   readonly className?: string;
 };
 
-/** Centered content shell: min(100% - gutter, 90rem). Server Component. */
+/** Centered Tailwind max-w-7xl content shell: min(100% - gutter, 80rem). */
 export default function Container({ children, className = "" }: ContainerProps) {
   const classes = className ? `shell ${className}` : "shell";
   return <div className={classes}>{children}</div>;

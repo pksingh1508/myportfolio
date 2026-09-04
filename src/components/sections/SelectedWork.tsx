@@ -12,10 +12,11 @@ export default function SelectedWork() {
 
   return (
     <section id="work" aria-labelledby="work-heading" className="night">
-      <Container className="flow">
-        <div className="flow">
+      <Container className="flow work-shell">
+        <div className="work-heading-grid">
+          <p className="section-index meta">Selected archive</p>
           <h2 id="work-heading">Selected work</h2>
-          <p className="section-lede">
+          <p className="section-lede work-intro">
             Three projects with the strongest evidence: what they are, what I
             changed, and what moved.
           </p>

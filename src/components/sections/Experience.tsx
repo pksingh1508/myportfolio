@@ -1,14 +1,19 @@
 import { experience, projects } from "../../constant/data";
 import Container from "../layout/Container";
+import MotionReveal from "../motion/MotionReveal";
 import SmartLink from "../ui/SmartLink";
 
 /** Compact chronological experience list. Server Component. */
 export default function Experience() {
   return (
     <section id="experience" aria-labelledby="experience-heading">
-      <Container className="flow">
-        <h2 id="experience-heading">Experience</h2>
-        <ul className="ruled">
+      <Container>
+        <MotionReveal className="section-grid">
+          <div className="section-heading flow">
+            <p className="section-index meta">In production</p>
+            <h2 id="experience-heading">Experience</h2>
+          </div>
+          <ol className="ruled experience-list">
           {experience.map((job) => {
             const related = job.relatedProjectSlug
               ? projects.find(
@@ -16,7 +21,7 @@ export default function Experience() {
                 )
               : undefined;
             return (
-              <li key={job.id}>
+              <li key={job.id} className="experience-item">
                 <div className="flow">
                   <div className="item-head">
                     <div>
@@ -27,7 +32,7 @@ export default function Experience() {
                     </div>
                     <p className="meta tnum">{job.period.label}</p>
                   </div>
-                  <ul>
+                  <ul className="detail-list">
                     {job.highlights.map((highlight) => (
                       <li key={highlight}>{highlight}</li>
                     ))}
@@ -44,7 +49,8 @@ export default function Experience() {
               </li>
             );
           })}
-        </ul>
+          </ol>
+        </MotionReveal>
       </Container>
     </section>
   );
