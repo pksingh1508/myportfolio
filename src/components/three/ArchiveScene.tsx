@@ -56,8 +56,7 @@ function damp(current: number, target: number, delta: number, lambda: number) {
 /**
  * Isolated Orbital Archive prototype. Procedural scene graph from plan.md,
  * WebGPURenderer with setAnimationLoop, DPR tiers, off-screen and hidden-tab
- * pause, reduced-motion single frame, and full teardown. Step 9 adds the
- * material system, damped fine-pointer tilt, and named poses.
+ * pause, reduced-motion single frame at the final pose, and full teardown.
  */
 export default function ArchiveScene({
   backend,
@@ -235,6 +234,60 @@ export default function ArchiveScene({
         renderer.render(scene, camera);
       };
 
+      const ORBIT_SPEED = 0.1;
+
+      /**
+       * Pose layout shared by the live loop and the reduced-motion still.
+       * `instant` snaps every value to its target with ambient terms at rest,
+       * so reduced motion shows final states in a single frame instead of
+       * the construction pose.
+       */
+      const updatePose = (delta: number, t: number, instant: boolean) => {
+        const target = getArchivePoseTarget(poseRef.current, slugsRef.current);
+        if (instant) {
+          Object.assign(poseState, target);
+        } else {
+          poseState.orbitOffset = damp(poseState.orbitOffset, target.orbitOffset, delta, POSE_LAMBDA);
+          poseState.spread = damp(poseState.spread, target.spread, delta, POSE_LAMBDA);
+          poseState.cameraZ = damp(poseState.cameraZ, target.cameraZ, delta, POSE_LAMBDA);
+          poseState.cameraY = damp(poseState.cameraY, target.cameraY, delta, POSE_LAMBDA);
+          poseState.stackMix = damp(poseState.stackMix, target.stackMix, delta, POSE_LAMBDA);
+          poseState.focusIndex = target.focusIndex;
+        }
+
+        camera.position.set(0, poseState.cameraY, poseState.cameraZ);
+        camera.lookAt(0, 0.1, 0);
+
+        for (const frame of frames) {
+          const angle = frame.phase + t * ORBIT_SPEED;
+          const orbitX = Math.cos(angle) * ORBIT_RX * poseState.spread;
+          const orbitZ = Math.sin(angle) * ORBIT_RZ * poseState.spread;
+          const orbitY =
+            ORBIT_Y + (instant ? 0 : Math.sin(t * 0.5 + frame.phase) * 0.22);
+          const stackY = 0.8 - frame.index * 0.8;
+          frame.group.position.set(
+            orbitX * (1 - poseState.stackMix),
+            orbitY + (stackY - orbitY) * poseState.stackMix,
+            orbitZ * (1 - poseState.stackMix) + 0.6 * poseState.stackMix,
+          );
+          frame.group.lookAt(camera.position);
+          const targetScale = frame.index === poseState.focusIndex ? 1.08 : 1;
+          frame.scale = instant
+            ? targetScale
+            : damp(frame.scale, targetScale, delta, POSE_LAMBDA);
+          frame.group.scale.setScalar(frame.scale);
+        }
+        monolith.rotation.y = instant ? 0 : t * 0.05;
+        root.rotation.y =
+          poseState.orbitOffset + (instant ? 0 : Math.sin(t * 0.08) * 0.06);
+        dust.rotation.y = instant ? 0 : -t * 0.02;
+      };
+
+      const renderStill = () => {
+        updatePose(0, 0, true);
+        renderFrame();
+      };
+
       const applySize = () => {
         const width = host.clientWidth || 4;
         const height = host.clientHeight || 3;
@@ -245,47 +298,14 @@ export default function ArchiveScene({
         );
         renderer.setSize(width, height, false);
         if (reduceMotion) {
-          renderFrame();
+          renderStill();
         }
       };
       applySize();
 
-      const ORBIT_SPEED = 0.1;
       const tick = () => {
         const delta = Math.min(clock.getDelta(), 0.05);
-        const t = clock.elapsedTime;
-
-        const target = getArchivePoseTarget(poseRef.current, slugsRef.current);
-        poseState.orbitOffset = damp(poseState.orbitOffset, target.orbitOffset, delta, POSE_LAMBDA);
-        poseState.spread = damp(poseState.spread, target.spread, delta, POSE_LAMBDA);
-        poseState.cameraZ = damp(poseState.cameraZ, target.cameraZ, delta, POSE_LAMBDA);
-        poseState.cameraY = damp(poseState.cameraY, target.cameraY, delta, POSE_LAMBDA);
-        poseState.stackMix = damp(poseState.stackMix, target.stackMix, delta, POSE_LAMBDA);
-        poseState.focusIndex = target.focusIndex;
-
-        camera.position.set(0, poseState.cameraY, poseState.cameraZ);
-        camera.lookAt(0, 0.1, 0);
-
-        for (const frame of frames) {
-          const angle = frame.phase + t * ORBIT_SPEED;
-          const orbitX = Math.cos(angle) * ORBIT_RX * poseState.spread;
-          const orbitZ = Math.sin(angle) * ORBIT_RZ * poseState.spread;
-          const orbitY = ORBIT_Y + Math.sin(t * 0.5 + frame.phase) * 0.22;
-          const stackY = 0.8 - frame.index * 0.8;
-          frame.group.position.set(
-            orbitX * (1 - poseState.stackMix),
-            orbitY + (stackY - orbitY) * poseState.stackMix,
-            orbitZ * (1 - poseState.stackMix) + 0.6 * poseState.stackMix,
-          );
-          frame.group.lookAt(camera.position);
-          const targetScale = frame.index === poseState.focusIndex ? 1.08 : 1;
-          frame.scale = damp(frame.scale, targetScale, delta, POSE_LAMBDA);
-          frame.group.scale.setScalar(frame.scale);
-        }
-        monolith.rotation.y = t * 0.05;
-        root.rotation.y =
-          poseState.orbitOffset + Math.sin(t * 0.08) * 0.06;
-        dust.rotation.y = -t * 0.02;
+        updatePose(delta, clock.elapsedTime, false);
 
         tilt.x = damp(tilt.x, tilt.targetX, delta, TILT_LAMBDA);
         tilt.y = damp(tilt.y, tilt.targetY, delta, TILT_LAMBDA);
@@ -301,7 +321,7 @@ export default function ArchiveScene({
         }
         if (reduceMotion) {
           renderer.setAnimationLoop(null);
-          renderFrame();
+          renderStill();
           return;
         }
         if (loop.visible && loop.pageVisible) {
@@ -355,7 +375,7 @@ export default function ArchiveScene({
       }
 
       if (reduceMotion) {
-        renderFrame();
+        renderStill();
       } else {
         tick();
         updateLoop();
