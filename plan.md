@@ -328,9 +328,8 @@ src/
 │   ├── motion/
 │   ├── three/
 │   └── ui/
-├── content/
-│   ├── profile.ts
-│   └── projects.ts
+├── constant/
+│   └── data.ts
 ├── lib/
 │   ├── motion.ts
 │   ├── three-quality.ts
@@ -347,8 +346,8 @@ public/
 
 ### Content model
 
-- All personal facts live in `src/content/profile.ts`.
-- All project information lives in `src/content/projects.ts` and satisfies a shared `Project` type.
+- All personal, professional, project, education, navigation, and contact facts live in `src/constant/data.ts`.
+- `src/constant/data.ts` exports the canonical typed `portfolioData` object plus convenient named section exports for frontend use.
 - No invented clients, metrics, testimonials, links, or employment facts. Missing values are omitted in UI.
 - Media entries require intrinsic dimensions, meaningful alt text or an explicit decorative flag, and an optional poster for video.
 
@@ -408,4 +407,3 @@ public/
 - Email, social links, résumé file, production domain, analytics choice, and privacy requirements.
 
 The site may be built with clearly marked local placeholder data, but it is not launch-ready until every item above is reviewed by the owner.
-

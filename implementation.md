@@ -67,7 +67,7 @@ Use `frontend-design`, `ui-animation`, `scroll-animations`, `gsap-scrolltrigger`
 **Work**
 
 - Create `src/types/portfolio.ts` with `Profile`, `Project`, `ProjectMedia`, `ExperienceItem`, and `SocialLink` types.
-- Create `src/content/profile.ts` and `src/content/projects.ts`.
+- Maintain the canonical typed portfolio content in `src/constant/data.ts`.
 - Validate unique slugs and require accessible media metadata.
 - Add `src/app/work/[slug]/page.tsx` with static params and a plain semantic case-study layout.
 - Add a useful `not-found.tsx` for invalid project slugs.
@@ -434,4 +434,3 @@ Use `frontend-design`, `ui-animation`, `scroll-animations`, `gsap-scrolltrigger`
 - Mobile, reduced motion, keyboard, and no-WebGPU paths are complete.
 - Motion and 3D support the portfolio narrative and cleanly dispose on unmount.
 - The final page is recognizably inspired by SpaceFS's restraint and pacing but is visually and conceptually original.
-

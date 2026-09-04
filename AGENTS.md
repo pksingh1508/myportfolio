@@ -125,7 +125,7 @@ src/components/layout/ navigation/footer/shell structure
 src/components/sections/ semantic homepage and case-study sections
 src/components/motion/ client animation controllers and GSAP scopes
 src/components/three/ renderer, scene graph, materials, poses, fallback
-src/content/         verified profile and project data
+src/constant/        canonical typed portfolio data
 src/lib/             shared motion/quality utilities with clear ownership
 src/types/           portfolio content types
 public/              optimized images, posters, models, textures, video, résumé
@@ -211,8 +211,8 @@ Scene
 
 ## Content policy
 
-- Canonical personal data lives in `src/content/profile.ts`.
-- Canonical project data lives in `src/content/projects.ts`.
+- Canonical personal, professional, project, education, navigation, and contact data lives in `src/constant/data.ts`.
+- Import `portfolioData` for the complete model or its named section exports for focused components.
 - Components render content; they do not own or duplicate professional facts.
 - Missing data is omitted, not guessed.
 - Every media record has intrinsic dimensions and meaningful alt text or an explicit decorative flag.
