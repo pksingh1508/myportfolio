@@ -11,9 +11,10 @@
  * signal-soft/paper 1.77 is decorative-only, never text on light surfaces.
  *
  * Two derived tokens were added for AA-correct small text and are NOT plan
- * changes: --color-muted (#51555E, small secondary text on light) and
- * --color-fog (#C6C9D1, small secondary text on dark). --color-graphite keeps
- * its exact plan value for large text, metadata accents, and non-text UI.
+ * changes: --color-muted (#51555E, small secondary text on light),
+ * --color-fog (#C6C9D1, small secondary text on dark), and --color-night-line
+ * (#262B33, hairline dividers on dark, non-text UI only). --color-graphite
+ * keeps its exact plan value for large text, metadata accents, and non-text UI.
  */
 
 @theme {
@@ -27,6 +28,7 @@
   --color-signal: #635bff;
   --color-signal-soft: #b9b6ff;
   --color-night-surface: #15171b;
+  --color-night-line: #262b33;
 }
 
 @theme inline {
@@ -141,10 +143,6 @@ a {
   text-underline-offset: 3px;
 }
 
-a:hover {
-  text-decoration-color: currentColor;
-}
-
 a,
 button {
   touch-action: manipulation;
@@ -185,7 +183,6 @@ button {
 }
 
 .btn-secondary:hover {
-  border-color: var(--color-ink);
   text-decoration: none;
 }
 
@@ -251,6 +248,449 @@ button {
   top: 1rem;
   outline-color: var(--color-signal-soft);
   color: var(--color-white);
+}
+
+/* ---- Step 4: static section patterns (no animation, no canvas) ---- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-header);
+  background-color: var(--color-paper);
+  border-bottom: 1px solid var(--color-line);
+  transition:
+    background-color var(--duration-menu) var(--ease-menu),
+    border-color var(--duration-menu) var(--ease-menu);
+}
+
+/* Without JavaScript the header flows with the page so the static menu
+   panel below can never cover content. */
+html:not(.js) .site-header {
+  position: static;
+}
+
+.site-header[data-scrolled="true"] {
+  background-color: rgba(247, 248, 252, 0.86);
+  background-color: color-mix(in srgb, var(--color-paper) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+}
+
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: var(--header-height);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex-shrink: 0;
+  min-height: 44px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.625rem;
+  background-color: var(--color-ink);
+  color: var(--color-white);
+  font-family:
+    var(--font-plex-mono),
+    ui-monospace,
+    monospace;
+  font-size: 0.8125rem;
+}
+
+.desktop-nav {
+  display: none;
+}
+
+.desktop-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem 1.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.desktop-nav-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-muted);
+  text-decoration: none;
+  transition: color var(--duration-hover) var(--ease-out);
+}
+
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: block;
+  }
+
+  .site-menu {
+    display: none;
+  }
+}
+
+/* ---- Step 5: mobile disclosure menu (CSS owns the motion) ---- */
+
+.site-menu {
+  position: relative;
+}
+
+.menu-trigger {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-white);
+  color: var(--color-ink);
+  font-weight: 550;
+  transition:
+    border-color var(--duration-hover) var(--ease-out),
+    background-color var(--duration-hover) var(--ease-out),
+    transform var(--duration-press) var(--ease-press);
+}
+
+html.js .menu-trigger {
+  display: inline-flex;
+}
+
+.menu-trigger:active {
+  transform: scale(0.97);
+}
+
+.menu-icon {
+  position: relative;
+  width: 18px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+.menu-icon > span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background-color: currentColor;
+  transition:
+    transform var(--duration-menu) var(--ease-menu),
+    opacity var(--duration-hover) var(--ease-out);
+}
+
+.menu-icon > span:first-child {
+  top: 0;
+}
+
+.menu-icon > span:last-child {
+  bottom: 0;
+}
+
+.menu-trigger[aria-expanded="true"] .menu-icon > span:first-child {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.menu-trigger[aria-expanded="true"] .menu-icon > span:last-child {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+/* No-JS: the panel is a static stacked list inside the (now static) header. */
+.menu-panel {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-frame-sm);
+  padding: 0.5rem;
+}
+
+html.js .menu-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: var(--z-menu);
+  min-width: min(16rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - var(--header-height) - 1rem);
+  overflow: auto;
+  box-shadow: 0 24px 48px -24px rgba(9, 10, 12, 0.18);
+  transform-origin: top right;
+  transition:
+    opacity 220ms var(--ease-menu),
+    transform 220ms var(--ease-menu),
+    visibility 0s;
+}
+
+html.js .menu-panel[data-open="false"] {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  visibility: hidden;
+  transition:
+    opacity 200ms var(--ease-menu),
+    transform 200ms var(--ease-menu),
+    visibility 0s 220ms;
+}
+
+.menu-panel ul {
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+html.js .menu-item {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 200ms var(--ease-menu),
+    transform 200ms var(--ease-menu);
+}
+
+html.js .menu-panel[data-open="true"] .menu-item {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--menu-index, 0) * 25ms);
+}
+
+/* Hover paint stays behind fine pointers so it never sticks on touch. */
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .desktop-nav-list a:hover {
+    color: var(--color-ink);
+  }
+
+  .menu-link:hover {
+    background-color: var(--color-paper);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-ink);
+  }
+
+  .night a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+.meta {
+  font-family:
+    var(--font-plex-mono),
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-muted);
+}
+
+.lede {
+  font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.section-lede {
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.flow > * + * {
+  margin-block-start: 1.25rem;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.metric-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-label {
+  display: block;
+  margin-block-start: 0.25rem;
+}
+
+.stack {
+  font-size: 0.875rem;
+}
+
+.ruled {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ruled > li {
+  padding-block: 1.5rem;
+}
+
+.ruled > li + li {
+  border-top: 1px solid var(--color-line);
+}
+
+.skill-row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .skill-row {
+    grid-template-columns: 14rem 1fr;
+    gap: 2rem;
+  }
+}
+
+.item-head {
+  display: grid;
+  gap: 0.25rem;
+  margin-block-end: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .item-head {
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: baseline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .split {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
+}
+
+/* Dark selected-work chapter: full-bleed band, calm inside. */
+.night {
+  background-color: var(--color-ink);
+  color: var(--color-white);
+  padding-block: clamp(4rem, 8vw, 8rem);
+}
+
+.night .muted,
+.night .meta {
+  color: var(--color-fog);
+}
+
+.night a {
+  text-decoration-color: var(--color-graphite);
+}
+
+.night .ruled > li + li {
+  border-color: var(--color-night-line);
+}
+
+.night .btn-secondary {
+  border-color: var(--color-night-line);
+  color: var(--color-white);
+}
+
+.night .btn-secondary:hover {
+  border-color: var(--color-white);
+}
+
+.work-article {
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+}
+
+.work-article + .work-article {
+  border-top: 1px solid var(--color-night-line);
+}
+
+.finale {
+  max-width: 62ch;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.finale p {
+  margin-inline: auto;
+}
+
+.finale .btn-row,
+.finale .link-row {
+  justify-content: center;
+}
+
+.site-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 2rem 3rem;
 }
 
 @media (forced-colors: active) {

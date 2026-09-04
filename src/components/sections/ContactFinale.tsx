@@ -1,0 +1,41 @@
+import { contact, profile } from "../../constant/data";
+import { describeLink } from "../../lib/describe-link";
+import Container from "../layout/Container";
+import SmartLink from "../ui/SmartLink";
+
+/** Centered contact finale. The only centered text on the page. */
+export default function ContactFinale() {
+  const secondaryLinks = profile.links.filter(
+    (link) => link.kind === "social" || link.kind === "phone",
+  );
+
+  return (
+    <section id="contact" aria-labelledby="contact-heading">
+      <Container className="finale flow">
+        <p className="meta">Contact</p>
+        <h2 id="contact-heading" className="display">
+          {contact.heading}
+        </h2>
+        <p>{contact.body}</p>
+        <p className="btn-row">
+          <SmartLink
+            href={contact.primaryAction.href}
+            external={contact.primaryAction.external}
+            className="btn btn-primary"
+          >
+            {describeLink(contact.primaryAction, profile.fullName)}
+          </SmartLink>
+        </p>
+        <ul className="link-row" aria-label="More ways to reach me">
+          {secondaryLinks.map((link) => (
+            <li key={link.href}>
+              <SmartLink href={link.href} external={link.external}>
+                {describeLink(link, profile.fullName)}
+              </SmartLink>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </section>
+  );
+}

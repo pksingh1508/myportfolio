@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import { site } from "../constant/data";
+import SiteFooter from "../components/layout/SiteFooter";
+import SiteHeader from "../components/layout/SiteHeader";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -27,7 +29,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${instrumentSans.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body id="top" className="min-h-full flex flex-col">
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+        <SiteHeader />
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

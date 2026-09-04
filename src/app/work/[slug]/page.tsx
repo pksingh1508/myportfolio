@@ -48,6 +48,7 @@ export default async function ProjectPage({
   const next = index < projects.length - 1 ? projects[index + 1] : undefined;
 
   return (
+    <main id="main-content">
     <article>
       <nav aria-label="Breadcrumb">
         <Link href="/">Home</Link> / <Link href="/#work">Work</Link> /{" "}
@@ -153,5 +154,6 @@ export default async function ProjectPage({
         </p>
       </footer>
     </article>
+    </main>
   );
 }

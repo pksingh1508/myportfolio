@@ -27,7 +27,7 @@ const swatches = [
 
 export default function SpecimenPage() {
   return (
-    <main>
+    <main id="main-content">
       <Container>
         <p className="mono">Dev-only specimen — remove before launch</p>
         <h1 className="display">Orbital Archive specimen</h1>
