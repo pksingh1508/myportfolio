@@ -94,6 +94,13 @@ body {
   text-wrap: balance;
 }
 
+/* Plan desktop hero target: clamp(3.5rem, 7vw, 7.5rem). */
+@media (min-width: 1024px) {
+  .display {
+    font-size: clamp(3.5rem, 7vw, 7.5rem);
+  }
+}
+
 h1 {
   font-size: clamp(2.25rem, 5vw, 3.5rem);
   line-height: 1.02;
