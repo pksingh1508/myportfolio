@@ -44,6 +44,12 @@ export type Profile = {
 export type SiteConfig = {
   readonly title: string;
   readonly description: string;
+  /**
+   * Production origin (e.g. "https://example.com"). `null` until the owner
+   * supplies the domain; absolute-URL metadata (canonical, sitemap) stays
+   * omitted rather than shipping a guessed host.
+   */
+  readonly url: string | null;
   readonly navigation: readonly {
     readonly label: string;
     readonly href: `#${string}`;

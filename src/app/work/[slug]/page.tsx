@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { contact, profile, projects } from "../../../constant/data";
+import { contact, profile, projects, site } from "../../../constant/data";
 import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
 import Divider from "../../../components/ui/Divider";
@@ -30,9 +30,23 @@ export async function generateMetadata({
     return { title: `Project not found — ${profile.fullName}` };
   }
 
+  const title = `${project.title} — ${profile.fullName}`;
+  const url = `/work/${project.slug}`;
   return {
-    title: `${project.title} — ${profile.fullName}`,
+    title,
     description: project.summary,
+    alternates: site.url ? { canonical: url } : undefined,
+    openGraph: {
+      title,
+      description: project.summary,
+      type: "article",
+      ...(site.url ? { url } : {}),
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description: project.summary,
+    },
   };
 }
 

@@ -21,6 +21,22 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: site.title,
   description: site.description,
+  // Absolute-URL fields activate with site.url; text-only social cards
+  // (no OG images per the Step 14 scope decision) work without a domain.
+  metadataBase: site.url ? new URL(site.url) : undefined,
+  alternates: site.url ? { canonical: "/" } : undefined,
+  openGraph: {
+    title: site.title,
+    description: site.description,
+    type: "website",
+    locale: "en_US",
+    ...(site.url ? { url: "/" } : {}),
+  },
+  twitter: {
+    card: "summary",
+    title: site.title,
+    description: site.description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

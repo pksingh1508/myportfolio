@@ -50,6 +50,9 @@ export const portfolioData = {
     title: "Pawan Kumar - Software Development Engineer",
     description:
       "Portfolio of Pawan Kumar, a software development engineer building full-stack web platforms and cross-platform mobile applications.",
+    // Production domain unknown (Step 0/14 decision). Absolute-URL metadata
+    // activates the moment this is set; nothing guesses it before then.
+    url: null,
     navigation: [
       { label: "Work", href: "#work" },
       { label: "Experience", href: "#experience" },
