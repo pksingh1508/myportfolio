@@ -31,6 +31,8 @@ type ArchiveSceneProps = {
   /** Throw before init to exercise the poster fallback. */
   readonly simulateFailure?: boolean;
   readonly onStats?: (stats: ArchiveStats) => void;
+  /** Fires once after the first successfully rendered frame. */
+  readonly onFirstFrame?: () => void;
   readonly label?: string;
   /** Active named pose; the loop damps toward its target every frame. */
   readonly pose?: ArchivePoseName;
@@ -59,6 +61,7 @@ export default function ArchiveScene({
   backend,
   simulateFailure = false,
   onStats,
+  onFirstFrame,
   label = "Orbital archive prototype",
   pose = "hero",
   frameSlugs = [],
@@ -67,12 +70,14 @@ export default function ArchiveScene({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [failed, setFailed] = useState(false);
   const onStatsRef = useRef(onStats);
+  const onFirstFrameRef = useRef(onFirstFrame);
   const poseRef = useRef<ArchivePoseName>(pose);
   const slugsRef = useRef<readonly string[]>(frameSlugs);
 
   useEffect(() => {
     onStatsRef.current = onStats;
-  }, [onStats]);
+    onFirstFrameRef.current = onFirstFrame;
+  }, [onStats, onFirstFrame]);
 
   useEffect(() => {
     poseRef.current = pose;
@@ -354,6 +359,7 @@ export default function ArchiveScene({
       const backendFlag = renderer.backend as unknown as {
         isWebGPUBackend?: boolean;
       };
+      onFirstFrameRef.current?.();
       onStatsRef.current?.({
         backend: backendFlag.isWebGPUBackend ? "webgpu" : "webgl2",
         calls: renderer.info.render.calls,

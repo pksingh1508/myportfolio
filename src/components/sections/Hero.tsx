@@ -1,14 +1,19 @@
-import { profile } from "../../constant/data";
+import { profile, projects } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
+import HeroArchive from "../motion/HeroArchive";
 import HeroIntro from "../motion/HeroIntro";
 
-/** Identity hero. Typographic in Step 4; the archive visual docks here in Step 10. */
+/** Identity hero with the Orbital Archive docked beside the copy on desktop. */
 export default function Hero() {
+  const frameSlugs = projects
+    .filter((project) => project.featured)
+    .map((project) => project.slug);
+
   return (
     <section aria-labelledby="intro-heading">
-      <Container>
+      <Container className="hero-grid">
         <HeroIntro>
           <p data-intro className="meta">
             {profile.roles.join(", ")}
@@ -38,6 +43,7 @@ export default function Hero() {
             ))}
           </ul>
         </HeroIntro>
+        <HeroArchive frameSlugs={frameSlugs} />
       </Container>
     </section>
   );

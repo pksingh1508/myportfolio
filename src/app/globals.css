@@ -712,6 +712,50 @@ html.js .menu-panel[data-open="true"] .menu-item {
   pointer-events: none;
 }
 
+/* ---- Step 10: hero archive dock (poster-first, crossfade on first frame) ---- */
+
+.hero-grid {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+.hero-archive {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+.hero-archive-poster,
+.hero-archive-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-archive-poster {
+  pointer-events: none;
+  transition: opacity 500ms var(--ease-reveal);
+}
+
+.hero-archive-scene {
+  opacity: 0;
+  transition: opacity 500ms var(--ease-reveal);
+}
+
+.hero-archive[data-ready="true"] .hero-archive-scene {
+  opacity: 1;
+}
+
+.hero-archive[data-ready="true"] .hero-archive-poster {
+  opacity: 0;
+}
+
 @media (forced-colors: active) {
   :focus-visible {
     outline: 3px solid Highlight;
