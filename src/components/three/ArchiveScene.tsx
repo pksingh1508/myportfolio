@@ -33,6 +33,8 @@ type ArchiveSceneProps = {
   readonly onStats?: (stats: ArchiveStats) => void;
   /** Fires once after the first successfully rendered frame. */
   readonly onFirstFrame?: () => void;
+  /** Fires once when initialization fails and the poster takes over. */
+  readonly onError?: () => void;
   readonly label?: string;
   /** Active named pose; the loop damps toward its target every frame. */
   readonly pose?: ArchivePoseName;
@@ -62,6 +64,7 @@ export default function ArchiveScene({
   simulateFailure = false,
   onStats,
   onFirstFrame,
+  onError,
   label = "Orbital archive prototype",
   pose = "hero",
   frameSlugs = [],
@@ -71,13 +74,15 @@ export default function ArchiveScene({
   const [failed, setFailed] = useState(false);
   const onStatsRef = useRef(onStats);
   const onFirstFrameRef = useRef(onFirstFrame);
+  const onErrorRef = useRef(onError);
   const poseRef = useRef<ArchivePoseName>(pose);
   const slugsRef = useRef<readonly string[]>(frameSlugs);
 
   useEffect(() => {
     onStatsRef.current = onStats;
     onFirstFrameRef.current = onFirstFrame;
-  }, [onStats, onFirstFrame]);
+    onErrorRef.current = onError;
+  }, [onStats, onFirstFrame, onError]);
 
   useEffect(() => {
     poseRef.current = pose;
@@ -402,6 +407,7 @@ export default function ArchiveScene({
 
     start().catch(() => {
       if (!disposed) {
+        onErrorRef.current?.();
         setFailed(true);
       }
     });
