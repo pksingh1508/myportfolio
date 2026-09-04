@@ -850,6 +850,43 @@ html.js .menu-panel[data-open="true"] .menu-item {
   }
 }
 
+/*
+ * Without JavaScript the pinned split stage never applies: the same article
+ * DOM stays a normal stacked list and the decorative stage (including its
+ * progress rail) stays hidden. Each rule below beats its gated counterpart
+ * on specificity and comes later in source order.
+ */
+html:not(.js) .work-pin {
+  height: auto;
+  display: block;
+}
+
+html:not(.js) .work-cols {
+  display: block;
+}
+
+html:not(.js) .work-slides {
+  gap: clamp(2rem, 4vw, 3.5rem);
+  max-height: none;
+  overflow: visible;
+}
+
+html:not(.js) .work-slide {
+  grid-area: auto;
+}
+
+html:not(.js) .work-pin .work-article {
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+}
+
+html:not(.js) .work-pin .work-article + .work-article {
+  border-top: 1px solid var(--color-night-line);
+}
+
+html:not(.js) .work-side {
+  display: none;
+}
+
 @media (forced-colors: active) {
   :focus-visible {
     outline: 3px solid Highlight;
