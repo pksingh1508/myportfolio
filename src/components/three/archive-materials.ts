@@ -44,7 +44,8 @@ export function createArchiveMaterials(includeGlass: boolean): ArchiveMaterials 
       opacity: 0.9,
     }),
     orbit: new THREE.LineBasicMaterial({
-      color: 0x9aa0ab,
+      // Graphite plan token; the previous mid-gray had no token home.
+      color: 0x6f737b,
       transparent: true,
       opacity: 0.55,
     }),
