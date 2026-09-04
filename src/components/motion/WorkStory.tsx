@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 import type { ArchivePoseName } from "../three/archive-poses";
-import type { PortfolioProject } from "../../constant/data";
+import type { Project } from "../../types/portfolio";
 import { ScrollTrigger, gsap, markersEnabled, useGSAP } from "./scroll";
 
 const StageScene = dynamic(() => import("../three/ArchiveScene"), {
@@ -14,7 +14,7 @@ const StageScene = dynamic(() => import("../three/ArchiveScene"), {
 });
 
 type WorkStoryProps = {
-  readonly projects: readonly PortfolioProject[];
+  readonly projects: readonly Project[];
 };
 
 /**

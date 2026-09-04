@@ -1,128 +1,11 @@
-export type PortfolioLink = {
-  readonly label: string;
-  readonly href: string;
-  readonly kind: "email" | "phone" | "social" | "live" | "source" | "store";
-  readonly external: boolean;
-};
+import type {
+  PortfolioData,
+  Project,
+  ProjectMedia,
+  SocialLink,
+} from "../types/portfolio";
 
-export type DateRange = {
-  /** ISO-like month value used for sorting. */
-  readonly start: `${number}-${number}`;
-  /** `null` means the role is current. */
-  readonly end: `${number}-${number}` | null;
-  readonly label: string;
-};
-
-export type SkillGroup = {
-  readonly id: string;
-  readonly label: string;
-  readonly items: readonly string[];
-};
-
-export type ImpactMetric = {
-  readonly value: string;
-  readonly label: string;
-  readonly context: string;
-  readonly relatedSlug: string | null;
-};
-
-export type WorkExperience = {
-  readonly id: string;
-  readonly company: string;
-  readonly role: string;
-  readonly engagementType: "Employment" | "Freelance";
-  readonly workplace: "Remote";
-  readonly period: DateRange;
-  readonly techStack: readonly string[];
-  readonly highlights: readonly string[];
-  readonly relatedProjectSlug: string | null;
-};
-
-export type ProjectMetric = {
-  readonly value: string;
-  readonly label: string;
-};
-
-export type PortfolioProject = {
-  readonly slug: string;
-  readonly title: string;
-  readonly category: "Full-stack web" | "Mobile application" | "EdTech platform";
-  readonly status: "Live";
-  readonly date: `${number}-${number}`;
-  readonly dateLabel: string;
-  readonly role: string;
-  readonly summary: string;
-  readonly techStack: readonly string[];
-  readonly highlights: readonly string[];
-  readonly metrics: readonly ProjectMetric[];
-  readonly links: readonly PortfolioLink[];
-  readonly featured: boolean;
-  /** Add approved portfolio media later without changing the project schema. */
-  readonly media: readonly {
-    readonly src: string;
-    readonly alt: string;
-    readonly width: number;
-    readonly height: number;
-    readonly type: "image" | "video";
-    readonly poster?: string;
-  }[];
-};
-
-export type EducationItem = {
-  readonly id: string;
-  readonly qualification: string;
-  readonly shortName: string;
-  /** Institution names are not present in either supplied resume. */
-  readonly institution: string | null;
-  readonly period: {
-    readonly startYear: number;
-    readonly endYear: number;
-    readonly label: string;
-  };
-};
-
-export type PortfolioData = {
-  readonly site: {
-    readonly title: string;
-    readonly description: string;
-    readonly navigation: readonly {
-      readonly label: string;
-      readonly href: `#${string}`;
-    }[];
-  };
-  readonly profile: {
-    readonly firstName: string;
-    readonly lastName: string;
-    readonly fullName: string;
-    readonly initials: string;
-    readonly roles: readonly string[];
-    readonly headline: string;
-    readonly shortBio: string;
-    readonly email: string;
-    readonly phone: {
-      readonly display: string;
-      readonly href: `tel:${string}`;
-    };
-    readonly location: string | null;
-    readonly availability: string | null;
-    readonly links: readonly PortfolioLink[];
-  };
-  readonly resumeSources: readonly {
-    readonly label: string;
-    readonly fileName: string;
-    readonly focus: "Full-stack" | "Mobile";
-  }[];
-  readonly skillGroups: readonly SkillGroup[];
-  readonly impactMetrics: readonly ImpactMetric[];
-  readonly experience: readonly WorkExperience[];
-  readonly projects: readonly PortfolioProject[];
-  readonly education: readonly EducationItem[];
-  readonly contact: {
-    readonly heading: string;
-    readonly body: string;
-    readonly primaryAction: PortfolioLink;
-  };
-};
+export type { PortfolioData } from "../types/portfolio";
 
 const contactLinks = {
   email: {
@@ -149,7 +32,7 @@ const contactLinks = {
     kind: "social",
     external: true,
   },
-} as const satisfies Record<string, PortfolioLink>;
+} as const satisfies Record<string, SocialLink>;
 
 /**
  * Canonical portfolio content extracted from the two resumes supplied at the
@@ -561,3 +444,49 @@ export const {
   education,
   contact,
 } = portfolioData;
+
+/**
+ * Step 2 content guards. These run at module scope so every consumer —
+ * homepage, case-study routes, metadata — fails loudly on bad data instead
+ * of shipping a broken route. The static `media: []` arrays pass today;
+ * each future record must carry dimensions plus alt text (or an explicit
+ * decorative flag) and video must carry a poster.
+ */
+function assertUniqueProjectSlugs(items: readonly Project[]): void {
+  const seen = new Set<string>();
+  for (const item of items) {
+    if (item.slug.length === 0) {
+      throw new Error("portfolioData: project with an empty slug.");
+    }
+    if (seen.has(item.slug)) {
+      throw new Error(`portfolioData: duplicate project slug "${item.slug}".`);
+    }
+    seen.add(item.slug);
+  }
+}
+
+function assertAccessibleProjectMedia(items: readonly Project[]): void {
+  for (const item of items) {
+    const media: readonly ProjectMedia[] = item.media;
+    for (const record of media) {
+      if (record.width <= 0 || record.height <= 0) {
+        throw new Error(
+          `portfolioData: "${item.slug}" media "${record.src}" needs positive intrinsic dimensions.`,
+        );
+      }
+      if (!record.decorative && record.alt.length === 0) {
+        throw new Error(
+          `portfolioData: "${item.slug}" media "${record.src}" needs meaningful alt text or an explicit decorative flag.`,
+        );
+      }
+      if (record.type === "video" && record.poster.length === 0) {
+        throw new Error(
+          `portfolioData: "${item.slug}" video "${record.src}" needs a poster.`,
+        );
+      }
+    }
+  }
+}
+
+assertUniqueProjectSlugs(projects);
+assertAccessibleProjectMedia(projects);

@@ -82,7 +82,7 @@ export default function SpecimenPage() {
             Body copy stays within 68ch at 1.6 line height. Sentences stay in
             sentence case, left-aligned, with room to breathe around them.
           </p>
-          <p className="mono">Mono metadata — EU Career Serwis · 2025 · 95+</p>
+          <p className="mono">Mono metadata — Project name · Year · Metric</p>
           <p className="muted">
             Secondary copy uses the muted token so it holds AA contrast.
           </p>

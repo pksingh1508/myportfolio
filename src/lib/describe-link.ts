@@ -1,7 +1,7 @@
-import type { PortfolioLink } from "../constant/data";
+import type { SocialLink } from "../types/portfolio";
 
 /** Human-readable link text. Labels stay factual; only the phrasing is composed here. */
-export function describeLink(link: PortfolioLink, fullName: string): string {
+export function describeLink(link: SocialLink, fullName: string): string {
   switch (link.kind) {
     case "email":
       return `Email ${fullName}`;
