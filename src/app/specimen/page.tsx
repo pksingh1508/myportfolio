@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Container from "../../components/layout/Container";
+import MotionSelfTest from "../../components/motion/MotionSelfTest";
 import Divider from "../../components/ui/Divider";
 
 /*
@@ -85,6 +86,14 @@ export default function SpecimenPage() {
             Secondary copy uses the muted token so it holds AA contrast.
           </p>
           <p className="tnum">Tabular figures hold alignment: 1,000+ 45% 95+</p>
+        </section>
+      </Container>
+
+      <Container>
+        <Divider />
+        <section aria-labelledby="motion-heading">
+          <h2 id="motion-heading">Motion runtime self-test</h2>
+          <MotionSelfTest />
         </section>
       </Container>
 
