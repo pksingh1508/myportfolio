@@ -192,7 +192,10 @@ export default function ArchiveScene({
       const orbitGeo = new THREE.BufferGeometry().setFromPoints(
         new THREE.EllipseCurve(0, 0, ORBIT_RX, ORBIT_RZ).getPoints(128),
       );
-      const orbit = new THREE.LineLoop(orbitGeo, materials.orbit);
+      // Plain Line, not LineLoop: the WebGPU backend drops LineLoop objects
+      // (per-frame console error, missing orbit). EllipseCurve closes its
+      // own point ring, so this draws the identical loop on both backends.
+      const orbit = new THREE.Line(orbitGeo, materials.orbit);
       orbit.rotation.x = -Math.PI / 2;
       orbit.position.y = -0.55;
       root.add(orbit);

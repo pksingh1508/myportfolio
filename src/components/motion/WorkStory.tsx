@@ -115,14 +115,46 @@ export default function WorkStory({ projects }: WorkStoryProps) {
           });
 
           const refresh = () => ScrollTrigger.refresh();
+          // Pin spacers inserted above shift every fragment target down after
+          // the browser's initial hash jump. Re-assert the hash position once
+          // (and only if the user hasn't scrolled meanwhile) so direct visits
+          // to /#work, /#contact, and case-study "Back to work" links land
+          // where they point.
+          const entryScrollY = window.scrollY;
+          let hashSettled = false;
+          const settleHash = () => {
+            if (hashSettled) {
+              return;
+            }
+            hashSettled = true;
+            if (Math.abs(window.scrollY - entryScrollY) > 4) {
+              return;
+            }
+            try {
+              const hash = window.location.hash;
+              if (hash.length > 1) {
+                document.querySelector(hash)?.scrollIntoView();
+              }
+            } catch {
+              // Invalid selector: leave the scroll position alone.
+            }
+          };
+          const refreshAndSettle = () => {
+            refresh();
+            settleHash();
+          };
           if (document.fonts) {
-            document.fonts.ready.then(refresh).catch(() => {});
+            document.fonts.ready.then(refreshAndSettle).catch(() => {});
           }
-          window.addEventListener("load", refresh);
+          window.addEventListener("load", refreshAndSettle);
+          requestAnimationFrame(() => {
+            refresh();
+            settleHash();
+          });
 
           return () => {
             setEnhanced(false);
-            window.removeEventListener("load", refresh);
+            window.removeEventListener("load", refreshAndSettle);
           };
         },
       );
