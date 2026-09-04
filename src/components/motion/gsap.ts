@@ -2,17 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
 /*
  * Single GSAP registration point. Import ONLY from client islands
  * (this module's "use client" boundary would pull GSAP into any
  * server component that imports it, breaking route-level code splitting).
+ * ScrollTrigger stays out of this module so pages that only need core
+ * tweens (hero intro) never download it; Step 11 registers it in a
+ * scroll-specific module.
  */
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+gsap.registerPlugin(useGSAP);
 
-export { gsap, ScrollTrigger, useGSAP };
+export { gsap, useGSAP };
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
