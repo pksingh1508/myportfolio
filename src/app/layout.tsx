@@ -29,6 +29,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${instrumentSans.variable} ${plexMono.variable} h-full antialiased`}
     >
+      <head>
+        {/*
+         * Progressive-enhancement flag, set before first paint so the fixed
+         * header and disclosure menu never flash through their no-JS static
+         * states when JavaScript is available. Without JavaScript this never
+         * runs and the static fallbacks in globals.css apply instead.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js')",
+          }}
+        />
+      </head>
       <body id="top" className="min-h-full flex flex-col">
         <a href="#main-content" className="skip-link">
           Skip to content
