@@ -1,26 +1,275 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Orbital Archive design tokens (plan.md section 3, AGENTS.md visual system).
+ *
+ * Palette pairs below passed a measured WCAG AA contrast check on 2026-09-04:
+ * ink/paper 18.66, muted/paper 7.04, white/ink 19.80, white/night-surface 17.94,
+ * fog/ink 11.96, fog/night-surface 10.83, signal/white 4.70, signal-soft/ink 10.56.
+ * Restricted pairs (large text >= 24px / 18.66px bold, or non-text UI only):
+ * graphite/paper 4.48, signal/paper 4.43, graphite/ink 4.16, signal/ink 4.22.
+ * signal-soft/paper 1.77 is decorative-only, never text on light surfaces.
+ *
+ * Two derived tokens were added for AA-correct small text and are NOT plan
+ * changes: --color-muted (#51555E, small secondary text on light) and
+ * --color-fog (#C6C9D1, small secondary text on dark). --color-graphite keeps
+ * its exact plan value for large text, metadata accents, and non-text UI.
+ */
+
+@theme {
+  --color-paper: #f7f8fc;
+  --color-white: #ffffff;
+  --color-ink: #090a0c;
+  --color-graphite: #6f737b;
+  --color-muted: #51555e;
+  --color-fog: #c6c9d1;
+  --color-line: #dde1e8;
+  --color-signal: #635bff;
+  --color-signal-soft: #b9b6ff;
+  --color-night-surface: #15171b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-instrument);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --header-height: 4.5rem;
+  --space-section: clamp(6rem, 12vw, 12rem);
+  --radius-pill: 999px;
+  --radius-frame-sm: 16px;
+  --radius-frame-lg: 24px;
+  --z-header: 50;
+  --z-menu: 60;
+  --z-skip: 100;
+  --duration-press: 120ms;
+  --duration-hover: 140ms;
+  --duration-menu: 280ms;
+  --duration-reveal: 600ms;
+  --ease-press: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-menu: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-reveal: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+html {
+  scroll-padding-top: calc(var(--header-height) + 1rem);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family:
+    var(--font-instrument),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-signal-soft);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Fluid display type. h1 is the page title; .display is the hero scale. */
+.display {
+  font-size: clamp(2.8rem, 13vw, 4.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+:where(main) p {
+  max-width: 68ch;
+}
+
+.mono {
+  font-family:
+    var(--font-plex-mono),
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Pills are controls. transform/opacity only, explicit property list. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.375rem;
+  border-radius: var(--radius-pill);
+  font-weight: 550;
+  line-height: 1.25;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-hover) var(--ease-out),
+    border-color var(--duration-hover) var(--ease-out),
+    color var(--duration-hover) var(--ease-out),
+    transform var(--duration-hover) var(--ease-out);
+}
+
+.btn-primary {
+  background-color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--color-line);
+  color: var(--color-ink);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-ink);
+  text-decoration: none;
+}
+
+.btn:active {
+  transform: scale(0.98);
+  transition-duration: var(--duration-press);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover,
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* Content shell: min(100% - gutter, 90rem), wider gutters on tablet+. */
+.shell {
+  width: min(100% - 2rem, 90rem);
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .shell {
+    width: min(100% - 4rem, 90rem);
+  }
+}
+
+/* Quiet hairline divider; encodes a change in information. */
+.rule {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+}
+
+/* Section rhythm without doubling: one full measure between blocks. */
+:where(main) {
+  padding-block-start: calc(var(--header-height) + 2rem);
+  padding-block-end: var(--space-section);
+}
+
+:where(main) > * + * {
+  margin-block-start: var(--space-section);
+}
+
+[id] {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+/* Skip link: off-screen until keyboard focus lands on it. */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: var(--z-skip);
+  background-color: var(--color-ink);
+  color: var(--color-white);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  font-weight: 550;
+}
+
+.skip-link:focus-visible {
+  top: 1rem;
+  outline-color: var(--color-signal-soft);
+  color: var(--color-white);
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid Highlight;
+  }
+
+  .btn-primary {
+    border: 1px solid ButtonText;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

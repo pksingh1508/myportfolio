@@ -3,7 +3,7 @@ import { portfolioData } from "../constant/data";
 export default function Home() {
   return (
     <>
-      <a href="#main-content">Skip to content</a>
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <header>
         <p>{portfolioData.profile.fullName}</p>
         <nav aria-label="Primary">
