@@ -230,7 +230,10 @@ export default function ArchiveScene({
 
       const poseState: ArchivePoseState = createArchivePoseState();
       const tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
-      const clock = new THREE.Clock();
+      // THREE.Timer replaces the deprecated THREE.Clock: call update()
+      // once per frame, then read getDelta()/getElapsed() (both seconds).
+      const timer = new THREE.Timer();
+      timer.connect(document);
       const loop = { visible: true, pageVisible: !document.hidden };
 
       const renderFrame = () => {
@@ -306,9 +309,10 @@ export default function ArchiveScene({
       };
       applySize();
 
-      const tick = () => {
-        const delta = Math.min(clock.getDelta(), 0.05);
-        updatePose(delta, clock.elapsedTime, false);
+      const tick = (timestamp?: number) => {
+        timer.update(timestamp);
+        const delta = Math.min(timer.getDelta(), 0.05);
+        updatePose(delta, timer.getElapsed(), false);
 
         tilt.x = damp(tilt.x, tilt.targetX, delta, TILT_LAMBDA);
         tilt.y = damp(tilt.y, tilt.targetY, delta, TILT_LAMBDA);
@@ -328,7 +332,8 @@ export default function ArchiveScene({
           return;
         }
         if (loop.visible && loop.pageVisible) {
-          clock.getDelta();
+          // Discard time spent paused so the orbit doesn't jump on resume.
+          timer.reset();
           renderer.setAnimationLoop(tick);
         } else {
           renderer.setAnimationLoop(null);
@@ -402,6 +407,7 @@ export default function ArchiveScene({
         document.removeEventListener("visibilitychange", onVisibility);
         detachPointer?.();
         renderer.setAnimationLoop(null);
+        timer.dispose();
         scene.traverse((object) => {
           if (object instanceof THREE.Mesh || object instanceof THREE.Line) {
             object.geometry.dispose();

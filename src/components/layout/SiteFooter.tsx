@@ -16,7 +16,7 @@ export default function SiteFooter() {
       <Container>
         <Divider />
         <div className="site-footer-inner">
-          <p className="meta">
+          <p className="meta" suppressHydrationWarning>
             © {year} {profile.fullName}
           </p>
           <nav aria-label="Footer">
