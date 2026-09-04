@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Container from "../../components/layout/Container";
+import ArchiveLab from "../../components/motion/ArchiveLab";
 import MotionSelfTest from "../../components/motion/MotionSelfTest";
 import Divider from "../../components/ui/Divider";
 
@@ -94,6 +95,19 @@ export default function SpecimenPage() {
         <section aria-labelledby="motion-heading">
           <h2 id="motion-heading">Motion runtime self-test</h2>
           <MotionSelfTest />
+        </section>
+      </Container>
+
+      <Container>
+        <Divider />
+        <section aria-labelledby="archive-heading">
+          <h2 id="archive-heading">Isolated archive prototype</h2>
+          <p>
+            Procedural monolith, three project frames, one orbit line, and
+            instanced dust. Switch backends to verify each path; the poster
+            holds the same box while loading or on failure.
+          </p>
+          <ArchiveLab />
         </section>
       </Container>
 
