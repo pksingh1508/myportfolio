@@ -44,7 +44,11 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   font-size: 1rem;
   font-weight: 750;
   letter-spacing: -.055em;
-  transition: border-color 180ms ease-out, background-color 180ms ease-out;
+  transform: rotate(0deg);
+  transition:
+    transform 520ms cubic-bezier(.22, 1, .36, 1),
+    border-color 180ms ease-out,
+    background-color 180ms ease-out;
 }
 .brand-name {
   position: absolute;
@@ -56,21 +60,29 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   font-weight: 550;
   letter-spacing: -.025em;
   opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 180ms ease-out, transform 240ms cubic-bezier(.22, 1, .36, 1);
+  transform: translateX(-16px);
+  transition:
+    opacity 200ms ease-out,
+    transform 380ms cubic-bezier(.22, 1, .36, 1);
 }
 .brand:focus-visible::before,
 .brand:focus-visible .brand-name { opacity: 1; transform: none; }
-.brand:focus-visible .brand-mark { border-color: transparent; background: transparent; }
+.brand:focus-visible .brand-mark { border-color: transparent; background: transparent; transform: rotate(360deg); }
 @media (hover: hover) and (pointer: fine) {
-  .brand:hover::before,
-  .brand:hover .brand-name { opacity: 1; transform: none; }
-  .brand:hover .brand-mark { border-color: transparent; background: transparent; }
-  .brand:hover::before { pointer-events: auto; }
+  .brand:hover::before { opacity: 1; transform: none; pointer-events: auto; }
+  .brand:hover .brand-name {
+    opacity: 1;
+    transform: translateX(0);
+    transition:
+      opacity 260ms ease-out 70ms,
+      transform 440ms cubic-bezier(.22, 1, .36, 1) 70ms;
+  }
+  .brand:hover .brand-mark { border-color: transparent; background: transparent; transform: rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce) {
   .brand::before, .brand .brand-mark, .brand-name { transition: none; }
   .brand::before, .brand-name { transform: none; }
+  .brand:hover .brand-mark, .brand:focus-visible .brand-mark { transform: none; }
 }
 .site-header { background: transparent; }
 .site-header-inner { min-height: 5.5rem; }
