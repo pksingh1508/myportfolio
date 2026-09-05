@@ -1,16 +1,12 @@
-import { profile, projects } from "../../constant/data";
+import { profile, heroCarouselImages } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
-import HeroArchive from "../motion/HeroArchive";
+import ProjectCarousel from "../motion/ProjectCarousel";
 import HeroIntro from "../motion/HeroIntro";
 
-/** Identity hero with the Orbital Archive docked beside the copy on desktop. */
+/** Identity and a slowly looping arc of project previews. */
 export default function Hero() {
-  const frameSlugs = projects
-    .filter((project) => project.featured)
-    .map((project) => project.slug);
-
   return (
     <section aria-labelledby="intro-heading" className="hero-section">
       <Container className="hero-grid">
@@ -43,7 +39,7 @@ export default function Hero() {
             ))}
           </ul>
         </HeroIntro>
-        <HeroArchive frameSlugs={frameSlugs} />
+        <ProjectCarousel images={heroCarouselImages} />
       </Container>
       <Container className="hero-bottom">
         <span>Full-stack thinking. Front-to-back care.</span>

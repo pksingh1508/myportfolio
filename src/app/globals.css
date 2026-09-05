@@ -733,36 +733,6 @@ html.js .menu-panel[data-open="true"] .menu-item {
   }
 }
 
-.hero-archive {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  width: 100%;
-}
-
-.hero-archive-poster,
-.hero-archive-scene {
-  position: absolute;
-  inset: 0;
-}
-
-.hero-archive-poster {
-  pointer-events: none;
-  transition: opacity 500ms var(--ease-reveal);
-}
-
-.hero-archive-scene {
-  opacity: 0;
-  transition: opacity 500ms var(--ease-reveal);
-}
-
-.hero-archive[data-ready="true"] .hero-archive-scene {
-  opacity: 1;
-}
-
-.hero-archive[data-ready="true"] .hero-archive-poster {
-  opacity: 0;
-}
-
 /* ---- Step 12: contact-finale mark (compact centered dock, same
    poster-first crossfade contract as the hero archive) ---- */
 
@@ -969,7 +939,6 @@ h3 {
   box-shadow: 0 10px 28px rgba(9, 10, 12, 0.14);
 }
 
-.hero-archive,
 .finale-mark {
   isolation: isolate;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -982,7 +951,6 @@ h3 {
     inset 0 0 0 1px rgba(255, 255, 255, 0.025);
 }
 
-.hero-archive::before,
 .finale-mark::before {
   position: absolute;
   inset: 0;
@@ -998,20 +966,16 @@ h3 {
   mask-image: linear-gradient(to bottom, black, transparent 88%);
 }
 
-.hero-archive-poster,
-.hero-archive-scene,
 .finale-mark-poster,
 .finale-mark-scene {
   overflow: hidden;
   border-radius: inherit;
 }
 
-.hero-archive-poster,
 .finale-mark-poster {
   transition: none;
 }
 
-.hero-archive-scene,
 .finale-mark-scene {
   opacity: unset;
   transition: none;
@@ -1528,9 +1492,6 @@ h3 {
     font-size: clamp(3.6rem, 17vw, 5.3rem);
   }
 
-  .hero-archive {
-    margin-block-start: 0.5rem;
-  }
 
   .archive-readout span:last-child {
     display: none;

@@ -1,5 +1,10 @@
 # Personal Portfolio — Product and Experience Plan
 
+## Hero revision — September 5, 2026
+
+The owner has replaced the hero monolith/Three.js scene with a SpaceFS-inspired curved image carousel. This supersedes the older hero-specific 3D integration instructions below. Seven original, temporary SVG previews follow a slow continuous arc on the right of desktop copy and below mobile copy. CSS owns transforms and opacity; a small React boundary handles pause/play, off-screen and hidden-tab suspension. Reduced motion and no JavaScript show a still composition. Image paths and dimensions live in `heroCarouselImages` in `src/constant/data.ts`; replace the decorative assets in `public/images/hero/` with approved project images later. Existing non-hero scenes remain separate from this revision.
+
+
 ## 1. Project intent
 
 Build a highly crafted personal portfolio for a creative developer/engineer. The site should feel simple at first glance, then reveal technical depth through motion, spatial transitions, and one memorable Three.js/WebGPU experience. It must communicate who the owner is, what they build, how they think, and how to contact them without behaving like a visual-effects demo.

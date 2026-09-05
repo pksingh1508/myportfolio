@@ -1,5 +1,10 @@
 # Personal Portfolio — Incremental Implementation Guide
 
+## Hero revision — September 5, 2026
+
+The owner has replaced the hero monolith/Three.js scene with a SpaceFS-inspired curved image carousel. This supersedes the older hero-specific 3D integration instructions below. Seven original, temporary SVG previews follow a slow continuous arc on the right of desktop copy and below mobile copy. CSS owns transforms and opacity; a small React boundary handles pause/play, off-screen and hidden-tab suspension. Reduced motion and no JavaScript show a still composition. Image paths and dimensions live in `heroCarouselImages` in `src/constant/data.ts`; replace the decorative assets in `public/images/hero/` with approved project images later. Existing non-hero scenes remain separate from this revision.
+
+
 ## Execution contract
 
 This file is the build order. Complete one step, satisfy its exit gate, and commit or checkpoint the working state before starting the next step. A later step may refine earlier visuals, but it must not be used to postpone a broken build, inaccessible content, or missing fallback.

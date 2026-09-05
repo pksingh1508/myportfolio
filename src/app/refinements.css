@@ -21,13 +21,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .hero-bottom { display: flex; align-items: center; justify-content: space-between; padding-block: 1.5rem; color: var(--color-muted); font-size: .8rem; }
 .scroll-cue { display: inline-flex; align-items: center; gap: 1.5rem; min-height: 44px; text-decoration: none; }
 .scroll-cue > span:last-child { transition: transform 200ms var(--ease-out); }
-.hero-archive { aspect-ratio: 1.15; border-radius: 1.25rem; box-shadow: 0 22px 50px -36px rgb(9 10 12 / .5); background: #0c0e12; transform: rotate(-2deg); }
-.hero-archive-scene { display: grid; align-content: center; }
-.hero-archive-poster { display: grid; align-content: center; background: #0c0e12; }
-.hero-archive::before { display: none; }
 .archive-readout { padding: 1.5rem; font-family: var(--font-instrument), sans-serif; font-size: .7rem; color: #a9adb7; }
-.archive-title { position: absolute; inset: 1.5rem 1.5rem auto; display: flex; align-items: center; justify-content: space-between; z-index: 2; color: #e5e6ec; font-size: .8rem; }
-.archive-title small { color: #a9adb7; font-family: var(--font-plex-mono); font-size: .65rem; }
 .btn { gap: 1.5rem; min-height: 3.2rem; padding-inline: 1.5rem; font-size: .9rem; font-weight: 500; }
 .btn-primary { box-shadow: none; }
 .btn:active, .menu-trigger:active { transition-duration: 0s; }
@@ -149,7 +143,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .hero-copy .display { max-width: 10ch; font-size: clamp(4rem, 16vw, 6rem); }
   .hero-headline { font-size: 1.55rem; max-width: 25ch; }
   .hero-bio { font-size: .925rem; }
-  .hero-archive { max-width: 32rem; justify-self: center; aspect-ratio: 1.4; transform: rotate(-1.5deg); }
   .hero-bottom { padding-block: 0; }
   .hero-bottom > span { max-width: 17ch; }
   .scroll-cue { gap: .7rem; }
@@ -175,7 +168,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .project-shell > .project-art .art-object { inset: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-archive { transform: none; }
   .art-object > div, .link-arrow > span { transition: none; }
 }
 /* One linear scroll clock; CSS layering only applies after controller setup. */
@@ -221,3 +213,42 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 }
 .night { background: var(--color-ink); }
 .night::after { display: none; }
+
+/* Hero image arc: seven staggered cards, one continuous 56-second clock.
+   The invisible endpoints meet off-stage; all visible motion is transform/opacity. */
+.project-carousel { position: relative; min-width: 0; width: 100%; height: clamp(32rem, 48vw, 43rem); }
+.project-carousel-window { position: absolute; inset: -2rem -4vw 2.5rem 0; overflow: hidden; isolation: isolate; mask-image: linear-gradient(to bottom, transparent, black 13%, black 87%, transparent); }
+.project-carousel-card { position: absolute; top: 50%; left: 8%; width: clamp(15rem, 25vw, 22.5rem); aspect-ratio: 3 / 2; overflow: hidden; border-radius: 16px; background: #e4e8f1; box-shadow: 0 18px 32px -18px rgb(9 10 12 / .32); animation: project-card-arc 56s linear infinite both; animation-delay: var(--card-delay); animation-play-state: paused; }
+.project-carousel-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.project-carousel[data-running="true"] .project-carousel-card { animation-play-state: running; }
+.project-carousel-caption { position: absolute; inset: auto 0 0 8%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--color-muted); font-size: .75rem; min-height: 44px; }
+.carousel-toggle { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; min-width: 80px; border: 1px solid var(--color-line); border-radius: 999px; background: transparent; color: var(--color-ink); font: inherit; cursor: pointer; touch-action: manipulation; transition: background-color 180ms; }
+@keyframes project-card-arc {
+  0% { transform: translate3d(125%, -265%, 0) rotate(28deg) scale(.8); opacity: 0; }
+  10% { opacity: 1; }
+  16.666% { transform: translate3d(56%, -193%, 0) rotate(20deg) scale(.88); }
+  33.333% { transform: translate3d(14%, -122%, 0) rotate(10deg) scale(.96); }
+  50% { transform: translate3d(0, -50%, 0) rotate(0deg) scale(1); }
+  66.666% { transform: translate3d(14%, 22%, 0) rotate(-10deg) scale(.96); }
+  83.333% { transform: translate3d(56%, 93%, 0) rotate(-20deg) scale(.88); }
+  90% { opacity: 1; }
+  100% { transform: translate3d(125%, 165%, 0) rotate(-28deg) scale(.8); opacity: 0; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .carousel-toggle:hover { background-color: white; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .project-carousel { height: 34rem; }
+  .project-carousel-card { width: 30vw; left: 0; }
+  .project-carousel-caption { left: 0; }
+}
+@media (max-width: 767px) {
+  .project-carousel { height: 29rem; max-width: 32rem; justify-self: center; }
+  .project-carousel-window { inset: -1rem -1.25rem 2.75rem; }
+  .project-carousel-card { width: 65%; left: 8%; }
+  .project-carousel-caption { left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-carousel .project-carousel-card { animation-duration: 56s !important; animation-iteration-count: infinite !important; animation-play-state: paused; }
+  .carousel-toggle { display: none; }
+}

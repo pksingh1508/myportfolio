@@ -494,3 +494,11 @@ function assertAccessibleProjectMedia(items: readonly Project[]): void {
 
 assertUniqueProjectSlugs(projects);
 assertAccessibleProjectMedia(projects);
+
+/** Temporary decorative previews. Replace these paths with approved project images. */
+export const heroCarouselImages = Array.from({ length: 7 }, (_, index) => ({
+  src: `/images/hero/project-${index + 1}.svg`,
+  alt: "", // Decorative placeholders; project identity remains in selected work.
+  width: 720,
+  height: 480,
+}));
