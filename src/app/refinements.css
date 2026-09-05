@@ -346,3 +346,72 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 @media (forced-colors: active) {
   .footer-giant { display: none; }
 }
+
+/* ---- Header morph: centered nav at top, brand + right nav after scroll ----
+   At the top the desktop nav sits centered with the brand hidden; once the
+   outcomes strip approaches (or any scroll on pages without it) the brand
+   slides in on the left and the nav glides right. Brand is absolutely
+   positioned so its fade never disturbs layout; the nav's center-to-right
+   travel is animated with FLIP in HeaderState (transform/opacity only).
+   No-JS and mobile always show the full brand + nav bar. */
+@media (min-width: 768px) {
+  html.js .site-header-inner { position: relative; }
+  html.js .site-header .brand {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+  html.js .site-header[data-nav="center"] .site-header-inner { justify-content: center; }
+  html.js .site-header[data-nav="split"] .site-header-inner { justify-content: flex-end; }
+  html.js .site-header[data-nav="center"] .brand {
+    opacity: 0;
+    transform: translate(-16px, -50%);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 240ms var(--ease-out),
+      transform 380ms var(--ease-out),
+      visibility 0s linear 380ms;
+  }
+  html.js .site-header[data-nav="split"] .brand {
+    opacity: 1;
+    transform: translate(0, -50%);
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      opacity 320ms var(--ease-out) 90ms,
+      transform 480ms var(--ease-out) 90ms,
+      visibility 0s;
+  }
+}
+@media (max-width: 767px) {
+  .site-header .brand {
+    position: static;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .site-header-inner { justify-content: space-between; }
+}
+html:not(.js) .site-header .brand {
+  position: static;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+html:not(.js) .site-header-inner { justify-content: space-between; }
+/* Split-state brand name stays legible over the dark work chapter. */
+.site-header[data-theme="dark"] .brand-name { color: #fff; }
+.site-header[data-theme="dark"] .brand:hover .brand-name,
+.site-header[data-theme="dark"] .brand:focus-visible .brand-name { color: #0a0a0a; }
+@media (prefers-reduced-motion: reduce) {
+  html.js .site-header .brand,
+  html.js .site-header[data-nav="center"] .brand,
+  html.js .site-header[data-nav="split"] .brand {
+    transition: none;
+    transform: translate(0, -50%);
+  }
+}
