@@ -1,44 +1,91 @@
-import { profile, site } from "../../constant/data";
+import { contact, profile, site } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "./Container";
-import Divider from "../ui/Divider";
 import SmartLink from "../ui/SmartLink";
 
-/** Static global footer. Server Component. */
+/**
+ * Global footer. Server Component, no client JavaScript.
+ *
+ * Reference-inspired composition: personal mark, positioning line, and the
+ * primary conversion pair on the left; exactly two link columns
+ * (Links, Social) on the right; copyright plus stack note; and the
+ * oversized cropped first-name mark as a decorative finale.
+ *
+ * Social labels stay short in the visible UI ("Email", "LinkedIn",
+ * "GitHub") with the contact-section arrow affordance, while the
+ * accessible name keeps the full "Email Pawan Kumar" phrasing.
+ */
 export default function SiteFooter() {
   const year = new Date().getFullYear();
   const socialLinks = profile.links.filter(
-    (link) => link.kind === "social" || link.kind === "email",
+    (link) => link.kind === "email" || link.kind === "social",
   );
 
   return (
-    <footer>
+    <footer className="site-footer">
       <Container>
-        <Divider />
-        <div className="site-footer-inner">
-          <p className="meta" suppressHydrationWarning>
+        <div className="footer-top">
+          <div className="footer-brand">
+            <span aria-hidden="true" className="footer-mark">
+              {profile.initials}
+            </span>
+            <p className="footer-tagline">{profile.headline}</p>
+            <div className="btn-row footer-actions">
+              <SmartLink
+                href={contact.primaryAction.href}
+                external={contact.primaryAction.external}
+                className="btn btn-primary"
+              >
+                Say hello
+              </SmartLink>
+              <SmartLink href="/#work" className="btn btn-secondary">
+                View selected work
+              </SmartLink>
+            </div>
+          </div>
+          <nav aria-label="Footer" className="footer-columns">
+            <div>
+              <h2 className="footer-heading">Links</h2>
+              <ul className="footer-list">
+                {site.navigation.map((item) => (
+                  <li key={item.href}>
+                    <SmartLink href={`/${item.href}`} className="footer-link">
+                      {item.label}
+                    </SmartLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h2 className="footer-heading">Social</h2>
+              <ul className="footer-list" aria-label="Profiles and contact">
+                {socialLinks.map((link) => (
+                  <li key={link.href}>
+                    <SmartLink
+                      href={link.href}
+                      external={link.external}
+                      ariaLabel={describeLink(link, profile.fullName)}
+                      className="text-link footer-social-link"
+                      arrow
+                    >
+                      {link.label}
+                    </SmartLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
+        </div>
+        <div className="footer-bottom">
+          <p suppressHydrationWarning>
             © {year} {profile.fullName}
           </p>
-          <nav aria-label="Footer">
-            <ul className="link-row">
-              {site.navigation.map((item) => (
-                <li key={item.href}>
-                  <SmartLink href={`/${item.href}`}>{item.label}</SmartLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <ul className="link-row" aria-label="Profiles and contact">
-            {socialLinks.map((link) => (
-              <li key={link.href}>
-                <SmartLink href={link.href} external={link.external}>
-                  {describeLink(link, profile.fullName)}
-                </SmartLink>
-              </li>
-            ))}
-          </ul>
+          <p>Built with Next.js, TypeScript and Tailwind CSS.</p>
         </div>
       </Container>
+      <div aria-hidden="true" className="footer-giant">
+        {profile.firstName}
+      </div>
     </footer>
   );
 }
