@@ -1,7 +1,9 @@
 "use client";
 
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
 import dynamic from "next/dynamic";
-import { motion, useAnimate, useReducedMotion } from "motion/react";
+import { motion, useAnimate } from "motion/react";
 import { useEffect, useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 
@@ -23,7 +25,7 @@ type HeroArchiveProps = {
 export default function HeroArchive({ frameSlugs }: HeroArchiveProps) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const [ready, setReady] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionPreference();
 
   useEffect(() => {
     const element = scope.current;

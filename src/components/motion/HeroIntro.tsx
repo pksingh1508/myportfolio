@@ -1,6 +1,8 @@
 "use client";
 
-import { stagger, useAnimate, useReducedMotion } from "motion/react";
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
+import { stagger, useAnimate } from "motion/react";
 import { useLayoutEffect, type ReactNode } from "react";
 
 const PLAYED_KEY = "orbital-archive:hero-intro-played";
@@ -35,7 +37,7 @@ type HeroIntroProps = {
  */
 export default function HeroIntro({ children }: HeroIntroProps) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionPreference();
 
   useLayoutEffect(() => {
     if (reduceMotion || alreadyPlayed()) {

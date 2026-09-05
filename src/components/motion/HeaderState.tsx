@@ -33,18 +33,31 @@ export default function HeaderState({ children }: HeaderStateProps) {
         frame = requestAnimationFrame(update);
       }
     };
-    const pointerInput = () => { document.documentElement.dataset.input = "pointer"; };
-    const keyboardInput = () => { document.documentElement.dataset.input = "keyboard"; };
+    const onAnchorClick = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!anchor || anchor.closest(".menu-panel") || anchor.target || anchor.hasAttribute("download")) return;
+      const url = new URL(anchor.href);
+      if (url.origin !== location.origin || url.pathname !== location.pathname || url.search !== location.search || !url.hash) return;
+      let target: HTMLElement | null;
+      try { target = document.getElementById(decodeURIComponent(url.hash.slice(1))); } catch { return; }
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (location.hash !== url.hash) history.pushState(null, "", url.hash);
+      const instant = event.detail === 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: instant ? "instant" : "smooth" });
+      const heading = target.matches("h1, h2") ? target : target.querySelector<HTMLElement>("h1, h2");
+      if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+    };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    window.addEventListener("pointerdown", pointerInput, { passive: true });
-    window.addEventListener("keydown", keyboardInput);
+    document.addEventListener("click", onAnchorClick, true);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
-      window.removeEventListener("pointerdown", pointerInput);
-      window.removeEventListener("keydown", keyboardInput);
+      document.removeEventListener("click", onAnchorClick, true);
       if (frame) {
         cancelAnimationFrame(frame);
       }

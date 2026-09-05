@@ -1,7 +1,9 @@
 "use client";
 
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
 import dynamic from "next/dynamic";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 
@@ -24,7 +26,7 @@ type FinaleMarkProps = {
  */
 export default function FinaleMark({ frameSlugs }: FinaleMarkProps) {
   const [ready, setReady] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionPreference();
 
   return (
     <div className="finale-mark" data-ready={String(ready)}>

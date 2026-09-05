@@ -19,7 +19,11 @@ export default function WorkStory({ children }: { readonly children: ReactNode }
       if (!stage || slides.length < 2) return;
       let alive = true;
       root.dataset.enhanced = "true";
-      const entryY = window.scrollY;
+      let interacted = false;
+      const markInteraction = () => { interacted = true; };
+      window.addEventListener("wheel", markInteraction, { passive: true });
+      window.addEventListener("touchstart", markInteraction, { passive: true });
+      window.addEventListener("keydown", markInteraction);
       gsap.set(slides, { opacity: 1, y: 0 });
       const setters = slides.map(slide => ({ opacity: gsap.quickSetter(slide, "opacity"), y: gsap.quickSetter(slide, "y", "px") }));
       const railSetters = rails.map(rail => gsap.quickSetter(rail, "scaleX"));
@@ -59,7 +63,7 @@ export default function WorkStory({ children }: { readonly children: ReactNode }
       const refresh = () => {
         if (!alive) return;
         ScrollTrigger.refresh();
-        if (!settled && Math.abs(window.scrollY - entryY) < 8) {
+        if (!settled && !interacted) {
           const id = window.location.hash.slice(1);
           if (id) {
             try { document.getElementById(decodeURIComponent(id))?.scrollIntoView({ behavior: "instant" }); }
@@ -73,6 +77,9 @@ export default function WorkStory({ children }: { readonly children: ReactNode }
       return () => {
         alive = false;
         cancelAnimationFrame(frame);
+        window.removeEventListener("wheel", markInteraction);
+        window.removeEventListener("touchstart", markInteraction);
+        window.removeEventListener("keydown", markInteraction);
         trigger.kill();
         delete root.dataset.enhanced;
         slides.forEach(slide => {

@@ -1,9 +1,11 @@
 "use client";
 
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
 import {
   useAnimate,
   useInView,
-  useReducedMotion,
+  
 } from "motion/react";
 import { useEffect, useRef, type ReactNode } from "react";
 
@@ -29,7 +31,7 @@ export default function MotionReveal({
     amount: 0.12,
     margin: "0px 0px -10% 0px",
   });
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionPreference();
   const played = useRef(false);
 
   useEffect(() => {

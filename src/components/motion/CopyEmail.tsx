@@ -1,6 +1,8 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 export default function CopyEmail({ email }: { readonly email: string }) {
@@ -8,7 +10,7 @@ export default function CopyEmail({ email }: { readonly email: string }) {
   const [mounted, setMounted] = useState(false);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alive = useRef(true);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   useEffect(() => { alive.current = true; setMounted(true); return () => { alive.current = false; if (timeout.current) clearTimeout(timeout.current); }; }, []);
   const copy = async () => {
     try { await navigator.clipboard.writeText(email); if (alive.current) setState("copied"); }

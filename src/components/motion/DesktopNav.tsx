@@ -1,15 +1,17 @@
 "use client";
 
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGroup, motion, useReducedMotion } from "motion/react";
+import { LayoutGroup, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import type { MenuItem } from "./SiteMenu";
 
 export default function DesktopNav({ items }: { readonly items: readonly MenuItem[] }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [active, setActive] = useState<string | null>(null);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const pathname = usePathname();
   useEffect(() => {
     setActive(null);

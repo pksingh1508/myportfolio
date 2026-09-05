@@ -215,10 +215,6 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
   .hero-copy .btn { padding-inline: 1.05rem; gap: 1rem; font-size: .85rem; }
   .hero-copy .btn-row { gap: .65rem; }
 }
-/* Native anchor scrolling is smooth for pointer actions and immediate for keys. */
-@media (prefers-reduced-motion: no-preference) {
-  html[data-input="pointer"] { scroll-behavior: smooth; }
-}
 @media (min-width: 768px) and (max-width: 1023px) {
   .hero-copy .btn { padding-inline: 1rem; gap: .75rem; font-size: .8rem; }
   .hero-copy .btn-row { gap: .6rem; }
