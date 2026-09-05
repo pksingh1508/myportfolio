@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
 
 type CarouselImage = {
@@ -11,51 +11,102 @@ type CarouselImage = {
   readonly height: number;
 };
 
-/** CSS owns the arc; React only manages playback and its lifecycle. */
+/** CSS defines the arc; one shared clock changes its speed without phase jumps. */
 export default function ProjectCarousel({ images }: { readonly images: readonly CarouselImage[] }) {
   const stage = useRef<HTMLDivElement>(null);
-  const [paused, setPaused] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const clock = useRef(0);
   const reducedMotion = useReducedMotionPreference();
 
   useEffect(() => {
     const element = stage.current;
-    if (!element) return;
+    if (!element || reducedMotion) return;
+    const cards = Array.from(element.querySelectorAll<HTMLElement>(".project-carousel-card"));
+    const animations = cards.flatMap(card => card.getAnimations());
+    animations.forEach(animation => {
+      animation.pause();
+      animation.currentTime = clock.current;
+    });
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
     let intersecting = false;
-    const sync = () => setVisible(intersecting && !document.hidden);
+    let hovering = finePointer.matches && cards.some(card => card.matches(":hover"));
+    let focused = document.activeElement === element;
+    let frame = 0;
+    let lastTime = 0;
+    let lastScroll = window.scrollY;
+    let speed = 1;
+
+    const tick = (now: number) => {
+      const elapsed = Math.min((now - lastTime) / 1000, .05);
+      lastTime = now;
+      // Native scroll remains untouched. Both directions add forward momentum.
+      const velocity = Math.abs(window.scrollY - lastScroll) / Math.max(elapsed, .001);
+      lastScroll = window.scrollY;
+      const target = 1 + Math.min(velocity / 700, 4.5);
+      const response = target > speed ? .16 : .65;
+      speed += (target - speed) * (1 - Math.exp(-elapsed / response));
+      clock.current = (clock.current + elapsed * 1000 * speed) % 56000;
+      animations.forEach(animation => { animation.currentTime = clock.current; });
+      frame = requestAnimationFrame(tick);
+    };
+    const sync = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      if (intersecting && !document.hidden && !hovering && !focused) {
+        lastTime = performance.now();
+        lastScroll = window.scrollY;
+        speed = 1;
+        frame = requestAnimationFrame(tick);
+      }
+    };
+    const onEnter = () => {
+      if (!finePointer.matches) return;
+      hovering = true;
+      sync();
+    };
+    const onLeave = () => { hovering = false; sync(); };
+    const onFocus = () => { focused = true; sync(); };
+    const onBlur = () => { focused = false; sync(); };
+    const onPointerChange = () => { hovering = false; sync(); };
     const observer = new IntersectionObserver(([entry]) => {
       intersecting = entry.isIntersecting;
       sync();
     });
     observer.observe(element);
+    cards.forEach(card => {
+      card.addEventListener("pointerenter", onEnter);
+      card.addEventListener("pointerleave", onLeave);
+    });
+    element.addEventListener("focus", onFocus);
+    element.addEventListener("blur", onBlur);
+    finePointer.addEventListener("change", onPointerChange);
     document.addEventListener("visibilitychange", sync);
     return () => {
+      cancelAnimationFrame(frame);
       observer.disconnect();
+      cards.forEach(card => {
+        card.removeEventListener("pointerenter", onEnter);
+        card.removeEventListener("pointerleave", onLeave);
+      });
+      element.removeEventListener("focus", onFocus);
+      element.removeEventListener("blur", onBlur);
+      finePointer.removeEventListener("change", onPointerChange);
       document.removeEventListener("visibilitychange", sync);
+      animations.forEach(animation => animation.pause());
     };
-  }, []);
+  }, [images, reducedMotion]);
 
   return (
-    <div ref={stage} className="project-carousel" data-running={visible && !paused && !reducedMotion}>
+    <div ref={stage} className="project-carousel" tabIndex={0} role="img" aria-label="Rotating project previews. Focus here to pause the animation.">
       <div className="project-carousel-window" aria-hidden="true">
         {images.map((image, index) => (
           <div className="project-carousel-card" key={image.src} style={{
             "--card-delay": `${-(index + 0.5) * 56 / images.length}s`,
           } as CSSProperties}>
-            <Image {...image} alt="" loading="eager" sizes="(max-width: 767px) 65vw, (max-width: 1023px) 30vw, 360px" />
+            <div className="project-carousel-surface">
+              <Image {...image} alt="" loading="eager" sizes="(max-width: 767px) 65vw, (max-width: 1023px) 30vw, 360px" />
+            </div>
           </div>
         ))}
-      </div>
-      <div className="project-carousel-caption">
-        <span>Work in perspective</span>
-        {!reducedMotion && (
-          <button type="button" className="carousel-toggle" aria-label={paused ? "Play project carousel" : "Pause project carousel"} aria-pressed={paused} onClick={() => setPaused(value => !value)}>
-            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-              {paused ? <path d="m4 2 8 5-8 5Z" fill="currentColor" /> : <path d="M4 2v10M10 2v10" stroke="currentColor" strokeWidth="2" />}
-            </svg>
-            {paused ? "Play" : "Pause"}
-          </button>
-        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 ## Hero revision — September 5, 2026
 
-The owner has replaced the hero monolith/Three.js scene with a SpaceFS-inspired curved image carousel. This supersedes the older hero-specific 3D integration instructions below. Seven original, temporary SVG previews follow a slow continuous arc on the right of desktop copy and below mobile copy. CSS owns transforms and opacity; a small React boundary handles pause/play, off-screen and hidden-tab suspension. Reduced motion and no JavaScript show a still composition. Image paths and dimensions live in `heroCarouselImages` in `src/constant/data.ts`; replace the decorative assets in `public/images/hero/` with approved project images later. Existing non-hero scenes remain separate from this revision.
+The owner has replaced the hero monolith/Three.js scene with a SpaceFS-inspired curved image carousel. This supersedes the older hero-specific 3D integration instructions below. Seven original, temporary SVG previews follow a slow continuous arc on the right of desktop copy and below mobile copy. CSS defines the arc transforms and opacity; a shared animation clock advances the paused CSS animations with smoothly damped native-scroll velocity (up to 5.5× idle speed). Card hover pauses the loop and scales an inner surface by 1.045; keyboard focus also pauses. The caption and playback button are removed at the owner’s request. Off-screen and hidden-tab suspension remain in place. Reduced motion and no JavaScript show a still composition. Image paths and dimensions live in `heroCarouselImages` in `src/constant/data.ts`; replace the decorative assets in `public/images/hero/` with approved project images later. Existing non-hero scenes remain separate from this revision.
 
 
 ## 1. Project intent
