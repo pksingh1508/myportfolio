@@ -23,7 +23,7 @@ export default function MotionReveal({
   className = "",
   delay = 0,
 }: MotionRevealProps) {
-  const [scope, animate] = useAnimate();
+  const [scope, animate] = useAnimate<HTMLDivElement>();
   const inView = useInView(scope, {
     once: true,
     amount: 0.12,
@@ -38,8 +38,9 @@ export default function MotionReveal({
     }
 
     played.current = true;
-    animate(
-      scope.current,
+    const element = scope.current;
+    const playback = animate(
+      element,
       {
         opacity: [0.72, 1],
         transform: ["translateY(16px)", "translateY(0px)"],
@@ -50,6 +51,11 @@ export default function MotionReveal({
         ease: [0.19, 1, 0.22, 1],
       },
     );
+    return () => {
+      playback.stop();
+      element.style.removeProperty("opacity");
+      element.style.removeProperty("transform");
+    };
   }, [animate, delay, inView, reduceMotion, scope]);
 
   return (

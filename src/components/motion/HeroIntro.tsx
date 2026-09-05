@@ -34,7 +34,7 @@ type HeroIntroProps = {
  * JavaScript all resolve to the final readable pose.
  */
 export default function HeroIntro({ children }: HeroIntroProps) {
-  const [scope, animate] = useAnimate();
+  const [scope, animate] = useAnimate<HTMLDivElement>();
   const reduceMotion = useReducedMotion();
 
   useLayoutEffect(() => {
@@ -42,30 +42,21 @@ export default function HeroIntro({ children }: HeroIntroProps) {
       return;
     }
 
-    let cancelled = false;
-    const play = async () => {
-      await animate(
-        "[data-intro]",
-        {
-          opacity: [0, 1],
-          transform: ["translateY(22px)", "translateY(0px)"],
-        },
-        {
-          delay: stagger(0.075),
-          duration: 0.72,
-          ease: [0.19, 1, 0.22, 1],
-        },
-      );
-      if (!cancelled) {
-        markPlayed();
-      }
-    };
-
-    void play();
+    const elements = Array.from(scope.current.querySelectorAll<HTMLElement>("[data-intro]"));
+    const playback = animate(elements,
+      { opacity: [0.35, 1], transform: ["translateY(22px)", "translateY(0px)"] },
+      { delay: stagger(0.065), duration: 0.7, ease: [0.22, 0.68, 0.35, 1] },
+    );
+    // Mark at start so a fast route return does not replay a half-finished intro.
+    markPlayed();
     return () => {
-      cancelled = true;
+      playback.stop();
+      elements.forEach(element => {
+        element.style.removeProperty("opacity");
+        element.style.removeProperty("transform");
+      });
     };
-  }, [animate, reduceMotion]);
+  }, [animate, reduceMotion, scope]);
 
   return (
     <div ref={scope} className="hero-copy flow">

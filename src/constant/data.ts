@@ -75,6 +75,7 @@ export const portfolioData = {
     headline: "I build dependable products for web and mobile.",
     shortBio:
       "Software development engineer experienced in full-stack platforms, cross-platform mobile applications, real-time call operations, performance optimization, SEO, and production deployment.",
+    heroDescription: "From the first interaction to the systems behind it. Full-stack platforms, mobile applications, and the details that make them work better.",
     email: "pawankumarlearner@gmail.com",
     phone: {
       display: "+91 72759 96676",

@@ -4,6 +4,7 @@ import { site } from "../constant/data";
 import SiteFooter from "../components/layout/SiteFooter";
 import SiteHeader from "../components/layout/SiteHeader";
 import "./globals.css";
+import "./refinements.css";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],

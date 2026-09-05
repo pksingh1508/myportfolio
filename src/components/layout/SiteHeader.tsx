@@ -1,4 +1,5 @@
 import { profile, site } from "../../constant/data";
+import DesktopNav from "../motion/DesktopNav";
 import HeaderState from "../motion/HeaderState";
 import SiteMenu from "../motion/SiteMenu";
 import Container from "./Container";
@@ -23,15 +24,7 @@ export default function SiteHeader() {
           </span>
           {profile.fullName}
         </SmartLink>
-        <nav aria-label="Primary" className="desktop-nav">
-          <ul className="desktop-nav-list">
-            {items.map((item) => (
-              <li key={item.href}>
-                <SmartLink href={item.href}>{item.label}</SmartLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <DesktopNav items={items} />
         <SiteMenu items={items} />
       </Container>
     </HeaderState>

@@ -1,5 +1,6 @@
 import { contact, profile, projects } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
+import CopyEmail from "../motion/CopyEmail";
 import FinaleMark from "../motion/FinaleMark";
 import MotionReveal from "../motion/MotionReveal";
 import Container from "../layout/Container";
@@ -23,20 +24,22 @@ export default function ContactFinale() {
           {contact.heading}
         </h2>
         <p>{contact.body}</p>
-        <p className="btn-row">
+        <div className="btn-row">
           <SmartLink
             href={contact.primaryAction.href}
             external={contact.primaryAction.external}
             className="btn btn-primary"
+            arrow
           >
-            {describeLink(contact.primaryAction, profile.fullName)}
+            Say hello
           </SmartLink>
-        </p>
+          <CopyEmail email={profile.email} />
+        </div>
         <ul className="link-row" aria-label="More ways to reach me">
           {secondaryLinks.map((link) => (
             <li key={link.href}>
-              <SmartLink href={link.href} external={link.external}>
-                {describeLink(link, profile.fullName)}
+              <SmartLink href={link.href} external={link.external} ariaLabel={describeLink(link, profile.fullName)} className="text-link" arrow>
+                {link.label}
               </SmartLink>
             </li>
           ))}

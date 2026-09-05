@@ -1,8 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { motion, useAnimate, useReducedMotion } from "motion/react";
+import { useEffect, useState } from "react";
 import ArchivePoster from "../three/ArchivePoster";
 
 const ArchiveScene = dynamic(() => import("../three/ArchiveScene"), {
@@ -21,11 +21,28 @@ type HeroArchiveProps = {
  * reading and visual order; the canvas is decorative.
  */
 export default function HeroArchive({ frameSlugs }: HeroArchiveProps) {
+  const [scope, animate] = useAnimate<HTMLDivElement>();
   const [ready, setReady] = useState(false);
   const reduceMotion = useReducedMotion();
 
+  useEffect(() => {
+    const element = scope.current;
+    if (!element || reduceMotion || window.scrollY > window.innerHeight * .5) return;
+    const resting = getComputedStyle(element).transform;
+    const finalTransform = resting === "none" ? "translateY(0px)" : resting;
+    const playback = animate(element, {
+      opacity: [.65, 1],
+      transform: [`translateY(24px) scale(.97) ${finalTransform}`, finalTransform],
+    }, { duration: .85, delay: .12, ease: [.22, .68, .35, 1] });
+    return () => {
+      playback.stop();
+      element.style.removeProperty("opacity");
+      element.style.removeProperty("transform");
+    };
+  }, [animate, reduceMotion, scope]);
+
   return (
-    <div className="hero-archive" data-ready={String(ready)}>
+    <div ref={scope} className="hero-archive" data-ready={String(ready)}>
       <motion.div
         className="hero-archive-poster"
         aria-hidden={ready || undefined}
@@ -49,6 +66,7 @@ export default function HeroArchive({ frameSlugs }: HeroArchiveProps) {
           onFirstFrame={() => setReady(true)}
         />
       </motion.div>
+      <div className="archive-title" aria-hidden="true"><span>Orbital Archive</span><small>PK / Selected work</small></div>
       <div className="archive-readout" aria-hidden="true">
         <span><i /> Interactive archive</span>
         <span>Three selected systems</span>

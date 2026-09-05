@@ -6,6 +6,7 @@ import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
 import Divider from "../../../components/ui/Divider";
 import ProjectMediaFigure from "../../../components/ui/ProjectMediaFigure";
+import ProjectArtwork from "../../../components/ui/ProjectArtwork";
 import SmartLink from "../../../components/ui/SmartLink";
 
 type ProjectParams = {
@@ -120,6 +121,7 @@ export default async function ProjectPage({
           ) : null}
         </header>
 
+        {project.media.length === 0 && <ProjectArtwork project={project} />}
         {project.media.length > 0 ? (
           <section aria-label={`${project.title} media`} className="project-media">
             {project.media.map((media) => (

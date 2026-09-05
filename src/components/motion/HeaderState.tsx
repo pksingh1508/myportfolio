@@ -24,16 +24,27 @@ export default function HeaderState({ children }: HeaderStateProps) {
     const update = () => {
       frame = 0;
       el.dataset.scrolled = String(window.scrollY > 8);
+      const chapter = document.getElementById("work");
+      const rect = chapter?.getBoundingClientRect();
+      el.dataset.theme = rect && rect.top < el.offsetHeight && rect.bottom > el.offsetHeight ? "dark" : "light";
     };
     const onScroll = () => {
       if (!frame) {
         frame = requestAnimationFrame(update);
       }
     };
+    const pointerInput = () => { document.documentElement.dataset.input = "pointer"; };
+    const keyboardInput = () => { document.documentElement.dataset.input = "keyboard"; };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    window.addEventListener("pointerdown", pointerInput, { passive: true });
+    window.addEventListener("keydown", keyboardInput);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("pointerdown", pointerInput);
+      window.removeEventListener("keydown", keyboardInput);
       if (frame) {
         cancelAnimationFrame(frame);
       }

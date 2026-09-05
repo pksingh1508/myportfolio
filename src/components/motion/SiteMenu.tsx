@@ -47,7 +47,11 @@ export default function SiteMenu({ items }: SiteMenuProps) {
         !menuRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
+        if (menuRef.current.contains(document.activeElement)) triggerRef.current?.focus({ preventScroll: true });
       }
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setOpen(false);
     };
     const media = window.matchMedia("(min-width: 768px)");
     const onMediaChange = (event: MediaQueryListEvent) => {
@@ -57,13 +61,15 @@ export default function SiteMenu({ items }: SiteMenuProps) {
     };
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("focusin", onFocusOut);
     media.addEventListener("change", onMediaChange);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("focusin", onFocusOut);
       media.removeEventListener("change", onMediaChange);
     };
-  }, [open ]);
+  }, [open]);
 
   const handleNavigate = (href: string) => {
     setOpen(false);

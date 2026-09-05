@@ -6,6 +6,8 @@ type SmartLinkProps = {
   readonly external?: boolean;
   readonly className?: string;
   readonly children: ReactNode;
+  readonly ariaLabel?: string;
+  readonly arrow?: boolean;
 };
 
 /**
@@ -17,7 +19,10 @@ export default function SmartLink({
   external = false,
   className,
   children,
+  ariaLabel,
+  arrow = false,
 }: SmartLinkProps) {
+  const content = arrow ? <><span>{children}</span><span className="link-arrow" aria-hidden="true"><span>↗</span><span>↗</span></span></> : children;
   if (external) {
     return (
       <a
@@ -25,14 +30,15 @@ export default function SmartLink({
         target="_blank"
         rel="noopener noreferrer"
         className={className}
+        aria-label={ariaLabel}
       >
-        {children}
+        {content}
       </a>
     );
   }
   return (
-    <Link href={href} className={className}>
-      {children}
+    <Link href={href} className={className} aria-label={ariaLabel}>
+      {content}
     </Link>
   );
 }

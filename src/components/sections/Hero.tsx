@@ -16,8 +16,7 @@ export default function Hero() {
       <Container className="hero-grid">
         <HeroIntro>
           <p data-intro className="hero-kicker meta">
-            <span aria-hidden="true" className="status-pulse" />
-            {profile.roles.join(", ")}
+            {profile.roles[0]}
           </p>
           <h1 data-intro id="intro-heading" className="display">
             {profile.fullName}
@@ -25,9 +24,9 @@ export default function Hero() {
           <p data-intro className="hero-headline lede">
             {profile.headline}
           </p>
-          <p data-intro className="hero-bio">{profile.shortBio}</p>
+          <p data-intro className="hero-bio">{profile.heroDescription}</p>
           <p data-intro className="btn-row">
-            <SmartLink href="/#work" className="btn btn-primary">
+            <SmartLink href="/#work" className="btn btn-primary" arrow>
               View selected work
             </SmartLink>
             <SmartLink href="/#contact" className="btn btn-secondary">
@@ -35,16 +34,20 @@ export default function Hero() {
             </SmartLink>
           </p>
           <ul data-intro className="link-row hero-links" aria-label="Contact and profiles">
-            {profile.links.map((link) => (
+            {profile.links.filter((link) => link.kind === "social").map((link) => (
               <li key={link.href}>
-                <SmartLink href={link.href} external={link.external}>
-                  {describeLink(link, profile.fullName)}
+                <SmartLink href={link.href} external={link.external} ariaLabel={describeLink(link, profile.fullName)} className="text-link" arrow>
+                  {link.label}
                 </SmartLink>
               </li>
             ))}
           </ul>
         </HeroIntro>
         <HeroArchive frameSlugs={frameSlugs} />
+      </Container>
+      <Container className="hero-bottom">
+        <span>Full-stack thinking. Front-to-back care.</span>
+        <SmartLink href="/#work" className="scroll-cue"><span>Explore the work</span><span aria-hidden="true">↓</span></SmartLink>
       </Container>
     </section>
   );

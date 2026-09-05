@@ -31,6 +31,7 @@ export type Profile = {
   readonly roles: readonly string[];
   readonly headline: string;
   readonly shortBio: string;
+  readonly heroDescription: string;
   readonly email: string;
   readonly phone: {
     readonly display: string;
