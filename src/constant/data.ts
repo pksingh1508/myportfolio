@@ -55,8 +55,8 @@ export const portfolioData = {
     url: null,
     navigation: [
       { label: "Work", href: "#work" },
-      { label: "Experience", href: "#experience" },
       { label: "Skills", href: "#skills" },
+      { label: "Experience", href: "#experience" },
       { label: "Education", href: "#education" },
       { label: "Contact", href: "#contact" },
     ],
