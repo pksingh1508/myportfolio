@@ -822,7 +822,6 @@ h3 {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .desktop-nav-list a:hover::after,
   .desktop-nav-list a:focus-visible::after {
     opacity: 1;
     transform: scaleX(1);
