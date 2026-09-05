@@ -6,9 +6,9 @@ import SmartLink from "../ui/SmartLink";
 /**
  * Global footer. Server Component, no client JavaScript.
  *
- * Reference-inspired composition: personal mark, positioning line, and the
- * primary conversion pair on the left; exactly two link columns
- * (Links, Social) on the right; copyright plus stack note; and the
+ * Reference-inspired composition: the shared navbar brand (same 44px mark
+ * plus pill-reveal hover), positioning line, and the primary conversion
+ * pair on the left; exactly two link columns (Links, Social) on the right; copyright plus stack note; and the
  * oversized cropped first-name mark as a decorative finale.
  *
  * Social labels stay short in the visible UI ("Email", "LinkedIn",
@@ -26,9 +26,12 @@ export default function SiteFooter() {
       <Container>
         <div className="footer-top">
           <div className="footer-brand">
-            <span aria-hidden="true" className="footer-mark">
-              {profile.initials}
-            </span>
+            <SmartLink href="/" className="brand" ariaLabel={profile.fullName}>
+              <span aria-hidden="true" className="brand-mark">
+                {profile.initials}
+              </span>
+              <span aria-hidden="true" className="brand-name">{profile.fullName}</span>
+            </SmartLink>
             <p className="footer-tagline">{profile.headline}</p>
             <div className="btn-row footer-actions">
               <SmartLink
