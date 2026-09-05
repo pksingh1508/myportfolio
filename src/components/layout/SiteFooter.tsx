@@ -83,7 +83,6 @@ export default function SiteFooter() {
           <p suppressHydrationWarning>
             © {year} {profile.fullName}
           </p>
-          <p>Built with Next.js, TypeScript and Tailwind CSS.</p>
         </div>
       </Container>
       <div aria-hidden="true" className="footer-giant">
