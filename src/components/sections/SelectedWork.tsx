@@ -1,5 +1,6 @@
 import { projects } from "../../constant/data";
 import Container from "../layout/Container";
+import WorkExpand from "../motion/WorkExpand";
 import WorkStory from "../motion/WorkStory";
 import SmartLink from "../ui/SmartLink";
 import ProjectArtwork from "../ui/ProjectArtwork";
@@ -7,7 +8,7 @@ import ProjectArtwork from "../ui/ProjectArtwork";
 export default function SelectedWork() {
   const featured = projects.filter((project) => project.featured);
   return (
-    <section id="work" aria-labelledby="work-heading" className="night">
+    <WorkExpand>
       <Container className="flow work-shell">
         <div className="work-heading-grid">
           <p className="section-index meta">A few things I’ve built</p>
@@ -37,6 +38,6 @@ export default function SelectedWork() {
           <div className="work-stage-footer"><p>Selected work / {featured.length} projects</p><SmartLink href="/#skills" className="text-link">Continue to skills <span aria-hidden="true">↓</span></SmartLink></div>
         </WorkStory>
       </Container>
-    </section>
+    </WorkExpand>
   );
 }
