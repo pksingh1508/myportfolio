@@ -18,11 +18,11 @@ export default function SiteHeader() {
   return (
     <HeaderState>
       <Container className="site-header-inner">
-        <SmartLink href="/" className="brand">
+        <SmartLink href="/" className="brand" ariaLabel={profile.fullName}>
           <span aria-hidden="true" className="brand-mark">
             {profile.initials}
           </span>
-          {profile.fullName}
+          <span aria-hidden="true" className="brand-name">{profile.fullName}</span>
         </SmartLink>
         <DesktopNav items={items} />
         <SiteMenu items={items} />

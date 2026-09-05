@@ -6,6 +6,16 @@ body { background: var(--color-paper); }
 .shell { width: min(100% - clamp(2.5rem, 8vw, 8rem), 80rem); }
 h2 { font-weight: 480; letter-spacing: -.055em; }
 .brand-mark { border-radius: 50%; box-shadow: none; width: 2.35rem; height: 2.35rem; font-size: .75rem; }
+/* The name floats beside the logo so revealing it never shifts navigation. */
+.brand { position: relative; justify-content: center; width: 44px; }
+.brand-name { position: absolute; inset-inline-start: calc(100% + .5rem); white-space: nowrap; pointer-events: none; opacity: 0; transform: translateX(-8px); transition: opacity 180ms ease-out, transform 240ms cubic-bezier(.22, 1, .36, 1); }
+.brand:focus-visible .brand-name { opacity: 1; transform: translateX(0); }
+@media (hover: hover) and (pointer: fine) {
+  .brand:hover .brand-name { opacity: 1; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-name { transition: none; transform: none; }
+}
 .site-header { background: transparent; }
 .site-header-inner { min-height: 5.5rem; }
 .site-header[data-scrolled="true"] { background: rgb(247 248 252 / .88); box-shadow: none; }
