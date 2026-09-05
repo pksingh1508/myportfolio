@@ -194,6 +194,8 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 }
 @media (min-width: 1024px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* Owner nudge: settle the hero copy ~50px higher and ~80px further right. */
+  .hero-copy { transform: translate(80px, -50px); }
 }
 @media (max-width: 1023px) {
   .hero-section { min-height: auto; }
