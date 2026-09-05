@@ -733,39 +733,11 @@ html.js .menu-panel[data-open="true"] .menu-item {
   }
 }
 
-/* ---- Step 12: contact-finale mark (compact centered dock, same
-   poster-first crossfade contract as the hero archive) ---- */
 
-.finale-mark {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  width: min(100%, 26rem);
-  margin-inline: auto;
-}
 
-.finale-mark-poster,
-.finale-mark-scene {
-  position: absolute;
-  inset: 0;
-}
 
-.finale-mark-poster {
-  pointer-events: none;
-  transition: opacity 500ms var(--ease-reveal);
-}
 
-.finale-mark-scene {
-  opacity: 0;
-  transition: opacity 500ms var(--ease-reveal);
-}
 
-.finale-mark[data-ready="true"] .finale-mark-scene {
-  opacity: 1;
-}
-
-.finale-mark[data-ready="true"] .finale-mark-poster {
-  opacity: 0;
-}
 
 /* ---- 2026 visual refinement: quiet editorial shell + orbital instrument ---- */
 
@@ -939,47 +911,10 @@ h3 {
   box-shadow: 0 10px 28px rgba(9, 10, 12, 0.14);
 }
 
-.finale-mark {
-  isolation: isolate;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: clamp(1.25rem, 2.8vw, 2rem);
-  background:
-    radial-gradient(circle at 52% 42%, rgba(99, 91, 255, 0.16), transparent 34%),
-    #0c0e12;
-  box-shadow:
-    0 28px 80px rgba(9, 10, 12, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.025);
-}
 
-.finale-mark::before {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
-  background-size: 2rem 2rem;
-  content: "";
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent 88%);
-  mask-image: linear-gradient(to bottom, black, transparent 88%);
-}
 
-.finale-mark-poster,
-.finale-mark-scene {
-  overflow: hidden;
-  border-radius: inherit;
-}
 
-.finale-mark-poster {
-  transition: none;
-}
 
-.finale-mark-scene {
-  opacity: unset;
-  transition: none;
-}
 
 .archive-stage,
 .archive-poster {
@@ -1264,9 +1199,6 @@ h3 {
   letter-spacing: -0.055em;
 }
 
-.finale-mark {
-  margin-block-start: clamp(3rem, 6vw, 5rem);
-}
 
 .site-footer-inner {
   font-size: 0.875rem;

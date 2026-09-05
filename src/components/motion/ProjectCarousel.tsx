@@ -15,6 +15,7 @@ type CarouselImage = {
 export default function ProjectCarousel({ images }: { readonly images: readonly CarouselImage[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const clock = useRef(0);
+  const entered = useRef(false);
   const reducedMotion = useReducedMotionPreference();
 
   useEffect(() => {
@@ -34,16 +35,34 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     let lastTime = 0;
     let lastScroll = window.scrollY;
     let speed = 1;
+    let momentum = 0;
+    let introTime = 0;
+    const playEntrance = !entered.current && window.scrollY < window.innerHeight * .5;
+    entered.current = true;
+    let launchPending = playEntrance;
+    const entrances = playEntrance ? cards.map((card, index) => {
+      const surface = card.querySelector<HTMLElement>(".project-carousel-entrance")!;
+      return surface.animate([
+        { opacity: 0, transform: "translate3d(100px, 32px, 0) rotate(-12deg) scale(.72)" },
+        { opacity: 1, transform: "translate3d(0, 0, 0) rotate(0deg) scale(1)" },
+      ], { duration: 900, delay: 450 + index * 65, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "backwards" });
+    }) : [];
 
     const tick = (now: number) => {
       const elapsed = Math.min((now - lastTime) / 1000, .05);
       lastTime = now;
-      // Native scroll remains untouched. Both directions add forward momentum.
-      const velocity = Math.abs(window.scrollY - lastScroll) / Math.max(elapsed, .001);
+      // Each scroll movement adds an impulse; momentum survives between events.
+      // Convert the reference's angular response to our 56-second arc clock.
+      const distance = Math.abs(window.scrollY - lastScroll);
       lastScroll = window.scrollY;
-      const target = 1 + Math.min(velocity / 700, 4.5);
-      const response = target > speed ? .16 : .65;
-      speed += (target - speed) * (1 - Math.exp(-elapsed / response));
+      momentum = Math.min(44, momentum + distance * .0356);
+      introTime += elapsed;
+      if (launchPending && introTime >= .6) {
+        momentum = Math.max(momentum, 12);
+        launchPending = false;
+      }
+      momentum *= Math.exp(-1.6 * elapsed);
+      speed += (1 + momentum - speed) * (1 - Math.exp(-elapsed / .075));
       clock.current = (clock.current + elapsed * 1000 * speed) % 56000;
       animations.forEach(animation => { animation.currentTime = clock.current; });
       frame = requestAnimationFrame(tick);
@@ -51,7 +70,15 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     const sync = () => {
       cancelAnimationFrame(frame);
       frame = 0;
-      if (intersecting && !document.hidden && !hovering && !focused) {
+      momentum = 0;
+      const running = intersecting && !document.hidden && !hovering && !focused;
+      entrances.forEach(animation => {
+        if (animation.playState !== "finished") {
+          if (running) animation.play();
+          else animation.pause();
+        }
+      });
+      if (running) {
         lastTime = performance.now();
         lastScroll = window.scrollY;
         speed = 1;
@@ -82,6 +109,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     document.addEventListener("visibilitychange", sync);
     return () => {
       cancelAnimationFrame(frame);
+      entrances.forEach(animation => animation.cancel());
       observer.disconnect();
       cards.forEach(card => {
         card.removeEventListener("pointerenter", onEnter);
@@ -102,8 +130,10 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
           <div className="project-carousel-card" key={image.src} style={{
             "--card-delay": `${-(index + 0.5) * 56 / images.length}s`,
           } as CSSProperties}>
-            <div className="project-carousel-surface">
-              <Image {...image} alt="" loading="eager" sizes="(max-width: 767px) 65vw, (max-width: 1023px) 30vw, 360px" />
+            <div className="project-carousel-entrance">
+              <div className="project-carousel-surface">
+                <Image {...image} alt="" loading="eager" sizes="(max-width: 767px) 65vw, (max-width: 1023px) 30vw, 360px" />
+              </div>
             </div>
           </div>
         ))}

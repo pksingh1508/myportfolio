@@ -2,55 +2,30 @@
 
 import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
 
-import { stagger, useAnimate } from "motion/react";
-import { useLayoutEffect, type ReactNode } from "react";
-
-const PLAYED_KEY = "orbital-archive:hero-intro-played";
-
-function alreadyPlayed(): boolean {
-  try {
-    return window.sessionStorage.getItem(PLAYED_KEY) === "1";
-  } catch {
-    // Private mode: replay on the next mount rather than crashing.
-    return false;
-  }
-}
-
-function markPlayed(): void {
-  try {
-    window.sessionStorage.setItem(PLAYED_KEY, "1");
-  } catch {
-    // Private mode: replay on the next mount rather than crashing.
-  }
-}
+import { useAnimate } from "motion/react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 type HeroIntroProps = {
   readonly children: ReactNode;
 };
 
-/**
- * One-time hero entrance, max ~1.15s. The server-rendered hero is always
- * shipped visible; initial states are set in a layout effect (pre-paint, so
- * nothing flashes) and animated to the natural resting pose in hierarchy
- * order. Reduced motion, repeat visits in the same session, and failed
- * JavaScript all resolve to the final readable pose.
- */
+/** Staged page-load entrance. HTML stays readable without JavaScript or motion. */
 export default function HeroIntro({ children }: HeroIntroProps) {
   const [scope, animate] = useAnimate<HTMLDivElement>();
+  const played = useRef(false);
   const reduceMotion = useReducedMotionPreference();
 
   useLayoutEffect(() => {
-    if (reduceMotion || alreadyPlayed()) {
+    if (reduceMotion || played.current || window.scrollY > window.innerHeight * .5) {
       return;
     }
 
     const elements = Array.from(scope.current.querySelectorAll<HTMLElement>("[data-intro]"));
     const playback = animate(elements,
-      { opacity: [0.35, 1], transform: ["translateY(22px)", "translateY(0px)"] },
-      { delay: stagger(0.065), duration: 0.7, ease: [0.22, 0.68, 0.35, 1] },
+      { opacity: [0, 1], transform: ["translateY(24px)", "translateY(0px)"] },
+      { delay: (index) => [0.05, 0.18, 0.34, 0.48][index] ?? 0.48, duration: 0.85, ease: [0.22, 1, 0.36, 1] },
     );
-    // Mark at start so a fast route return does not replay a half-finished intro.
-    markPlayed();
+    played.current = true;
     return () => {
       playback.stop();
       elements.forEach(element => {

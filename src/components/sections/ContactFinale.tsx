@@ -1,7 +1,6 @@
-import { contact, profile, projects } from "../../constant/data";
+import { contact, profile } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import CopyEmail from "../motion/CopyEmail";
-import FinaleMark from "../motion/FinaleMark";
 import MotionReveal from "../motion/MotionReveal";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
@@ -11,9 +10,6 @@ export default function ContactFinale() {
   const secondaryLinks = profile.links.filter(
     (link) => link.kind === "social" || link.kind === "phone",
   );
-  const frameSlugs = projects
-    .filter((project) => project.featured)
-    .map((project) => project.slug);
 
   return (
     <section id="contact" aria-labelledby="contact-heading">
@@ -45,7 +41,6 @@ export default function ContactFinale() {
           ))}
         </ul>
         </MotionReveal>
-        <FinaleMark frameSlugs={frameSlugs} />
       </Container>
     </section>
   );

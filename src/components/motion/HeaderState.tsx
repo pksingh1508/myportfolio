@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
 
 type HeaderStateProps = {
   readonly children: ReactNode;
@@ -13,6 +14,20 @@ type HeaderStateProps = {
  */
 export default function HeaderState({ children }: HeaderStateProps) {
   const ref = useRef<HTMLElement>(null);
+  const entered = useRef(false);
+  const reducedMotion = useReducedMotionPreference();
+
+  useEffect(() => {
+    if (reducedMotion || entered.current || window.scrollY > 0) return;
+    const inner = ref.current?.querySelector<HTMLElement>(".site-header-inner");
+    if (!inner) return;
+    entered.current = true;
+    const entrance = inner.animate([
+      { opacity: 0, transform: "translateY(-16px)" },
+      { opacity: 1, transform: "translateY(0)" },
+    ], { duration: 600, delay: 200, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "backwards" });
+    return () => entrance.cancel();
+  }, [reducedMotion]);
 
   useEffect(() => {
     const el = ref.current;

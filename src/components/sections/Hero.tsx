@@ -1,5 +1,4 @@
 import { profile, heroCarouselImages } from "../../constant/data";
-import { describeLink } from "../../lib/describe-link";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
 import ProjectCarousel from "../motion/ProjectCarousel";
@@ -15,11 +14,9 @@ export default function Hero() {
             {profile.roles[0]}
           </p>
           <h1 data-intro id="intro-heading" className="display">
-            {profile.fullName}
+            <span>{profile.firstName}</span>{" "}
+            <span className="hero-name-secondary">{profile.lastName}</span>
           </h1>
-          <p data-intro className="hero-headline lede">
-            {profile.headline}
-          </p>
           <p data-intro className="hero-bio">{profile.heroDescription}</p>
           <p data-intro className="btn-row">
             <SmartLink href="/#work" className="btn btn-primary" arrow>
@@ -29,15 +26,6 @@ export default function Hero() {
               Contact me
             </SmartLink>
           </p>
-          <ul data-intro className="link-row hero-links" aria-label="Contact and profiles">
-            {profile.links.filter((link) => link.kind === "social").map((link) => (
-              <li key={link.href}>
-                <SmartLink href={link.href} external={link.external} ariaLabel={describeLink(link, profile.fullName)} className="text-link" arrow>
-                  {link.label}
-                </SmartLink>
-              </li>
-            ))}
-          </ul>
         </HeroIntro>
         <ProjectCarousel images={heroCarouselImages} />
       </Container>
