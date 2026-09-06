@@ -294,7 +294,15 @@ export const portfolioData = {
         },
       ],
       featured: true,
-      media: [],
+      media: [
+        {
+          type: "image",
+          src: projectImages.eucareerserwis,
+          width: 3208,
+          height: 1912,
+          alt: "EU Career Serwis homepage screenshot",
+        },
+      ],
     },
     {
       slug: "eu-work-support",
@@ -330,7 +338,15 @@ export const portfolioData = {
         },
       ],
       featured: true,
-      media: [],
+      media: [
+        {
+          type: "image",
+          src: projectImages.euworksupport,
+          width: 3272,
+          height: 1916,
+          alt: "EU Work Support app preview",
+        },
+      ],
     },
     {
       slug: "learnifi",
@@ -374,7 +390,15 @@ export const portfolioData = {
         },
       ],
       featured: true,
-      media: [],
+      media: [
+        {
+          type: "image",
+          src: projectImages.learnifi,
+          width: 3420,
+          height: 1918,
+          alt: "LearniFi platform screenshot",
+        },
+      ],
     },
     {
       slug: "eu-prime-serwis",
