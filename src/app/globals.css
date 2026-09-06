@@ -3,7 +3,16 @@
 /*
  * Orbital Archive design tokens (plan.md section 3, AGENTS.md visual system).
  *
- * Palette pairs below passed a measured WCAG AA contrast check on 2026-09-04:
+ * --color-paper is now #FFFFFF, sampled from the owner-supplied reference
+ * image (pure white, rgb 255 255 255) per the 2026-09-06 request to use that
+ * image color as the complete project background. It intentionally diverges
+ * from the original plan value #F7F8FC; every light surface (body, header,
+ * footer, carousel fade) follows this token.
+ *
+ * Palette pairs below passed a measured WCAG AA contrast check on 2026-09-04
+ * against the previous paper #F7F8FC; moving to pure white only increases
+ * light-surface contrast (e.g. signal/white 4.70, graphite/white ~4.82), so
+ * the AA claims below still hold:
  * ink/paper 18.66, muted/paper 7.04, white/ink 19.80, white/night-surface 17.94,
  * fog/ink 11.96, fog/night-surface 10.83, signal/white 4.70, signal-soft/ink 10.56.
  * Restricted pairs (large text >= 24px / 18.66px bold, or non-text UI only):
@@ -18,7 +27,7 @@
  */
 
 @theme {
-  --color-paper: #f7f8fc;
+  --color-paper: #ffffff;
   --color-white: #ffffff;
   --color-ink: #090a0c;
   --color-graphite: #6f737b;
@@ -289,7 +298,7 @@ html:not(.js) .site-header {
 }
 
 .site-header[data-scrolled="true"] {
-  background-color: rgba(247, 248, 252, 0.86);
+  background-color: rgba(255, 255, 255, 0.86);
   background-color: color-mix(in srgb, var(--color-paper) 84%, transparent);
   -webkit-backdrop-filter: blur(14px) saturate(1.5);
   backdrop-filter: blur(14px) saturate(1.5);

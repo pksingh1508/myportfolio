@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const swatches = [
-  { name: "paper", hex: "#F7F8FC", use: "Page canvas" },
+  { name: "paper", hex: "#FFFFFF", use: "Page canvas" },
   { name: "white", hex: "#FFFFFF", use: "Elevated media" },
   { name: "ink", hex: "#090A0C", use: "Body copy, dark chapter" },
   { name: "muted", hex: "#51555E", use: "Small secondary text, light" },

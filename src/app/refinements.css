@@ -144,7 +144,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .site-header .brand:hover .brand-name { transition: none; }
 }
 .site-header-inner { min-height: 5.5rem; }
-.site-header[data-scrolled="true"] { background: rgb(247 248 252 / .88); box-shadow: none; }
+.site-header[data-scrolled="true"] { background: rgb(255 255 255 / .88); box-shadow: none; }
 .hero-section { min-height: min(820px, calc(100svh - 6.5rem)); align-content: center; gap: 2rem; }
 .hero-section::before { display: none; }
 .hero-grid { padding-block: 3rem 2rem; gap: clamp(2rem, 4vw, 5rem); }
