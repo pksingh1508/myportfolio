@@ -479,10 +479,13 @@ function assertAccessibleProjectMedia(items: readonly Project[]): void {
 assertUniqueProjectSlugs(projects);
 assertAccessibleProjectMedia(projects);
 
-/** Temporary decorative previews. Replace these paths with approved project images. */
-export const heroCarouselImages = Array.from({ length: 7 }, (_, index) => ({
-  src: `/images/hero/project-${index + 1}.svg`,
-  alt: "", // Decorative placeholders; project identity remains in selected work.
-  width: 720,
-  height: 405,
-}));
+/** Real project previews for the landing-page rotating fan. Decorative: identity stays in selected work. */
+export const heroCarouselImages = [
+  { src: "/images/project/eucareerserwis.png", alt: "", width: 3208, height: 1912 },
+  { src: "/images/project/eucrm.png", alt: "", width: 3420, height: 1914 },
+  { src: "/images/project/euprimeserwis.png", alt: "", width: 2972, height: 1920 },
+  { src: "/images/project/euworksupport.png", alt: "", width: 3272, height: 1916 },
+  { src: "/images/project/hackathonwallah.png", alt: "", width: 2940, height: 1914 },
+  { src: "/images/project/invoice.png", alt: "", width: 3400, height: 1914 },
+  { src: "/images/project/learnifi.png", alt: "", width: 3420, height: 1918 },
+];
