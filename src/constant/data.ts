@@ -500,5 +500,5 @@ export const heroCarouselImages = Array.from({ length: 7 }, (_, index) => ({
   src: `/images/hero/project-${index + 1}.svg`,
   alt: "", // Decorative placeholders; project identity remains in selected work.
   width: 720,
-  height: 480,
+  height: 405,
 }));

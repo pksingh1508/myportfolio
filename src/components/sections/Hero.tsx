@@ -4,7 +4,7 @@ import SmartLink from "../ui/SmartLink";
 import ProjectCarousel from "../motion/ProjectCarousel";
 import HeroIntro from "../motion/HeroIntro";
 
-/** Identity and a slowly looping arc of project previews. */
+/** Identity and a scroll-responsive circular fan of project previews. */
 export default function Hero() {
   return (
     <section aria-labelledby="intro-heading" className="hero-section">

@@ -206,8 +206,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 }
 @media (min-width: 1024px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  /* Owner nudge: settle the hero copy ~50px higher and ~80px further right. */
-  .hero-copy { transform: translate(80px, -50px); }
 }
 @media (max-width: 1023px) {
   .hero-section { min-height: auto; }
@@ -291,41 +289,100 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 .night { background: var(--color-ink); }
 .night::after { display: none; }
 
-/* Hero image arc: seven staggered cards, one continuous 56-second clock.
-   The invisible endpoints meet off-stage; all visible motion is transform/opacity. */
-.project-carousel { position: relative; min-width: 0; width: 100%; height: clamp(32rem, 48vw, 43rem); }
-.project-carousel-window { position: absolute; inset: -2rem -4vw 0 0; overflow: hidden; isolation: isolate; mask-image: linear-gradient(to bottom, transparent, black 13%, black 87%, transparent); }
-.project-carousel-card { position: absolute; top: 50%; left: 8%; width: clamp(15rem, 25vw, 22.5rem); aspect-ratio: 3 / 2; animation: project-card-arc 56s linear infinite both; animation-delay: var(--card-delay); animation-play-state: paused; }
-.project-carousel-entrance { width: 100%; height: 100%; }
-.project-carousel-surface { width: 100%; height: 100%; overflow: hidden; border-radius: 16px; background: #e4e8f1; box-shadow: 0 18px 32px -18px rgb(9 10 12 / .32); transition: transform 320ms cubic-bezier(.22, 1, .36, 1); }
+/* Hero fan: responsive circular geometry, centered at the far right.
+   Only the right edge dissolves; the top and bottom cards keep their detail. */
+.project-carousel {
+  position: relative;
+  container-type: size;
+  min-width: 0;
+  width: 100%;
+  height: 34rem;
+  isolation: isolate;
+}
+.project-carousel-window {
+  --arc-radius: min(max(32cqh, 220px), 55cqw, 410px);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.project-carousel-window::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(11rem, 30%);
+  z-index: 150;
+  background: linear-gradient(to right, transparent, var(--color-paper));
+  pointer-events: none;
+}
+.project-carousel-card {
+  position: absolute;
+  top: 50%;
+  left: 92%;
+  width: max(calc(var(--arc-radius) * 1.05), 250px);
+  aspect-ratio: 16 / 9;
+  pointer-events: auto;
+  transform-style: preserve-3d;
+}
+.project-carousel-surface {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #e4e8f1;
+  box-shadow: 0 18px 50px -16px rgb(9 10 12 / .5);
+  transition: transform 500ms cubic-bezier(.22, 1, .36, 1), box-shadow 500ms ease-out;
+}
 .project-carousel-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
-@keyframes project-card-arc {
-  0% { transform: translate3d(125%, -265%, 0) rotate(28deg) scale(.8); opacity: 0; }
-  10% { opacity: 1; }
-  16.666% { transform: translate3d(56%, -193%, 0) rotate(20deg) scale(.88); }
-  33.333% { transform: translate3d(14%, -122%, 0) rotate(10deg) scale(.96); }
-  50% { transform: translate3d(0, -50%, 0) rotate(0deg) scale(1); }
-  66.666% { transform: translate3d(14%, 22%, 0) rotate(-10deg) scale(.96); }
-  83.333% { transform: translate3d(56%, 93%, 0) rotate(-20deg) scale(.88); }
-  90% { opacity: 1; }
-  100% { transform: translate3d(125%, 165%, 0) rotate(-28deg) scale(.8); opacity: 0; }
-}
 @media (hover: hover) and (pointer: fine) {
-  .project-carousel-card:hover { z-index: 2; }
-  .project-carousel-card:hover .project-carousel-surface { transform: scale(1.045); }
+  .project-carousel-card:hover { z-index: 100 !important; }
+  .project-carousel-card:hover .project-carousel-surface {
+    transform: translateZ(64px) scale(1.06);
+    box-shadow: 0 32px 80px -16px rgb(9 10 12 / .6);
+  }
 }
-@media (min-width: 768px) and (max-width: 1023px) {
-  .project-carousel { height: 34rem; }
-  .project-carousel-card { width: 30vw; left: 0; }
+@media (min-width: 1024px) {
+  .hero-section {
+    margin-block-start: calc(-1 * (var(--header-height) + 2rem));
+    min-height: max(620px, 100svh);
+    gap: 0;
+    overflow: clip;
+    isolation: isolate;
+  }
+  .hero-grid {
+    position: static;
+    width: min(100%, 1440px);
+    min-height: max(620px, 100svh);
+    padding: 6rem 40px;
+    gap: 0;
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 2;
+    margin-inline-start: 64px;
+    transform: translateY(-56px);
+  }
+  .hero-grid .project-carousel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 50%;
+    height: 100%;
+  }
+  .hero-bottom { position: absolute; inset: auto 0 1rem; z-index: 2; }
+  .hero-bottom .scroll-cue { position: absolute; left: 50%; transform: translateX(-50%); }
+}
+@media (min-width: 1280px) {
+  .hero-copy { margin-inline-start: 112px; }
+}
+@media (max-width: 1023px) {
+  .project-carousel { overflow: clip; }
 }
 @media (max-width: 767px) {
-  .project-carousel { height: 29rem; max-width: 32rem; justify-self: center; }
-  .project-carousel-window { inset: -1rem -1.25rem 0; }
-  .project-carousel-card { width: 65%; left: 8%; }
+  .project-carousel { height: 26rem; max-width: 32rem; justify-self: center; }
+  .project-carousel-window { --arc-radius: min(32cqh, 55cqw); }
+  .project-carousel-card { width: max(calc(var(--arc-radius) * 1.05), 190px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .project-carousel-surface { transition: none; transform: none !important; }
-  .project-carousel .project-carousel-card { animation-duration: 56s !important; animation-iteration-count: infinite !important; animation-play-state: paused; }
 }
 
 /* ---- Footer: brand + conversion pair, Links/Social columns, giant mark ---- */

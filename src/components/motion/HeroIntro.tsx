@@ -8,7 +8,7 @@ type HeroIntroProps = {
 };
 
 const INTRO_DELAYS = [0.05, 0.18, 0.34, 0.48];
-const INTRO_DURATION = 0.85;
+const INTRO_DURATION = 1;
 
 /**
  * Staged page-load entrance. HTML stays readable without JavaScript or motion.
