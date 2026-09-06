@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
 
@@ -9,6 +10,8 @@ type CarouselImage = {
   readonly alt: string;
   readonly width: number;
   readonly height: number;
+  readonly href: string;
+  readonly title: string;
 };
 
 const SLOT_COUNT = 10;
@@ -51,7 +54,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     let launched = !entrance;
     let intersecting = false;
     let hovering = finePointer.matches && cards.some(card => card.matches(":hover"));
-    let focused = document.activeElement === element;
+    let focused = element.contains(document.activeElement);
     let frame = 0;
     let lastTime = 0;
     let lastScroll = window.scrollY;
@@ -122,8 +125,8 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
       card.addEventListener("pointerenter", onEnter);
       card.addEventListener("pointerleave", onLeave);
     });
-    element.addEventListener("focus", onFocus);
-    element.addEventListener("blur", onBlur);
+    element.addEventListener("focusin", onFocus);
+    element.addEventListener("focusout", onBlur);
     finePointer.addEventListener("change", onPointerChange);
     document.addEventListener("visibilitychange", sync);
     return () => {
@@ -137,8 +140,8 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
         card.style.zIndex = String(pose.zIndex);
         card.style.removeProperty("opacity");
       });
-      element.removeEventListener("focus", onFocus);
-      element.removeEventListener("blur", onBlur);
+      element.removeEventListener("focusin", onFocus);
+      element.removeEventListener("focusout", onBlur);
       finePointer.removeEventListener("change", onPointerChange);
       document.removeEventListener("visibilitychange", sync);
     };
@@ -147,16 +150,16 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
   if (images.length === 0) return null;
 
   return (
-    <div ref={stage} className="project-carousel" tabIndex={0} role="img" aria-label="Rotating project previews. Focus here to pause the animation.">
-      <div className="project-carousel-window" aria-hidden="true">
+    <div ref={stage} className="project-carousel" role="group" aria-label="Featured project previews">
+      <div className="project-carousel-window">
         {Array.from({ length: SLOT_COUNT }, (_, index) => {
           const image = images[index % images.length];
           return (
-            <div className="project-carousel-card" key={index} style={cardPose(Math.PI + index * TURN / SLOT_COUNT)}>
+            <Link className="project-carousel-card" key={index} href={image.href} aria-label={`Open the ${image.title} case study`} style={cardPose(Math.PI + index * TURN / SLOT_COUNT)}>
               <div className="project-carousel-surface">
-                <Image {...image} alt="" loading="eager" sizes="(max-width: 767px) 200px, (max-width: 1023px) 250px, (max-height: 740px) 250px, (max-height: 1000px) 340px, 431px" />
+                <Image src={image.src} alt="" width={image.width} height={image.height} loading="eager" sizes="(max-width: 767px) 200px, (max-width: 1023px) 250px, (max-height: 740px) 250px, (max-height: 1000px) 340px, 431px" />
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

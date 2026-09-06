@@ -628,13 +628,17 @@ function assertAccessibleProjectMedia(items: readonly Project[]): void {
 assertUniqueProjectSlugs(projects);
 assertAccessibleProjectMedia(projects);
 
-/** Real project previews for the landing-page rotating fan. Decorative: identity stays in selected work. */
+/**
+ * Landing-page rotating fan. Each card links to its case study. Decorative
+ * images (alt stays empty; the link label carries identity). `hackathonwallah`
+ * is intentionally excluded until it gets a project page, so every visible
+ * card has a destination.
+ */
 export const heroCarouselImages = [
-  { src: projectImages.eucareerserwis, alt: "", width: 3208, height: 1912 },
-  { src: projectImages.eucrm, alt: "", width: 3420, height: 1914 },
-  { src: projectImages.euprimeserwis, alt: "", width: 2972, height: 1920 },
-  { src: projectImages.euworksupport, alt: "", width: 3272, height: 1916 },
-  { src: projectImages.hackathonwallah, alt: "", width: 2940, height: 1914 },
-  { src: projectImages.invoice, alt: "", width: 3400, height: 1914 },
-  { src: projectImages.learnifi, alt: "", width: 3420, height: 1918 },
+  { src: projectImages.eucareerserwis, alt: "", width: 3208, height: 1912, href: "/work/eu-career-serwis", title: "EU Career Serwis" },
+  { src: projectImages.eucrm, alt: "", width: 3420, height: 1914, href: "/work/crm-lead-management", title: "CRM - Lead Management" },
+  { src: projectImages.euprimeserwis, alt: "", width: 2972, height: 1920, href: "/work/eu-prime-serwis", title: "EU Prime Serwis" },
+  { src: projectImages.euworksupport, alt: "", width: 3272, height: 1916, href: "/work/eu-work-support", title: "EU Work Support" },
+  { src: projectImages.invoice, alt: "", width: 3400, height: 1914, href: "/work/invoice-generator", title: "Invoice Generator" },
+  { src: projectImages.learnifi, alt: "", width: 3420, height: 1918, href: "/work/learnifi", title: "LearniFi" },
 ];
