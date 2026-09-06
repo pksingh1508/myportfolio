@@ -88,6 +88,61 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .brand:hover .brand-mark, .brand:focus-visible .brand-mark { transform: none; animation: none; }
 }
 .site-header { background: transparent; }
+/* Navbar only: reversible transitions keep quick pointer re-entry continuous.
+   The pill scales behind a fixed circular mark, so the navigation never shifts. */
+.site-header .brand {
+  --brand-ease: cubic-bezier(.4, 0, .2, 1);
+  --brand-duration: 500ms;
+}
+.site-header .brand::before {
+  opacity: 0;
+  transform: scaleX(.231579); /* 44px closed / 190px open */
+  transition: transform var(--brand-duration) var(--brand-ease),
+    opacity var(--brand-duration) var(--brand-ease);
+}
+.site-header .brand .brand-mark {
+  transform: rotate(0deg);
+  transition: transform 650ms var(--brand-ease),
+    border-color var(--brand-duration) var(--brand-ease),
+    background-color var(--brand-duration) var(--brand-ease);
+}
+.site-header .brand:is(:hover, :focus-visible) .brand-mark { animation: none; }
+.site-header .brand-name-window {
+  position: absolute;
+  inset: 0 auto 0 44px;
+  width: 146px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.site-header .brand .brand-name {
+  position: relative;
+  inset-inline-start: 4px;
+  transform: translateX(-16px);
+  transition: opacity var(--brand-duration) var(--brand-ease),
+    transform var(--brand-duration) var(--brand-ease);
+}
+.site-header .brand:focus-visible::before { opacity: 1; transform: scaleX(1); }
+.site-header .brand:focus-visible .brand-name { opacity: 1; transform: translateX(0); }
+@media (hover: hover) and (pointer: fine) {
+  .site-header .brand:hover::before { opacity: 1; transform: scaleX(1); }
+  .site-header .brand:hover .brand-name {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity var(--brand-duration) var(--brand-ease),
+      transform var(--brand-duration) var(--brand-ease);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .site-header .brand:hover .brand-mark { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header .brand::before,
+  .site-header .brand .brand-mark,
+  .site-header .brand .brand-name,
+  .site-header .brand:hover .brand-name { transition: none; }
+}
 .site-header-inner { min-height: 5.5rem; }
 .site-header[data-scrolled="true"] { background: rgb(247 248 252 / .88); box-shadow: none; }
 .hero-section { min-height: min(820px, calc(100svh - 6.5rem)); align-content: center; gap: 2rem; }
@@ -412,7 +467,7 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 }
 
 /* ---- Footer: brand + conversion pair, Links/Social columns, giant mark ---- */
-.site-footer { background: var(--color-paper); border-top: 1px solid var(--color-line); overflow: clip; }
+.site-footer { position: relative; isolation: isolate; background: var(--color-paper); border-top: 1px solid var(--color-line); overflow: clip; }
 .footer-top { display: grid; gap: 3rem; padding-block: clamp(3.5rem, 7vw, 5.5rem) 0; }
 .footer-brand { max-width: 26rem; }
 .footer-tagline { margin-block-start: 1.75rem; color: var(--color-muted); font-size: 1.05rem; line-height: 1.55; }
@@ -422,11 +477,48 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 .footer-list { display: grid; align-content: start; list-style: none; margin: 0; padding: 0; }
 .footer-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-muted); font-size: .9375rem; text-decoration: none; transition: color var(--duration-hover) var(--ease-out); }
 .footer-social-link { font-size: .9375rem; color: var(--color-muted); }
-.footer-bottom { display: flex; flex-wrap: wrap; gap: .5rem 2rem; align-items: center; justify-content: flex-end; padding-block: clamp(3rem, 6vw, 5rem) 2rem; color: var(--color-muted); font-size: .8125rem; }
+.footer-bottom { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: .5rem 2rem; align-items: center; justify-content: flex-end; padding-block: .5rem 1.75rem; color: var(--color-muted); font-size: .8125rem; }
 .footer-bottom p { margin: 0; }
-.footer-giant { margin-block: clamp(1.5rem, 4vw, 3rem) -.23em; color: #ccd1da; font-size: clamp(7rem, 27vw, 25rem); font-weight: 600; letter-spacing: -.05em; line-height: .8; text-align: center; user-select: none; pointer-events: none; }
+.footer-giant { position: relative; z-index: 0; margin-block-start: .5rem; }
+.footer-wordmark {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  color: #c5cad3;
+  font-size: clamp(6rem, 27vw, 25rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: .85;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+}
+.footer-letter { position: relative; display: block; }
+.footer-letter + .footer-letter { margin-inline-start: -.055em; }
+.footer-letter-glyph {
+  position: relative;
+  display: block;
+  pointer-events: none;
+  transform-origin: center 72%;
+  transition: transform 450ms var(--ease-out), color 300ms var(--ease-out);
+}
+/* Complementary masks keep the upper letters crisp and soften only their base.
+   Stable outer hit areas let each letter zoom without moving its neighbors. */
+.footer-wordmark-sharp {
+  display: block;
+  mask-image: linear-gradient(to bottom, #000 55%, rgb(0 0 0 / .96) 66%, transparent 96%);
+}
+.footer-wordmark-blur {
+  position: absolute;
+  inset: 0;
+  filter: blur(clamp(3px, .65vw, 9px));
+  mask-image: linear-gradient(to bottom, transparent 58%, rgb(0 0 0 / .65) 79%, transparent 100%);
+  pointer-events: none;
+}
 @media (hover: hover) and (pointer: fine) {
   .footer-link:hover, .footer-social-link:hover { color: var(--color-ink); }
+  .footer-letter:hover { z-index: 1; }
+  .footer-letter:hover .footer-letter-glyph { color: #afb6c2; transform: translateY(-.015em) scale(1.12); }
 }
 @media (min-width: 768px) {
   .footer-top { grid-template-columns: 1fr 1fr; gap: 3rem; }
@@ -437,6 +529,7 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .footer-link { transition: none; }
+  .footer-letter-glyph, .footer-letter:hover .footer-letter-glyph { transition: none; transform: none; }
 }
 @media (forced-colors: active) {
   .footer-giant { display: none; }
@@ -482,7 +575,7 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 }
 @media (max-width: 767px) {
   .site-header .brand {
-    position: static;
+    position: relative;
     transform: none;
     opacity: 1;
     visibility: visible;
@@ -491,7 +584,7 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
   .site-header-inner { justify-content: space-between; }
 }
 html:not(.js) .site-header .brand {
-  position: static;
+  position: relative;
   transform: none;
   opacity: 1;
   visibility: visible;
@@ -502,7 +595,7 @@ html:not(.js) .site-header-inner { justify-content: space-between; }
 .site-header[data-theme="dark"] .brand-name { color: #fff; }
 .site-header[data-theme="dark"] .brand:hover .brand-name,
 .site-header[data-theme="dark"] .brand:focus-visible .brand-name { color: #0a0a0a; }
-@media (prefers-reduced-motion: reduce) {
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
   html.js .site-header .brand,
   html.js .site-header[data-nav="center"] .brand,
   html.js .site-header[data-nav="split"] .brand {

@@ -1,5 +1,13 @@
 # Personal Portfolio — Product and Experience Plan
 
+## Navbar brand refinement — September 6, 2026
+
+The owner requested the SpaceFS navbar's expanding pill and sliding name reveal while retaining a full 360° logo rotation. The navbar uses a 500ms reversible pill/name transition and a 650ms full turn, with the reference's cubic-bezier(.4, 0, .2, 1) easing. A fixed 44px layout footprint prevents navigation movement; the name is clipped in its own window while sliding. Hover reverses smoothly on exit or interruption. Keyboard focus reveals the name without spinning; reduced motion disables transitions. Footer brand styling is unchanged.
+
+## Footer refinement — September 6, 2026
+
+The owner requested a readable oversized first-name backdrop directly below the existing footer content. Keep the full name within the footer instead of cropping it below the page, use a light cool gray (#C5CAD3) with a progressive blur/fade confined to the bottom of the letters, and place copyright at the final baseline. Tighten the content-to-name gap to 8px and reduce the name's line box. A dedicated one-shot viewport entrance staggers the brand, tagline, actions, and navigation columns; the name retains its own reveal. Each letter has a stable hover area and an independently scaling inner glyph (1.12×) so neighboring characters stay still. CSS owns fine-pointer hover; reduced motion keeps the static composition, and server-rendered content stays visible without JavaScript.
+
 ## Hero refinement — September 6, 2026
 
 The owner requested a closer match to the SpaceFS landing carousel's alignment, proportions, rotation, scroll response, and loading animation. This supersedes the September 5 partial-arc clock and entrance below. The live reference and its published carousel implementation were inspected on September 6.

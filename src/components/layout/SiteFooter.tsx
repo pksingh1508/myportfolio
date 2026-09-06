@@ -2,14 +2,16 @@ import { contact, profile, site } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "./Container";
 import SmartLink from "../ui/SmartLink";
+import MotionReveal from "../motion/MotionReveal";
+import FooterReveal from "../motion/FooterReveal";
 
 /**
- * Global footer. Server Component, no client JavaScript.
+ * Server-rendered footer with small, progressive entrance boundaries.
  *
  * Reference-inspired composition: the shared navbar brand (same 44px mark
  * plus pill-reveal hover), positioning line, and the primary conversion
- * pair on the left; exactly two link columns (Links, Social) on the right; copyright plus stack note; and the
- * oversized cropped first-name mark as a decorative finale.
+ * pair on the left; two link columns on the right; and an oversized
+ * first-name backdrop that softens into the copyright baseline.
  *
  * Social labels stay short in the visible UI ("Email", "LinkedIn",
  * "GitHub") with the contact-section arrow affordance, while the
@@ -24,16 +26,18 @@ export default function SiteFooter() {
   return (
     <footer className="site-footer">
       <Container>
-        <div className="footer-top">
+        <FooterReveal>
           <div className="footer-brand">
+            <div data-footer-reveal>
             <SmartLink href="/" className="brand" ariaLabel={profile.fullName}>
               <span aria-hidden="true" className="brand-mark">
                 {profile.initials}
               </span>
               <span aria-hidden="true" className="brand-name">{profile.fullName}</span>
             </SmartLink>
-            <p className="footer-tagline">{profile.headline}</p>
-            <div className="btn-row footer-actions">
+            </div>
+            <p className="footer-tagline" data-footer-reveal>{profile.headline}</p>
+            <div className="btn-row footer-actions" data-footer-reveal>
               <SmartLink
                 href={contact.primaryAction.href}
                 external={contact.primaryAction.external}
@@ -47,7 +51,7 @@ export default function SiteFooter() {
             </div>
           </div>
           <nav aria-label="Footer" className="footer-columns">
-            <div>
+            <div data-footer-reveal>
               <h2 className="footer-heading">Links</h2>
               <ul className="footer-list">
                 {site.navigation.map((item) => (
@@ -59,7 +63,7 @@ export default function SiteFooter() {
                 ))}
               </ul>
             </div>
-            <div>
+            <div data-footer-reveal>
               <h2 className="footer-heading">Social</h2>
               <ul className="footer-list" aria-label="Profiles and contact">
                 {socialLinks.map((link) => (
@@ -78,16 +82,25 @@ export default function SiteFooter() {
               </ul>
             </div>
           </nav>
-        </div>
+        </FooterReveal>
+        <MotionReveal className="footer-giant">
+          <div aria-hidden="true" className="footer-wordmark">
+            {Array.from(profile.firstName).map((letter, index) => (
+              <span className="footer-letter" key={`${letter}-${index}`}>
+                <span className="footer-letter-glyph">
+                  <span className="footer-wordmark-sharp">{letter}</span>
+                  <span className="footer-wordmark-blur">{letter}</span>
+                </span>
+              </span>
+            ))}
+          </div>
+        </MotionReveal>
         <div className="footer-bottom">
           <p suppressHydrationWarning>
             © {year} {profile.fullName}
           </p>
         </div>
       </Container>
-      <div aria-hidden="true" className="footer-giant">
-        {profile.firstName}
-      </div>
     </footer>
   );
 }

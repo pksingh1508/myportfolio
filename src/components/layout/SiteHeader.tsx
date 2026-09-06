@@ -22,7 +22,9 @@ export default function SiteHeader() {
           <span aria-hidden="true" className="brand-mark">
             {profile.initials}
           </span>
-          <span aria-hidden="true" className="brand-name">{profile.fullName}</span>
+          <span aria-hidden="true" className="brand-name-window">
+            <span className="brand-name">{profile.fullName}</span>
+          </span>
         </SmartLink>
         <DesktopNav items={items} />
         <SiteMenu items={items} />
