@@ -67,15 +67,12 @@ export const portfolioData = {
     lastName: "Kumar",
     fullName: "Pawan Kumar",
     initials: "PK",
-    roles: [
-      "Software Development Engineer",
-      "Full-stack Developer",
-      "Mobile Developer",
-    ],
+    roles: ["Software Engineer", "Full-stack Developer", "Mobile Developer"],
     headline: "I build dependable products for web and mobile.",
     shortBio:
       "Software development engineer experienced in full-stack platforms, cross-platform mobile applications, real-time call operations, performance optimization, SEO, and production deployment.",
-    heroDescription: "From the first interaction to the systems behind it. Full-stack platforms, mobile applications, and the details that make them work better.",
+    heroDescription:
+      "From the first interaction to the systems behind it. Full-stack platforms, mobile applications, and the details that make them work better.",
     email: "pawankumarlearner@gmail.com",
     phone: {
       display: "+91 72759 96676",
@@ -116,25 +113,12 @@ export const portfolioData = {
     {
       id: "frontend-mobile",
       label: "Frontend and mobile",
-      items: [
-        "Next.js",
-        "React",
-        "React Native",
-        "Expo",
-        "Tailwind CSS",
-      ],
+      items: ["Next.js", "React", "React Native", "Expo", "Tailwind CSS"],
     },
     {
       id: "backend-realtime",
       label: "Backend and real-time systems",
-      items: [
-        "Node.js",
-        "Express",
-        "Laravel",
-        "Redis",
-        "Twilio",
-        "Pusher",
-      ],
+      items: ["Node.js", "Express", "Laravel", "Redis", "Twilio", "Pusher"],
     },
     {
       id: "data-content",

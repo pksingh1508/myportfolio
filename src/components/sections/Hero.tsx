@@ -10,12 +10,9 @@ export default function Hero() {
     <section aria-labelledby="intro-heading" className="hero-section">
       <Container className="hero-grid">
         <HeroIntro>
-          <p data-intro className="hero-kicker meta">
-            {profile.roles[0]}
-          </p>
           <h1 data-intro id="intro-heading" className="display">
-            <span>{profile.firstName}</span>{" "}
-            <span className="hero-name-secondary">{profile.lastName}</span>
+            <span>{profile.fullName}</span>{" "}
+            <span className="hero-name-secondary">{profile.roles[0]}</span>
           </h1>
           <p data-intro className="hero-bio">{profile.heroDescription}</p>
           <p data-intro className="btn-row">
