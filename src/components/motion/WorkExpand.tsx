@@ -5,8 +5,8 @@ import { gsap, ScrollTrigger, useGSAP, markersEnabled } from "./scroll";
 
 const MAX_RADIUS = 28;
 const MIN_INSET = 24;
-const MAX_INSET = 160;
-const INSET_RATIO = 0.06;
+/** Entry/exit panel targets Tailwind max-w-6xl (72rem ≈ 1152px), centered. */
+const PANEL_MAX_WIDTH = 1152;
 
 type WorkExpandProps = {
   readonly children: ReactNode;
@@ -14,9 +14,9 @@ type WorkExpandProps = {
 
 /**
  * Inset-panel bloom for the dark selected-work chapter, in both directions.
- * The section enters as a rounded, viewport-inset panel, expands to full
- * bleed as it docks to the top, then shrinks back to the same inset panel
- * as it scrolls out of view — all driven 1:1 by scroll progress.
+ * The section enters as a rounded max-w-6xl panel, expands to full bleed as
+ * it docks to the top, then shrinks back to the same max-w-6xl panel as it
+ * scrolls out of view — all driven 1:1 by scroll progress.
  *
  * Implemented as a scrubbed clip-path (never width/height), so inner content
  * keeps its full-bleed layout the whole time: no reflow, no distortion.
@@ -39,9 +39,12 @@ export default function WorkExpand({ children }: WorkExpandProps) {
           let enterProgress = 0;
           let exitProgress = 0;
           const render = () => {
-            const inset = Math.min(
-              Math.max(window.innerWidth * INSET_RATIO, MIN_INSET),
-              MAX_INSET,
+            // Centered 6xl panel: (viewport - 1152) / 2 per side, floored so
+            // small viewports keep a visible rounded margin. Both entry and
+            // exit share this value, so expand and collapse are symmetric.
+            const inset = Math.max(
+              (window.innerWidth - PANEL_MAX_WIDTH) / 2,
+              MIN_INSET,
             );
             const open =
               Math.max(0, Math.min(1, enterProgress)) *
