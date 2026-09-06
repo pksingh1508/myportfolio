@@ -7,6 +7,17 @@ import type {
 
 export type { PortfolioData } from "../types/portfolio";
 
+/** Project screenshots served from ImageKit. Single source of truth for every `<Image>` in the site. */
+export const projectImages = {
+  eucareerserwis: "https://ik.imagekit.io/eucareerserwis/Portfolio/eucareerserwis.png",
+  eucrm: "https://ik.imagekit.io/eucareerserwis/Portfolio/eucrm.png",
+  euprimeserwis: "https://ik.imagekit.io/eucareerserwis/Portfolio/euprimeserwis.png",
+  euworksupport: "https://ik.imagekit.io/eucareerserwis/Portfolio/euworksupport.png",
+  hackathonwallah: "https://ik.imagekit.io/eucareerserwis/Portfolio/hackathonwallah.png",
+  invoice: "https://ik.imagekit.io/eucareerserwis/Portfolio/invoice.png",
+  learnifi: "https://ik.imagekit.io/eucareerserwis/Portfolio/learnifi.png",
+} as const;
+
 const contactLinks = {
   email: {
     label: "Email",
@@ -401,7 +412,7 @@ export const portfolioData = {
       media: [
         {
           type: "image",
-          src: "/images/project/euprimeserwis.png",
+          src: projectImages.euprimeserwis,
           width: 2972,
           height: 1920,
           alt: "EU Prime Serwis homepage screenshot",
@@ -438,7 +449,7 @@ export const portfolioData = {
       media: [
         {
           type: "image",
-          src: "/images/project/eucrm.png",
+          src: projectImages.eucrm,
           width: 3420,
           height: 1914,
           alt: "CRM lead management dashboard screenshot",
@@ -472,7 +483,7 @@ export const portfolioData = {
       media: [
         {
           type: "image",
-          src: "/images/project/invoice.png",
+          src: projectImages.invoice,
           width: 3400,
           height: 1914,
           alt: "Invoice generator invoice preview",
@@ -595,11 +606,11 @@ assertAccessibleProjectMedia(projects);
 
 /** Real project previews for the landing-page rotating fan. Decorative: identity stays in selected work. */
 export const heroCarouselImages = [
-  { src: "/images/project/eucareerserwis.png", alt: "", width: 3208, height: 1912 },
-  { src: "/images/project/eucrm.png", alt: "", width: 3420, height: 1914 },
-  { src: "/images/project/euprimeserwis.png", alt: "", width: 2972, height: 1920 },
-  { src: "/images/project/euworksupport.png", alt: "", width: 3272, height: 1916 },
-  { src: "/images/project/hackathonwallah.png", alt: "", width: 2940, height: 1914 },
-  { src: "/images/project/invoice.png", alt: "", width: 3400, height: 1914 },
-  { src: "/images/project/learnifi.png", alt: "", width: 3420, height: 1918 },
+  { src: projectImages.eucareerserwis, alt: "", width: 3208, height: 1912 },
+  { src: projectImages.eucrm, alt: "", width: 3420, height: 1914 },
+  { src: projectImages.euprimeserwis, alt: "", width: 2972, height: 1920 },
+  { src: projectImages.euworksupport, alt: "", width: 3272, height: 1916 },
+  { src: projectImages.hackathonwallah, alt: "", width: 2940, height: 1914 },
+  { src: projectImages.invoice, alt: "", width: 3400, height: 1914 },
+  { src: projectImages.learnifi, alt: "", width: 3420, height: 1918 },
 ];
