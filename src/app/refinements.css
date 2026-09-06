@@ -116,6 +116,29 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .outcomes-panel .metric-value { font-size: clamp(1.8rem, 3vw, 2.65rem); font-weight: 450; letter-spacing: -.055em; }
 .outcomes-panel .metric-label { font-size: .85rem; line-height: 1.45; }
 .outcomes-panel .meta { font-size: .7rem; line-height: 1.4; }
+/* Odometer reels for Selected outcomes (Mobbin-style number motion). Each
+   character lives in a fixed 1.2em slot (REEL_STEP_EM in CountUp.tsx), so the
+   row never reflows mid-roll. Reels park at zero, then travel bottom-to-top
+   through full revolutions on one CSS transform transition each.
+   letter-spacing is reset on the cells because the negative tracking on
+   .metric-value would otherwise pull each clipped slot over its neighbour
+   and slice glyph edges (the "cut zero"). */
+.count-cells { display: inline-block; letter-spacing: 0; }
+.count-slot {
+  display: inline-block;
+  height: 1.2em;
+  overflow: hidden;
+  line-height: 1.2;
+  vertical-align: top;
+}
+.count-reel {
+  display: block;
+  transition: transform 1600ms cubic-bezier(0.16, 1, 0.3, 1) var(--roll-delay, 0ms);
+}
+.count-cell { display: block; height: 1.2em; line-height: 1.2; }
+@media (prefers-reduced-motion: reduce) {
+  .count-reel { transition: none; }
+}
 .outcomes-label { margin-block-end: 1.75rem; }
 .night { padding-block: clamp(4rem, 7vw, 7rem) 3rem; }
 .work-heading-grid { grid-template-columns: 1fr 1fr; row-gap: 1.25rem; }
