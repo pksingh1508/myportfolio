@@ -248,6 +248,57 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .finale .link-row { gap: 1.5rem; }
 .project-page { background: var(--color-paper); }
 .project-hero h1 { font-weight: 450; }
+/* A continuous heading underline branches into each contribution. */
+.contribution-tree {
+  --branch-length: clamp(1rem, 2.5vw, 2.25rem);
+  --tree-line: var(--color-graphite);
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0;
+}
+.contribution-tree h2 {
+  grid-column: 1;
+  margin: 0;
+  padding-block-end: .4rem;
+  padding-inline-end: .65rem;
+  border-bottom: 1px solid var(--tree-line);
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  letter-spacing: -.025em;
+}
+.contribution-list {
+  grid-column: 2;
+  grid-row: 2;
+  margin: 0;
+  padding: 1.5rem 0 0;
+  list-style: none;
+}
+.contribution-list li {
+  position: relative;
+  padding-inline-start: calc(var(--branch-length) + .65rem);
+  padding-block-end: 1rem;
+  font-size: clamp(.9rem, 1.5vw, 1.125rem);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.contribution-list li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1px;
+  top: 0;
+  bottom: 0;
+  border-inline-start: 1px solid var(--tree-line);
+}
+.contribution-list li:first-child::before { top: -1.5rem; }
+.contribution-list li:last-child::before { bottom: calc(100% - .825em); }
+.contribution-list li:last-child { padding-block-end: 0; }
+.contribution-list li::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: -1px;
+  top: .825em;
+  width: var(--branch-length);
+  border-top: 1px solid var(--tree-line);
+}
+
 .project-shell > .project-art { aspect-ratio: 1.65; }
 .project-shell > .project-art .art-object { inset: 0 15%; }
 @media (hover: hover) and (pointer: fine) {

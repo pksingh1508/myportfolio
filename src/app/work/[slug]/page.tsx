@@ -130,9 +130,9 @@ export default async function ProjectPage({
           </section>
         ) : null}
 
-        <section aria-labelledby="contribution-heading" className="project-section">
+        <section aria-labelledby="contribution-heading" className="project-section contribution-tree">
           <h2 id="contribution-heading">Contribution</h2>
-          <ul className="detail-list">
+          <ul className="contribution-list" role="list">
             {project.highlights.map((highlight) => (
               <li key={highlight}>{highlight}</li>
             ))}
