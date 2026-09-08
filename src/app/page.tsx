@@ -1,5 +1,4 @@
 import ContactFinale from "../components/sections/ContactFinale";
-import CredibilityStrip from "../components/sections/CredibilityStrip";
 import Education from "../components/sections/Education";
 import Experience from "../components/sections/Experience";
 import Hero from "../components/sections/Hero";
@@ -34,7 +33,6 @@ export default function Home() {
       />
       <main id="main-content">
         <Hero />
-        <CredibilityStrip />
         <SelectedWork />
         <Skills />
         <Experience />

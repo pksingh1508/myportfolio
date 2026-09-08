@@ -26,10 +26,6 @@ export default function Hero() {
         </HeroIntro>
         <ProjectCarousel images={heroCarouselImages} />
       </Container>
-      <Container className="hero-bottom">
-        <span>Full-stack thinking. Front-to-back care.</span>
-        <SmartLink href="/#work" className="scroll-cue"><span>Explore the work</span><span aria-hidden="true">↓</span></SmartLink>
-      </Container>
     </section>
   );
 }

@@ -154,9 +154,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .hero-copy .display .hero-name-secondary { color: #737373; font-weight: 400; }
 .hero-bio { max-width: 46ch; font-size: .975rem; line-height: 1.65; margin-block-start: 1.75rem; }
 .hero-copy .btn-row { margin-block-start: 2rem; }
-.hero-bottom { display: flex; align-items: center; justify-content: space-between; padding-block: 1.5rem; color: var(--color-muted); font-size: .8rem; }
-.scroll-cue { display: inline-flex; align-items: center; gap: 1.5rem; min-height: 44px; text-decoration: none; }
-.scroll-cue > span:last-child { transition: transform 200ms var(--ease-out); }
 .archive-readout { padding: 1.5rem; font-family: var(--font-instrument), sans-serif; font-size: .7rem; color: #a9adb7; }
 .btn { gap: 1.5rem; min-height: 3.2rem; padding-inline: 1.5rem; font-size: .9rem; font-weight: 500; }
 .btn-primary { box-shadow: none; }
@@ -165,36 +162,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .link-arrow { position: relative; display: inline-block; flex: 0 0 1em; width: 1em; height: 1.25em; overflow: hidden; font-size: 1.12em; line-height: 1.25; }
 .link-arrow > span { position: absolute; inset: 0; transition: transform 260ms var(--ease-out); }
 .link-arrow > span:last-child { transform: translate(-110%, 110%); }
-.outcomes-section { margin-block-start: 3rem; }
-.outcomes-panel { padding-block: 2rem; }
-.outcomes-panel .metrics-grid { gap: 1.5rem; }
-.outcomes-panel .metric-value { font-size: clamp(1.8rem, 3vw, 2.65rem); font-weight: 450; letter-spacing: -.055em; }
-.outcomes-panel .metric-label { font-size: .85rem; line-height: 1.45; }
-.outcomes-panel .meta { font-size: .7rem; line-height: 1.4; }
-/* Odometer reels for Selected outcomes (Mobbin-style number motion). Each
-   character lives in a fixed 1.2em slot (REEL_STEP_EM in CountUp.tsx), so the
-   row never reflows mid-roll. Reels park at zero, then travel bottom-to-top
-   through full revolutions on one CSS transform transition each.
-   letter-spacing is reset on the cells because the negative tracking on
-   .metric-value would otherwise pull each clipped slot over its neighbour
-   and slice glyph edges (the "cut zero"). */
-.count-cells { display: inline-block; letter-spacing: 0; }
-.count-slot {
-  display: inline-block;
-  height: 1.2em;
-  overflow: hidden;
-  line-height: 1.2;
-  vertical-align: top;
-}
-.count-reel {
-  display: block;
-  transition: transform 1600ms cubic-bezier(0.16, 1, 0.3, 1) var(--roll-delay, 0ms);
-}
-.count-cell { display: block; height: 1.2em; line-height: 1.2; }
-@media (prefers-reduced-motion: reduce) {
-  .count-reel { transition: none; }
-}
-.outcomes-label { margin-block-end: 1.75rem; }
 .night { padding-block: clamp(4rem, 7vw, 7rem) 3rem; }
 .work-heading-grid { grid-template-columns: 1fr 1fr; row-gap: 1.25rem; }
 .work-heading-grid .section-index { grid-column: 1 / -1; }
@@ -286,7 +253,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 @media (hover: hover) and (pointer: fine) {
   a:hover > .link-arrow > span:first-child { transform: translate(110%, -110%); }
   a:hover > .link-arrow > span:last-child { transform: none; }
-  .scroll-cue:hover > span:last-child { transform: translateY(4px); }
   .btn-primary:hover { background: #292b31; border-color: #292b31; }
   .project-index-link:hover { color: white; }
   .project-art-link:hover .art-pathways { transform: rotate(-12deg) scale(1.035); }
@@ -311,10 +277,6 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .hero-grid { grid-template-columns: 1fr; padding-block-start: 2rem; gap: 2.8rem; }
   .hero-copy .display { max-width: none; font-size: clamp(2.5rem, 9vw, 3.5rem); }
   .hero-bio { font-size: .925rem; }
-  .hero-bottom { padding-block: 0; }
-  .hero-bottom > span { max-width: 17ch; }
-  .scroll-cue { gap: .7rem; }
-  .outcomes-section { margin-block-start: 2.5rem; }
   .work-heading-grid { grid-template-columns: 1fr; gap: 1.25rem; }
   .work-intro { justify-self: start; }
   .project-index { gap: 1rem; margin-block-end: 2.5rem; }
@@ -459,8 +421,6 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
     width: 50%;
     height: 100%;
   }
-  .hero-bottom { position: absolute; inset: auto 0 1rem; z-index: 2; }
-  .hero-bottom .scroll-cue { position: absolute; left: 50%; transform: translateX(-50%); }
 }
 @media (min-width: 1280px) {
   .hero-copy { margin-inline-start: 112px; }
@@ -548,7 +508,7 @@ html.js .menu-panel[data-open="true"] { transform: none; opacity: 1; }
 
 /* ---- Header morph: centered nav at top, brand + right nav after scroll ----
    At the top the desktop nav sits centered with the brand hidden; once the
-   outcomes strip approaches (or any scroll on pages without it) the brand
+   hero ends (or any scroll on pages without it) the brand
    slides in on the left and the nav glides right. Brand is absolutely
    positioned so its fade never disturbs layout; the nav's center-to-right
    travel is animated with FLIP in HeaderState (transform/opacity only).
