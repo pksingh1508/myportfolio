@@ -1,3 +1,4 @@
+import ContributionReveal from "../../../components/motion/ContributionReveal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -130,14 +131,14 @@ export default async function ProjectPage({
           </section>
         ) : null}
 
-        <section aria-labelledby="contribution-heading" className="project-section contribution-tree">
+        <ContributionReveal>
           <h2 id="contribution-heading">Contribution</h2>
           <ul className="contribution-list" role="list">
             {project.highlights.map((highlight) => (
-              <li key={highlight}>{highlight}</li>
+              <li key={highlight}><span className="contribution-arrow" aria-hidden="true" /><span className="contribution-copy">{highlight}</span></li>
             ))}
           </ul>
-        </section>
+        </ContributionReveal>
 
         {project.metrics.length > 0 ? (
           <section aria-labelledby="outcome-heading" className="project-section">

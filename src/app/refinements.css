@@ -250,8 +250,9 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .project-hero h1 { font-weight: 450; }
 /* A continuous heading underline branches into each contribution. */
 .contribution-tree {
-  --branch-length: clamp(1rem, 2.5vw, 2.25rem);
-  --tree-line: var(--color-graphite);
+  --branch-length: clamp(1.5rem, 4vw, 3.5rem);
+  --tree-line: var(--color-line);
+  --tree-radius: 8px;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 0;
 }
@@ -260,9 +261,8 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   margin: 0;
   padding-block-end: .4rem;
   padding-inline-end: .65rem;
-  border-bottom: 1px solid var(--tree-line);
-  font-size: clamp(1rem, 2vw, 1.35rem);
-  letter-spacing: -.025em;
+
+  position: relative;
 }
 .contribution-list {
   grid-column: 2;
@@ -287,17 +287,67 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   bottom: 0;
   border-inline-start: 1px solid var(--tree-line);
 }
-.contribution-list li:first-child::before { top: -1.5rem; }
-.contribution-list li:last-child::before { bottom: calc(100% - .825em); }
+.contribution-list li:first-child::before { top: calc(-1.5rem + var(--tree-radius)); }
+.contribution-list li:last-child::before { bottom: calc(100% - .825em + var(--tree-radius)); }
 .contribution-list li:last-child { padding-block-end: 0; }
-.contribution-list li::after {
+.contribution-arrow {
   content: "";
   position: absolute;
   inset-inline-start: -1px;
-  top: .825em;
+  top: calc(.825em - var(--tree-radius));
   width: var(--branch-length);
-  border-top: 1px solid var(--tree-line);
+  height: var(--tree-radius);
+  border-inline-start: 1px solid var(--tree-line);
+  border-bottom: 1px solid var(--tree-line);
+  border-end-start-radius: var(--tree-radius);
+  transform-origin: left;
 }
+
+.contribution-tree h2::after {
+  content: "";
+  position: absolute;
+  /* Extend beyond the curve tangent so it overlaps the stem cleanly. */
+  inset: auto 0 calc(-1 * (var(--tree-radius) + 2px));
+  height: calc(var(--tree-radius) + 2px);
+  box-sizing: border-box;
+  border-top: 1px solid var(--tree-line);
+  border-inline-end: 1px solid var(--tree-line);
+  border-start-end-radius: var(--tree-radius);
+  transform-origin: left;
+}
+.contribution-copy { display: block; }
+.contribution-list li::before { transform-origin: top; }
+@media (max-width: 767px) {
+  .contribution-tree { grid-template-columns: 1rem minmax(0, 1fr); }
+  .contribution-tree h2 { grid-column: 1 / -1; }
+  .contribution-tree h2::after {
+    inset-inline-start: calc(1rem - 1px);
+    border-inline-end: 0;
+    border-inline-start: 1px solid var(--tree-line);
+    border-start-end-radius: 0;
+    border-start-start-radius: var(--tree-radius);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contribution-tree[data-revealing] h2::after {
+    animation: contribution-horizontal 350ms ease-out both;
+  }
+  .contribution-tree[data-revealing] li::before {
+    animation: contribution-vertical 350ms ease-out both;
+    animation-delay: calc(250ms + var(--contribution-index, 0) * 220ms);
+  }
+  .contribution-tree[data-revealing] .contribution-arrow {
+    animation: contribution-horizontal 300ms ease-out both;
+    animation-delay: calc(450ms + var(--contribution-index, 0) * 220ms);
+  }
+  .contribution-tree[data-revealing] .contribution-copy {
+    animation: contribution-text 550ms cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(550ms + var(--contribution-index, 0) * 220ms);
+  }
+}
+@keyframes contribution-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes contribution-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes contribution-text { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .project-shell > .project-art { aspect-ratio: 1.65; }
 .project-shell > .project-art .art-object { inset: 0 15%; }
