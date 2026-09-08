@@ -253,6 +253,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   --branch-length: clamp(1.5rem, 4vw, 3.5rem);
   --tree-line: var(--color-line);
   --tree-radius: 8px;
+  --tree-stroke: 2px;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 0;
 }
@@ -282,10 +283,10 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .contribution-list li::before {
   content: "";
   position: absolute;
-  inset-inline-start: -1px;
+  inset-inline-start: calc(-1 * var(--tree-stroke));
   top: 0;
   bottom: 0;
-  border-inline-start: 1px solid var(--tree-line);
+  border-inline-start: var(--tree-stroke) solid var(--tree-line);
 }
 .contribution-list li:first-child::before { top: calc(-1.5rem + var(--tree-radius)); }
 .contribution-list li:last-child::before { bottom: calc(100% - .825em + var(--tree-radius)); }
@@ -293,12 +294,12 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .contribution-arrow {
   content: "";
   position: absolute;
-  inset-inline-start: -1px;
+  inset-inline-start: calc(-1 * var(--tree-stroke));
   top: calc(.825em - var(--tree-radius));
   width: var(--branch-length);
   height: var(--tree-radius);
-  border-inline-start: 1px solid var(--tree-line);
-  border-bottom: 1px solid var(--tree-line);
+  border-inline-start: var(--tree-stroke) solid var(--tree-line);
+  border-bottom: var(--tree-stroke) solid var(--tree-line);
   border-end-start-radius: var(--tree-radius);
   transform-origin: left;
 }
@@ -310,8 +311,8 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   inset: auto 0 calc(-1 * (var(--tree-radius) + 2px));
   height: calc(var(--tree-radius) + 2px);
   box-sizing: border-box;
-  border-top: 1px solid var(--tree-line);
-  border-inline-end: 1px solid var(--tree-line);
+  border-top: var(--tree-stroke) solid var(--tree-line);
+  border-inline-end: var(--tree-stroke) solid var(--tree-line);
   border-start-end-radius: var(--tree-radius);
   transform-origin: left;
 }
@@ -321,9 +322,9 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   .contribution-tree { grid-template-columns: 1rem minmax(0, 1fr); }
   .contribution-tree h2 { grid-column: 1 / -1; }
   .contribution-tree h2::after {
-    inset-inline-start: calc(1rem - 1px);
+    inset-inline-start: calc(1rem - var(--tree-stroke));
     border-inline-end: 0;
-    border-inline-start: 1px solid var(--tree-line);
+    border-inline-start: var(--tree-stroke) solid var(--tree-line);
     border-start-end-radius: 0;
     border-start-start-radius: var(--tree-radius);
   }
