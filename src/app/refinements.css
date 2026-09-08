@@ -231,8 +231,11 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .art-object { position: absolute; inset: 0; display: grid; place-items: center; perspective: 900px; }
 /* Screenshot rectangle: bordered frame in the middle band, cropped from the
    top so each product's header stays visible. Light cards use a dark border; LearniFi overrides it with a tonal teal. */
-.art-shot { width: 82%; aspect-ratio: 16 / 10; overflow: hidden; border: 3px solid currentColor; background: #fff; }
+.art-shot { width: 82%; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 18px; border: 3px solid currentColor; background: #fff; }
 .art-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+/* Preserve the entire CRM dashboard, including its sidebar and account menu. */
+.art-crm-lead-management .art-shot { aspect-ratio: 3420 / 1914; }
+.art-crm-lead-management .art-shot img { object-fit: contain; }
 .art-pathways { position: relative; width: 56%; aspect-ratio: 1; transform: rotate(-25deg); }
 .art-pathways i { position: absolute; inset: 0; border: 1px solid #315944; border-radius: 50%; transform: scaleX(.38); }
 .art-pathways i:nth-child(2) { transform: rotate(30deg) scaleX(.38); }
