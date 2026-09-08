@@ -1,5 +1,9 @@
 # Personal Portfolio — Product and Experience Plan
 
+## Selected-work palette refinement — September 8, 2026
+
+Project media cards use soft white (`#F7F8FC`) to complement the light project screenshots. LearniFi uses dark teal (`#083644`) drawn from its interface, with light text and an arrow and a tonal teal screenshot border.
+
 ## Navbar brand refinement — September 6, 2026
 
 The owner requested the SpaceFS navbar's expanding pill and sliding name reveal while retaining a full 360° logo rotation. The navbar uses a 500ms reversible pill/name transition and a 650ms full turn, with the reference's cubic-bezier(.4, 0, .2, 1) easing. A fixed 44px layout footprint prevents navigation movement; the name is clipped in its own window while sliding. Hover reverses smoothly on exit or interruption. Keyboard focus reveals the name without spinning; reduced motion disables transitions. Footer brand styling is unchanged.
