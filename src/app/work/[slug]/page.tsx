@@ -1,8 +1,8 @@
-import ContributionReveal from "../../../components/motion/ContributionReveal";
+import ProjectSectionReveal from "../../../components/motion/ProjectSectionReveal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { contact, profile, projects, site } from "../../../constant/data";
+import { profile, projects, site } from "../../../constant/data";
 import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
 import Divider from "../../../components/ui/Divider";
@@ -131,33 +131,42 @@ export default async function ProjectPage({
           </section>
         ) : null}
 
-        <ContributionReveal>
+        <ProjectSectionReveal labelledBy="contribution-heading">
           <h2 id="contribution-heading">Contribution</h2>
-          <ul className="contribution-list" role="list">
+          <ul className="project-detail-list" role="list">
             {project.highlights.map((highlight) => (
-              <li key={highlight}><span className="contribution-arrow" aria-hidden="true" /><span className="contribution-copy">{highlight}</span></li>
+              <li key={highlight}><span className="project-detail-branch" aria-hidden="true" /><span className="project-detail-copy">{highlight}</span></li>
             ))}
           </ul>
-        </ContributionReveal>
+        </ProjectSectionReveal>
 
         {project.metrics.length > 0 ? (
-          <section aria-labelledby="outcome-heading" className="project-section">
+          <ProjectSectionReveal labelledBy="outcome-heading">
             <h2 id="outcome-heading">Outcome</h2>
-            <ul className="metrics-grid">
+            <ul className="project-detail-list" role="list">
               {project.metrics.map((metric) => (
                 <li key={`${metric.value}-${metric.label}`}>
-                  <span className="metric-value">{metric.value}</span>
-                  <span className="metric-label">{metric.label}</span>
+                  <span className="project-detail-branch" aria-hidden="true" />
+                  <span className="project-detail-copy">
+                    <strong>{metric.value}</strong>{" "}{metric.label}
+                  </span>
                 </li>
               ))}
             </ul>
-          </section>
+          </ProjectSectionReveal>
         ) : null}
 
-        <section aria-labelledby="stack-heading" className="project-section">
+        <ProjectSectionReveal labelledBy="stack-heading">
           <h2 id="stack-heading">Stack</h2>
-          <p className="mono stack">{project.techStack.join(", ")}</p>
-        </section>
+          <ul className="project-detail-list" role="list">
+            {project.techStack.map((technology) => (
+              <li key={technology}>
+                <span className="project-detail-branch" aria-hidden="true" />
+                <span className="project-detail-copy">{technology}</span>
+              </li>
+            ))}
+          </ul>
+        </ProjectSectionReveal>
 
         <Divider />
 
@@ -178,25 +187,6 @@ export default async function ProjectPage({
           </ul>
         </nav>
 
-        <section aria-labelledby="project-contact-heading" className="flow project-contact">
-          <h2 id="project-contact-heading">{contact.heading}</h2>
-          <p>{contact.body}</p>
-          <p className="btn-row">
-            <SmartLink
-              href={contact.primaryAction.href}
-              external={contact.primaryAction.external}
-              className="btn btn-primary"
-            >
-              {contact.primaryAction.label}: {profile.email}
-            </SmartLink>
-            <Link href="/#contact" className="btn btn-secondary">
-              Contact details
-            </Link>
-          </p>
-          <p>
-            <Link href="/#work">Back to work</Link>
-          </p>
-        </section>
       </Container>
     </main>
   );

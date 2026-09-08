@@ -248,8 +248,8 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 .finale .link-row { gap: 1.5rem; }
 .project-page { background: var(--color-paper); }
 .project-hero h1 { font-weight: 450; }
-/* A continuous heading underline branches into each contribution. */
-.contribution-tree {
+/* Shared case-study tree: a continuous heading underline branches into each item. */
+.project-detail-tree {
   --branch-length: clamp(1.5rem, 4vw, 3.5rem);
   --tree-line: var(--color-line);
   --tree-radius: 8px;
@@ -257,7 +257,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 0;
 }
-.contribution-tree h2 {
+.project-detail-tree h2 {
   grid-column: 1;
   margin: 0;
   padding-block-end: .4rem;
@@ -265,14 +265,14 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
 
   position: relative;
 }
-.contribution-list {
+.project-detail-list {
   grid-column: 2;
   grid-row: 2;
   margin: 0;
   padding: 1.5rem 0 0;
   list-style: none;
 }
-.contribution-list li {
+.project-detail-list li {
   position: relative;
   padding-inline-start: calc(var(--branch-length) + .65rem);
   padding-block-end: 1rem;
@@ -280,7 +280,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   line-height: 1.65;
   overflow-wrap: anywhere;
 }
-.contribution-list li::before {
+.project-detail-list li::before {
   content: "";
   position: absolute;
   inset-inline-start: calc(-1 * var(--tree-stroke));
@@ -288,10 +288,10 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   bottom: 0;
   border-inline-start: var(--tree-stroke) solid var(--tree-line);
 }
-.contribution-list li:first-child::before { top: calc(-1.5rem + var(--tree-radius)); }
-.contribution-list li:last-child::before { bottom: calc(100% - .825em + var(--tree-radius)); }
-.contribution-list li:last-child { padding-block-end: 0; }
-.contribution-arrow {
+.project-detail-list li:first-child::before { top: calc(-1.5rem + var(--tree-radius)); }
+.project-detail-list li:last-child::before { bottom: calc(100% - .825em + var(--tree-radius)); }
+.project-detail-list li:last-child { padding-block-end: 0; }
+.project-detail-branch {
   content: "";
   position: absolute;
   inset-inline-start: calc(-1 * var(--tree-stroke));
@@ -304,7 +304,7 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   transform-origin: left;
 }
 
-.contribution-tree h2::after {
+.project-detail-tree h2::after {
   content: "";
   position: absolute;
   /* Extend beyond the curve tangent so it overlaps the stem cleanly. */
@@ -316,12 +316,12 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   border-start-end-radius: var(--tree-radius);
   transform-origin: left;
 }
-.contribution-copy { display: block; }
-.contribution-list li::before { transform-origin: top; }
+.project-detail-copy { display: block; }
+.project-detail-list li::before { transform-origin: top; }
 @media (max-width: 767px) {
-  .contribution-tree { grid-template-columns: 1rem minmax(0, 1fr); }
-  .contribution-tree h2 { grid-column: 1 / -1; }
-  .contribution-tree h2::after {
+  .project-detail-tree { grid-template-columns: 1rem minmax(0, 1fr); }
+  .project-detail-tree h2 { grid-column: 1 / -1; }
+  .project-detail-tree h2::after {
     inset-inline-start: calc(1rem - var(--tree-stroke));
     border-inline-end: 0;
     border-inline-start: var(--tree-stroke) solid var(--tree-line);
@@ -330,25 +330,25 @@ h2 { font-weight: 480; letter-spacing: -.055em; }
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .contribution-tree[data-revealing] h2::after {
-    animation: contribution-horizontal 350ms ease-out both;
+  .project-detail-tree[data-revealing] h2::after {
+    animation: project-detail-horizontal 350ms ease-out both;
   }
-  .contribution-tree[data-revealing] li::before {
-    animation: contribution-vertical 350ms ease-out both;
-    animation-delay: calc(250ms + var(--contribution-index, 0) * 220ms);
+  .project-detail-tree[data-revealing] li::before {
+    animation: project-detail-vertical 350ms ease-out both;
+    animation-delay: calc(250ms + var(--project-detail-index, 0) * 220ms);
   }
-  .contribution-tree[data-revealing] .contribution-arrow {
-    animation: contribution-horizontal 300ms ease-out both;
-    animation-delay: calc(450ms + var(--contribution-index, 0) * 220ms);
+  .project-detail-tree[data-revealing] .project-detail-branch {
+    animation: project-detail-horizontal 300ms ease-out both;
+    animation-delay: calc(450ms + var(--project-detail-index, 0) * 220ms);
   }
-  .contribution-tree[data-revealing] .contribution-copy {
-    animation: contribution-text 550ms cubic-bezier(.22, 1, .36, 1) both;
-    animation-delay: calc(550ms + var(--contribution-index, 0) * 220ms);
+  .project-detail-tree[data-revealing] .project-detail-copy {
+    animation: project-detail-text 550ms cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(550ms + var(--project-detail-index, 0) * 220ms);
   }
 }
-@keyframes contribution-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@keyframes contribution-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-@keyframes contribution-text { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes project-detail-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes project-detail-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes project-detail-text { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .project-shell > .project-art { aspect-ratio: 1.65; }
 .project-shell > .project-art .art-object { inset: 0 15%; }

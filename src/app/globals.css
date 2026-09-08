@@ -1275,28 +1275,9 @@ h3 {
   justify-content: space-between;
 }
 
-.project-contact {
-  margin-block-start: clamp(3rem, 7vw, 6rem);
-  padding: clamp(2rem, 6vw, 5rem);
-  border-radius: var(--radius-frame-lg);
-  background: var(--color-ink);
-  color: var(--color-white);
-}
 
-.project-contact h2 {
-  max-width: 13ch;
-}
 
-.project-contact .btn-primary {
-  border-color: var(--color-white);
-  background: var(--color-white);
-  color: var(--color-ink);
-}
 
-.project-contact .btn-secondary {
-  border-color: var(--color-night-line);
-  color: var(--color-white);
-}
 
 .not-found-page {
   display: grid;
@@ -1398,9 +1379,6 @@ h3 {
     gap: 1rem;
   }
 
-  .project-contact {
-    margin-inline: -0.25rem;
-  }
 }
 
 @media (forced-colors: active) {
