@@ -5,6 +5,7 @@ import SiteFooter from "../components/layout/SiteFooter";
 import SiteHeader from "../components/layout/SiteHeader";
 import "./globals.css";
 import "./refinements.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         {children}
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );
