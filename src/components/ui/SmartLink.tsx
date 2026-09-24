@@ -10,6 +10,8 @@ type SmartLinkProps = {
   readonly ariaLabel?: string;
   /** `true` draws the default up-right arrow; a direction picks another. */
   readonly arrow?: boolean | ArrowDirection;
+  /** Decorative leading mark (for example a platform logo); the text stays the name. */
+  readonly icon?: ReactNode;
 };
 
 /** Two stacked arrows that trade places on hover (CSS owns the motion). */
@@ -33,15 +35,26 @@ export default function SmartLink({
   children,
   ariaLabel,
   arrow = false,
+  icon,
 }: SmartLinkProps) {
   const direction = arrow === true ? "up-right" : arrow || null;
+  const label = icon ? (
+    <span className="link-label">
+      {icon}
+      <span>{children}</span>
+    </span>
+  ) : direction ? (
+    <span>{children}</span>
+  ) : (
+    children
+  );
   const content = direction ? (
     <>
-      <span>{children}</span>
+      {label}
       <LinkArrow direction={direction} />
     </>
   ) : (
-    children
+    label
   );
   if (external) {
     return (

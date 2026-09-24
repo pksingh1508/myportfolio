@@ -499,6 +499,29 @@ video {
   height: 1rem;
 }
 
+/* A leading mark travels with its label as one unit, ahead of the arrow. */
+.link-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:has(.link-label) {
+  padding-inline-start: 1.125rem;
+}
+
+/* Platform marks share one optical height; each keeps its own ratio. */
+.icon-ios {
+  width: 1.0625rem;
+  height: 1.0625rem;
+  margin-block-start: -0.125rem;
+}
+
+.icon-android {
+  width: 1.375rem;
+  height: calc(1.375rem * 15 / 24);
+}
+
 /* Hover paint stays behind fine pointers so it never sticks on touch. */
 @media (hover: hover) and (pointer: fine) {
   a:hover {

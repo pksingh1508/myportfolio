@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import { contact, profile, projects, site } from "../../../constant/data";
 import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
-import { ArrowIcon } from "../../../components/ui/Icons";
+import { ArrowIcon, PlatformIcon } from "../../../components/ui/Icons";
 import ProjectMediaFigure from "../../../components/ui/ProjectMediaFigure";
 import ProjectArtwork from "../../../components/ui/ProjectArtwork";
 import SmartLink from "../../../components/ui/SmartLink";
@@ -161,6 +161,7 @@ export default async function ProjectPage({
                     external={link.external}
                     className={linkIndex === 0 ? "btn btn-primary" : "btn btn-secondary"}
                     arrow
+                    icon={link.platform ? <PlatformIcon platform={link.platform} /> : undefined}
                   >
                     {link.label}
                   </SmartLink>

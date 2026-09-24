@@ -13,6 +13,8 @@ export type SocialLink = {
   readonly href: string;
   readonly kind: "email" | "phone" | "social" | "live" | "source" | "store";
   readonly external: boolean;
+  /** Store links name their platform so the UI can show its mark. */
+  readonly platform?: "android" | "ios";
 };
 
 export type DateRange = {
