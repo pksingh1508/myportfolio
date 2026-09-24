@@ -336,6 +336,12 @@ export const portfolioData = {
           kind: "store",
           external: true,
         },
+        {
+          label: "View on the App Store",
+          href: "https://apps.apple.com/app/eu-work-support/id6802320607",
+          kind: "store",
+          external: true,
+        },
       ],
       featured: true,
       media: [
