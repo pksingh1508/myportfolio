@@ -44,7 +44,15 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
 
   useEffect(() => {
     const element = stage.current;
-    if (!element || reducedMotion || images.length === 0) return;
+    if (!element) return;
+    // Hand-off from the CSS fallback: the window is shown only once the
+    // client owns the cards, so the still pose never flashes before the
+    // entrance. Reduced motion keeps the still pose.
+    const goLive = () => element.setAttribute("data-live", "");
+    if (reducedMotion || images.length === 0) {
+      goLive();
+      return;
+    }
     const cards = Array.from(element.querySelectorAll<HTMLElement>(".project-carousel-card"));
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
     const entrance = !entered.current && window.scrollY < window.innerHeight * 0.5;
@@ -120,6 +128,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     });
 
     draw();
+    goLive();
     observer.observe(element);
     cards.forEach(card => {
       card.addEventListener("pointerenter", onEnter);
@@ -157,7 +166,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
           return (
             <Link className="project-carousel-card" key={index} href={image.href} aria-label={`Open the ${image.title} case study`} style={cardPose(Math.PI + index * TURN / SLOT_COUNT)}>
               <div className="project-carousel-surface">
-                <Image src={image.src} alt="" width={image.width} height={image.height} loading="eager" sizes="(max-width: 767px) 200px, (max-width: 1023px) 250px, (max-height: 740px) 250px, (max-height: 1000px) 340px, 431px" />
+                <Image src={image.src} alt="" width={image.width} height={image.height} loading="eager" fetchPriority="low" sizes="(max-width: 767px) 200px, (max-width: 1023px) 250px, (max-height: 740px) 250px, (max-height: 1000px) 340px, 431px" />
               </div>
             </Link>
           );

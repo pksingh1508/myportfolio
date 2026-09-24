@@ -3,7 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { gsap, ScrollTrigger, useGSAP, markersEnabled } from "./scroll";
 
-const MAX_RADIUS = 28;
+const MAX_RADIUS = 32;
 const MIN_INSET = 24;
 /** Entry/exit panel targets Tailwind max-w-6xl (72rem ≈ 1152px), centered. */
 const PANEL_MAX_WIDTH = 1152;
@@ -101,7 +101,13 @@ export default function WorkExpand({ children }: WorkExpandProps) {
   );
 
   return (
-    <section ref={scope} id="work" aria-labelledby="work-heading" className="night">
+    <section
+      ref={scope}
+      id="work"
+      aria-labelledby="work-heading"
+      className="night"
+      data-header-theme="dark"
+    >
       {children}
     </section>
   );

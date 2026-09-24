@@ -5,6 +5,17 @@ type ProjectMediaFigureProps = {
   readonly media: ProjectMedia;
 };
 
+/** Decorative browser chrome shared with the homepage project cards. */
+function WindowBar() {
+  return (
+    <div className="art-window-bar" aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </div>
+  );
+}
+
 /**
  * Reusable case-study figure driven by the Step 2 media contract: intrinsic
  * dimensions always, meaningful alt text or an explicit decorative flag, and
@@ -20,6 +31,7 @@ export default function ProjectMediaFigure({
   if (media.type === "video") {
     return (
       <figure>
+        <WindowBar />
         <video
           src={media.src}
           poster={media.poster}
@@ -40,12 +52,13 @@ export default function ProjectMediaFigure({
   if (media.decorative) {
     return (
       <figure aria-hidden="true">
+        <WindowBar />
         <Image
           src={media.src}
           alt=""
           width={media.width}
           height={media.height}
-          sizes="(max-width: 768px) 100vw, 64rem"
+          sizes="(max-width: 768px) 100vw, 72rem"
         />
       </figure>
     );
@@ -53,12 +66,14 @@ export default function ProjectMediaFigure({
 
   return (
     <figure>
+      <WindowBar />
       <Image
         src={media.src}
         alt={media.alt}
         width={media.width}
         height={media.height}
-        sizes="(max-width: 768px) 100vw, 64rem"
+        sizes="(max-width: 768px) 100vw, 72rem"
+        loading="eager"
       />
     </figure>
   );

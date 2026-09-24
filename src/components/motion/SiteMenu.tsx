@@ -125,6 +125,9 @@ export default function SiteMenu({ items }: SiteMenuProps) {
                   onClick={() => handleNavigate(item.href)}
                 >
                   {item.label}
+                  <span className="menu-link-index mono" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                 </Link>
               </li>
             ))}

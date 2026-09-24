@@ -2,6 +2,7 @@ import ContactFinale from "../components/sections/ContactFinale";
 import Education from "../components/sections/Education";
 import Experience from "../components/sections/Experience";
 import Hero from "../components/sections/Hero";
+import PageTransition from "../components/motion/PageTransition";
 import SelectedWork from "../components/sections/SelectedWork";
 import Skills from "../components/sections/Skills";
 import { profile, site } from "../constant/data";
@@ -31,14 +32,16 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
-      <main id="main-content">
-        <Hero />
-        <SelectedWork />
-        <Skills />
-        <Experience />
-        <Education />
-        <ContactFinale />
-      </main>
+      <PageTransition>
+        <main id="main-content">
+          <Hero />
+          <SelectedWork />
+          <Skills />
+          <Experience />
+          <Education />
+          <ContactFinale />
+        </main>
+      </PageTransition>
     </>
   );
 }

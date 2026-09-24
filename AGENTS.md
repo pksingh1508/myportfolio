@@ -40,8 +40,8 @@ Do not silently change the product direction. If a request requires a meaningful
 - Language: TypeScript in strict/no-emit mode.
 - Styling: Tailwind CSS v4 plus global CSS.
 - Package manager: pnpm `10.33.0`.
-- Current application: create-next-app starter in `src/app`.
-- Planned but not yet installed: `gsap`, `@gsap/react`, and `three`.
+- Current application: the Orbital Archive portfolio in `src/app` (homepage, `/work/[slug]` case studies, dev-only `/specimen`).
+- Motion and 3D packages: `gsap`, `@gsap/react`, `motion`, and `three` (3D is limited to the dev-only specimen so far).
 
 Never assume APIs or conventions from older Next.js releases. Before modifying framework code, read the relevant guide under `node_modules/next/dist/docs/` as required by the generated block above.
 
@@ -77,21 +77,30 @@ If a section lacks real content, hide it or mark it as incomplete in development
 
 ### Palette
 
-- Paper: `#F7F8FC`
-- White: `#FFFFFF`
-- Ink/night: `#090A0C`
-- Graphite: `#6F737B`
-- Hairline: `#DDE1E8`
-- Signal violet: `#635BFF`
-- Signal soft: `#B9B6FF`
-- Raised night surface: `#15171B`
+Strictly monochrome (owner request, 2026-09-24): a premium black-and-white theme with neutral grays. The earlier violet signal accents and blue-tinted grays are retired. Tokens live in `src/app/globals.css`.
 
-Signal violet is scarce. Use it for focus, active progress, live status, and the 3D emissive edge—not for broad gradients or arbitrary decoration.
+- Paper: `#FFFFFF` (page canvas, per the 2026-09-06 request)
+- Surface: `#FAFAFA` / `#F4F4F4` (raised light rows, tags, frames)
+- Ink/night: `#0A0A0A`
+- Muted: `#525252` (small secondary text on light)
+- Graphite: `#737373` (large text, metadata, non-text UI)
+- Hairline: `#EBEBEB`; strong hairline `#D9D9D9`
+- Raised night surfaces: `#131313` / `#1A1A1A`; night hairline `#262626`
+- Fog: `#A3A3A3` (secondary text on dark); mist `#D4D4D4` (body text on dark)
+
+Emphasis comes from contrast, scale, and weight, never from hue. Project screenshots are the only color on the page. Focus rings, progress, and active states use ink on light surfaces and white on dark ones.
+
+### Surfaces, depth, and glass
+
+- Floating controls (header nav, brand mark, menu, secondary buttons) use glass: a translucent fill, a hairline edge, and `backdrop-filter` blur with saturation.
+- Depth uses the layered `--shadow-*` tokens (a tight contact shadow plus softer ambient layers). Keep `backdrop-filter` to small floating surfaces.
+- Dark chapters (`.night`, the contact finale panel, the case-study contact band) mark themselves with `data-header-theme="dark"` so the header glass turns smoke over them.
 
 ### Typography
 
-- Intended primary family: Instrument Sans through the current `next/font` API.
-- Intended technical family: IBM Plex Mono.
+- Primary family: Geist (variable) through `next/font/google`, for display and body.
+- Technical family: Geist Mono, reserved for small numeric indices where fixed-width alignment is functional.
+- Display headlines use weight 600 with tight tracking (about `-0.05em`). Secondary headline lines use graphite, never a hue.
 - If a font is unavailable in the installed framework, select a deliberate open-source substitute and document it.
 - Use fluid display sizes, tight headline leading, readable body leading, and maximum text line lengths around `60–72ch`.
 - Use sentence case. Avoid repeated tracked uppercase eyebrows, decorative monospace, and single-word color/italic headline accents.
@@ -138,7 +147,11 @@ Avoid vague dumping grounds such as a giant `utils.ts`, `animations.ts`, or all-
 Use one animation owner per property at a time.
 
 - CSS owns frequent interaction states: hover, focus, press, color changes, menu icon, and simple disclosures.
-- GSAP owns orchestrated timelines such as the hero entrance.
+- CSS owns page-load entrances (hero and case-study `.intro` staggers, header entrance) so they play on first paint without waiting for hydration and always end visible.
+- CSS owns one-shot scroll reveals. The `Reveal` island only sets `data-revealed`, and the pre-reveal pose applies only while JavaScript can still play it. An inline failsafe in the root layout releases every pose if hydration never arrives.
+- React `<ViewTransition>` (through `PageTransition` in each page) owns route cross-fades; the header stays anchored.
+- Motion owns the desktop nav's layout-spring thumbs and the copy-email label swap.
+- GSAP owns orchestrated timelines.
 - ScrollTrigger owns the selected-work pinned sequence and its progress mapping.
 - Three.js owns ambient scene motion and rendering.
 - GSAP may animate named camera/group pose values for narrative transitions; the renderer consumes those values.

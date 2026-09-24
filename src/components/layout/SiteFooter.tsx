@@ -2,8 +2,7 @@ import { contact, profile, site } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "./Container";
 import SmartLink from "../ui/SmartLink";
-import MotionReveal from "../motion/MotionReveal";
-import FooterReveal from "../motion/FooterReveal";
+import Reveal from "../motion/Reveal";
 
 /**
  * Server-rendered footer with small, progressive entrance boundaries.
@@ -26,18 +25,18 @@ export default function SiteFooter() {
   return (
     <footer className="site-footer">
       <Container>
-        <FooterReveal>
+        <Reveal className="footer-top" stagger>
           <div className="footer-brand">
-            <div data-footer-reveal>
             <SmartLink href="/" className="brand" ariaLabel={profile.fullName}>
               <span aria-hidden="true" className="brand-mark">
                 {profile.initials}
               </span>
-              <span aria-hidden="true" className="brand-name">{profile.fullName}</span>
+              <span aria-hidden="true" className="brand-name-window">
+                <span className="brand-name">{profile.fullName}</span>
+              </span>
             </SmartLink>
-            </div>
-            <p className="footer-tagline" data-footer-reveal>{profile.headline}</p>
-            <div className="btn-row footer-actions" data-footer-reveal>
+            <p className="footer-tagline">{profile.headline}</p>
+            <div className="btn-row footer-actions">
               <SmartLink
                 href={contact.primaryAction.href}
                 external={contact.primaryAction.external}
@@ -51,7 +50,7 @@ export default function SiteFooter() {
             </div>
           </div>
           <nav aria-label="Footer" className="footer-columns">
-            <div data-footer-reveal>
+            <div>
               <h2 className="footer-heading">Links</h2>
               <ul className="footer-list">
                 {site.navigation.map((item) => (
@@ -63,7 +62,7 @@ export default function SiteFooter() {
                 ))}
               </ul>
             </div>
-            <div data-footer-reveal>
+            <div>
               <h2 className="footer-heading">Social</h2>
               <ul className="footer-list" aria-label="Profiles and contact">
                 {socialLinks.map((link) => (
@@ -82,8 +81,8 @@ export default function SiteFooter() {
               </ul>
             </div>
           </nav>
-        </FooterReveal>
-        <MotionReveal className="footer-giant">
+        </Reveal>
+        <Reveal className="footer-giant">
           <div aria-hidden="true" className="footer-wordmark">
             {Array.from(profile.firstName).map((letter, index) => (
               <span className="footer-letter" key={`${letter}-${index}`}>
@@ -94,11 +93,14 @@ export default function SiteFooter() {
               </span>
             ))}
           </div>
-        </MotionReveal>
+        </Reveal>
         <div className="footer-bottom">
           <p suppressHydrationWarning>
             © {year} {profile.fullName}
           </p>
+          <SmartLink href="#top" className="text-link" arrow="up">
+            Back to top
+          </SmartLink>
         </div>
       </Container>
     </footer>

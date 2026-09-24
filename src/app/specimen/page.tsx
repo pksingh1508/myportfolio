@@ -16,15 +16,16 @@ export const metadata: Metadata = {
 
 const swatches = [
   { name: "paper", hex: "#FFFFFF", use: "Page canvas" },
-  { name: "white", hex: "#FFFFFF", use: "Elevated media" },
-  { name: "ink", hex: "#090A0C", use: "Body copy, dark chapter" },
-  { name: "muted", hex: "#51555E", use: "Small secondary text, light" },
-  { name: "graphite", hex: "#6F737B", use: "Large text and UI only" },
-  { name: "fog", hex: "#C6C9D1", use: "Secondary text, dark" },
-  { name: "line", hex: "#DDE1E8", use: "Dividers, outlines" },
-  { name: "signal", hex: "#635BFF", use: "Focus, progress, live" },
-  { name: "signal-soft", hex: "#B9B6FF", use: "Edges, dark accents" },
-  { name: "night-surface", hex: "#15171B", use: "Raised media, dark" },
+  { name: "surface", hex: "#FAFAFA", use: "Raised light rows and tags" },
+  { name: "ink", hex: "#0A0A0A", use: "Body copy, primary controls, dark chapters" },
+  { name: "muted", hex: "#525252", use: "Small secondary text, light" },
+  { name: "graphite", hex: "#737373", use: "Large text, metadata, non-text UI" },
+  { name: "line", hex: "#EBEBEB", use: "Hairline dividers" },
+  { name: "line-strong", hex: "#D9D9D9", use: "Control outlines, rails" },
+  { name: "night-raised", hex: "#131313", use: "Raised cards on dark" },
+  { name: "night-line", hex: "#262626", use: "Hairlines on dark" },
+  { name: "fog", hex: "#A3A3A3", use: "Secondary text, dark" },
+  { name: "mist", hex: "#D4D4D4", use: "Body text, dark" },
 ] as const;
 
 export default function SpecimenPage() {
@@ -34,8 +35,8 @@ export default function SpecimenPage() {
         <p className="mono">Dev-only specimen — remove before launch</p>
         <h1 className="display">Orbital Archive specimen</h1>
         <p>
-          Instrument Sans carries display and body copy; IBM Plex Mono carries
-          project metadata, coordinates, dates, and status readouts.
+          Geist carries display and body copy; Geist Mono is reserved for
+          small numeric indices where fixed-width alignment is functional.
         </p>
         <p>
           <a className="btn btn-primary" href="#swatches">
@@ -75,9 +76,9 @@ export default function SpecimenPage() {
       <Container>
         <section id="type" aria-labelledby="type-heading">
           <h2 id="type-heading">Type scale</h2>
-          <h1>Page title at clamp(2.25rem, 5vw, 3.5rem)</h1>
-          <h2>Section heading at clamp(1.5rem, 3vw, 2.25rem)</h2>
-          <h3>Subsection heading at 1.25rem</h3>
+          <h1 className="display">Display at var(--text-display)</h1>
+          <h2>Section heading at var(--text-section)</h2>
+          <h3>Subsection heading at clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem)</h3>
           <p>
             Body copy stays within 68ch at 1.6 line height. Sentences stay in
             sentence case, left-aligned, with room to breathe around them.

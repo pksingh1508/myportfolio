@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ArrowIcon, type ArrowDirection } from "./Icons";
 
 type SmartLinkProps = {
   readonly href: string;
@@ -7,8 +8,19 @@ type SmartLinkProps = {
   readonly className?: string;
   readonly children: ReactNode;
   readonly ariaLabel?: string;
-  readonly arrow?: boolean;
+  /** `true` draws the default up-right arrow; a direction picks another. */
+  readonly arrow?: boolean | ArrowDirection;
 };
+
+/** Two stacked arrows that trade places on hover (CSS owns the motion). */
+export function LinkArrow({ direction = "up-right" }: { readonly direction?: ArrowDirection }) {
+  return (
+    <span className="link-arrow" data-arrow={direction} aria-hidden="true">
+      <ArrowIcon direction={direction} />
+      <ArrowIcon direction={direction} />
+    </span>
+  );
+}
 
 /**
  * Internal links use next/link for prefetching; external links open safely
@@ -22,7 +34,15 @@ export default function SmartLink({
   ariaLabel,
   arrow = false,
 }: SmartLinkProps) {
-  const content = arrow ? <><span>{children}</span><span className="link-arrow" aria-hidden="true"><span>↗</span><span>↗</span></span></> : children;
+  const direction = arrow === true ? "up-right" : arrow || null;
+  const content = direction ? (
+    <>
+      <span>{children}</span>
+      <LinkArrow direction={direction} />
+    </>
+  ) : (
+    children
+  );
   if (external) {
     return (
       <a

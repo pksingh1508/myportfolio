@@ -1,56 +1,56 @@
 import { experience, projects } from "../../constant/data";
 import Container from "../layout/Container";
-import MotionReveal from "../motion/MotionReveal";
+import Reveal from "../motion/Reveal";
 import SmartLink from "../ui/SmartLink";
 
-/** Compact chronological experience list. Server Component. */
+/** Chronological experience timeline. Server Component. */
 export default function Experience() {
   return (
     <section id="experience" aria-labelledby="experience-heading">
-      <Container>
-        <MotionReveal className="section-grid">
-          <div className="section-heading flow">
-            <p className="section-index meta">In production</p>
-            <h2 id="experience-heading">Experience</h2>
-          </div>
-          <ol className="ruled experience-list">
+      <Container className="section-grid">
+        <Reveal className="section-heading" stagger>
+          <p className="eyebrow">In production</p>
+          <h2 id="experience-heading">Experience</h2>
+        </Reveal>
+        <ol className="timeline">
           {experience.map((job) => {
             const related = job.relatedProjectSlug
-              ? projects.find(
-                  (project) => project.slug === job.relatedProjectSlug,
-                )
+              ? projects.find((project) => project.slug === job.relatedProjectSlug)
               : undefined;
+            const current = job.period.end === null;
             return (
-              <li key={job.id} className="experience-item">
-                <div className="flow">
-                  <div className="item-head">
-                    <div>
-                      <h3>{job.role}</h3>
-                      <p className="meta">
-                        {job.company}, {job.engagementType}, {job.workplace}
-                      </p>
-                    </div>
-                    <p className="meta tnum">{job.period.label}</p>
-                  </div>
+              <li key={job.id} className="timeline-item" data-current={current}>
+                <span className="timeline-marker" aria-hidden="true" />
+                <Reveal stagger>
+                  <p className="timeline-period">{job.period.label}</p>
+                  <h3>{job.role}</h3>
+                  <p className="timeline-org">
+                    {job.company} <span aria-hidden="true">·</span>{" "}
+                    {job.engagementType} <span aria-hidden="true">·</span>{" "}
+                    {job.workplace}
+                  </p>
                   <ul className="detail-list">
                     {job.highlights.map((highlight) => (
                       <li key={highlight}>{highlight}</li>
                     ))}
                   </ul>
-                  <p className="mono meta">{job.techStack.join(", ")}</p>
+                  <ul className="tag-list" aria-label={`${job.company} stack`}>
+                    {job.techStack.map((technology) => (
+                      <li key={technology}>{technology}</li>
+                    ))}
+                  </ul>
                   {related ? (
-                    <p>
-                      <SmartLink href={`/work/${related.slug}`}>
+                    <p className="timeline-link">
+                      <SmartLink href={`/work/${related.slug}`} className="text-link" arrow="right">
                         Related project: {related.title}
                       </SmartLink>
                     </p>
                   ) : null}
-                </div>
+                </Reveal>
               </li>
             );
           })}
-          </ol>
-        </MotionReveal>
+        </ol>
       </Container>
     </section>
   );
