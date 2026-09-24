@@ -19,6 +19,29 @@ type ProjectParams = {
 /** Stagger slot for the CSS page-load entrance (see `.intro` in globals.css). */
 const step = (index: number) => ({ "--i": index }) as CSSProperties;
 
+const pad = (value: number) => String(value).padStart(2, "0");
+
+const countLabel = (count: number, one: string, many: string) =>
+  `${count} ${count === 1 ? one : many}`;
+
+/** Label column shared by every case-study section, so all lists align. */
+function SectionHead({
+  id,
+  title,
+  meta,
+}: {
+  readonly id: string;
+  readonly title: string;
+  readonly meta: string;
+}) {
+  return (
+    <div className="case-section-head">
+      <h2 id={id}>{title}</h2>
+      <p className="case-section-meta">{meta}</p>
+    </div>
+  );
+}
+
 export async function generateStaticParams(): Promise<ProjectParams[]> {
   return projects.map((project) => ({ slug: project.slug }));
 }
@@ -61,8 +84,8 @@ export async function generateMetadata({
  * Launch-quality case study rendered entirely from the typed model.
  * Context, constraints, approach, and reflection sections stay omitted until
  * the owner supplies that prose; nothing here is invented. Motion stays
- * quiet so reading remains primary: a CSS entrance on load and the tree
- * reveals as each section arrives.
+ * quiet so reading remains primary: a CSS entrance on load, then each
+ * section's items rise in as it arrives.
  */
 export default async function ProjectPage({
   params,
@@ -160,27 +183,35 @@ export default async function ProjectPage({
           ) : null}
 
           <ProjectSectionReveal labelledBy="contribution-heading">
-            <h2 id="contribution-heading">Contribution</h2>
-            <ul className="project-detail-list" role="list">
-              {project.highlights.map((highlight) => (
+            <SectionHead
+              id="contribution-heading"
+              title="Contribution"
+              meta={countLabel(project.highlights.length, "highlight", "highlights")}
+            />
+            <ol className="contribution-list" role="list">
+              {project.highlights.map((highlight, itemIndex) => (
                 <li key={highlight}>
-                  <span className="project-detail-branch" aria-hidden="true" />
-                  <span className="project-detail-copy">{highlight}</span>
+                  <span className="case-index" aria-hidden="true">
+                    {pad(itemIndex + 1)}
+                  </span>
+                  <p>{highlight}</p>
                 </li>
               ))}
-            </ul>
+            </ol>
           </ProjectSectionReveal>
 
           {project.metrics.length > 0 ? (
             <ProjectSectionReveal labelledBy="outcome-heading">
-              <h2 id="outcome-heading">Outcome</h2>
-              <ul className="project-detail-list" role="list">
+              <SectionHead
+                id="outcome-heading"
+                title="Outcome"
+                meta={countLabel(project.metrics.length, "result", "results")}
+              />
+              <ul className="outcome-grid" role="list">
                 {project.metrics.map((metric) => (
-                  <li key={`${metric.value}-${metric.label}`}>
-                    <span className="project-detail-branch" aria-hidden="true" />
-                    <span className="project-detail-copy">
-                      <strong>{metric.value}</strong> {metric.label}
-                    </span>
+                  <li key={`${metric.value}-${metric.label}`} className="outcome-card">
+                    <strong className="outcome-value">{metric.value}</strong>{" "}
+                    <span className="outcome-label">{metric.label}</span>
                   </li>
                 ))}
               </ul>
@@ -188,12 +219,18 @@ export default async function ProjectPage({
           ) : null}
 
           <ProjectSectionReveal labelledBy="stack-heading">
-            <h2 id="stack-heading">Stack</h2>
-            <ul className="project-detail-list" role="list">
-              {project.techStack.map((technology) => (
+            <SectionHead
+              id="stack-heading"
+              title="Stack"
+              meta={countLabel(project.techStack.length, "technology", "technologies")}
+            />
+            <ul className="stack-grid" role="list">
+              {project.techStack.map((technology, itemIndex) => (
                 <li key={technology}>
-                  <span className="project-detail-branch" aria-hidden="true" />
-                  <span className="project-detail-copy">{technology}</span>
+                  <span className="case-index" aria-hidden="true">
+                    {pad(itemIndex + 1)}
+                  </span>
+                  {technology}
                 </li>
               ))}
             </ul>
