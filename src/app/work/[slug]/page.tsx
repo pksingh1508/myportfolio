@@ -1,5 +1,7 @@
 import PageTransition from "../../../components/motion/PageTransition";
+import PointerSpot from "../../../components/motion/PointerSpot";
 import ProjectSectionReveal from "../../../components/motion/ProjectSectionReveal";
+import SharedShot from "../../../components/motion/SharedShot";
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import Link from "next/link";
@@ -8,6 +10,7 @@ import { contact, profile, projects, site } from "../../../constant/data";
 import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
 import { ArrowIcon, PlatformIcon } from "../../../components/ui/Icons";
+import Odometer from "../../../components/ui/Odometer";
 import ProjectMediaFigure from "../../../components/ui/ProjectMediaFigure";
 import ProjectArtwork from "../../../components/ui/ProjectArtwork";
 import SmartLink from "../../../components/ui/SmartLink";
@@ -170,16 +173,23 @@ export default async function ProjectPage({
             ) : null}
           </header>
 
-          {project.media.length === 0 && <ProjectArtwork project={project} />}
+          {project.media.length === 0 && <ProjectArtwork project={project} shared />}
           {project.media.length > 0 ? (
             <section
               aria-label={`${project.title} media`}
               className="project-media intro"
               style={step(6)}
             >
-              {project.media.map((media) => (
-                <ProjectMediaFigure key={media.src} media={media} />
-              ))}
+              {project.media.map((media, mediaIndex) =>
+                // The lead shot receives the morph from the selected-work card.
+                mediaIndex === 0 ? (
+                  <SharedShot key={media.src} slug={project.slug}>
+                    <ProjectMediaFigure media={media} shot={project.slug} />
+                  </SharedShot>
+                ) : (
+                  <ProjectMediaFigure key={media.src} media={media} />
+                ),
+              )}
             </section>
           ) : null}
 
@@ -211,7 +221,9 @@ export default async function ProjectPage({
               <ul className="outcome-grid" role="list">
                 {project.metrics.map((metric) => (
                   <li key={`${metric.value}-${metric.label}`} className="outcome-card">
-                    <strong className="outcome-value">{metric.value}</strong>{" "}
+                    <strong className="outcome-value">
+                      <Odometer value={metric.value} />
+                    </strong>{" "}
                     <span className="outcome-label">{metric.label}</span>
                   </li>
                 ))}
@@ -242,6 +254,7 @@ export default async function ProjectPage({
             aria-labelledby="project-contact-heading"
             data-header-theme="dark"
           >
+            <PointerSpot className="panel-spot" />
             <h2 id="project-contact-heading">{contact.heading}</h2>
             <p className="btn-row">
               <SmartLink

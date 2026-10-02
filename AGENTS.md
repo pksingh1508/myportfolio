@@ -40,7 +40,7 @@ Do not silently change the product direction. If a request requires a meaningful
 - Language: TypeScript in strict/no-emit mode.
 - Styling: Tailwind CSS v4 plus global CSS.
 - Package manager: pnpm `10.33.0`.
-- Current application: the Orbital Archive portfolio in `src/app` (homepage, `/work/[slug]` case studies, dev-only `/specimen`).
+- Current application: the Orbital Archive portfolio in `src/app` (homepage, `/work/[slug]` case studies, dev-only `/specimen`). The homepage now includes the credibility strip (`ImpactStrip`, from `impactMetrics`) and an About statement (`About`, from `profile.shortBio` and the current role), filling IA items 3 and 6.
 - Motion and 3D packages: `gsap`, `@gsap/react`, `motion`, and `three` (3D is limited to the dev-only specimen so far).
 
 Never assume APIs or conventions from older Next.js releases. Before modifying framework code, read the relevant guide under `node_modules/next/dist/docs/` as required by the generated block above.
@@ -146,13 +146,18 @@ Avoid vague dumping grounds such as a giant `utils.ts`, `animations.ts`, or all-
 
 Use one animation owner per property at a time.
 
+Richer motion (owner request, 2026-10-03): details adapted from vibrant.design references (split-flap labels, odometer figures, scroll-inked statement, shared-element project morph, pointer-lit dot grids, a dot-matrix 404). Each stays monochrome, reveals evidence rather than hiding it, and degrades to static content without JavaScript or with reduced motion.
+
 - CSS owns frequent interaction states: hover, focus, press, color changes, menu icon, and simple disclosures.
 - CSS owns page-load entrances (hero and case-study `.intro` staggers, header entrance) so they play on first paint without waiting for hydration and always end visible.
 - CSS owns one-shot scroll reveals. The `Reveal` island only sets `data-revealed`, and the pre-reveal pose applies only while JavaScript can still play it. An inline failsafe in the root layout releases every pose if hydration never arrives.
-- React `<ViewTransition>` (through `PageTransition` in each page) owns route cross-fades; the header stays anchored.
+- CSS owns the odometer roll (`Odometer`) and the footer wordmark's letter rise; both key off the reveal attributes and rest on their final pose by default.
+- React `<ViewTransition>` (through `PageTransition` in each page) owns route cross-fades; the header stays anchored. `SharedShot` adds one shared-element morph: a selected-work browser frame flies into the case-study hero frame, only for navigations tagged `PROJECT_OPEN` (`src/lib/view-transitions.ts`). Each project's shot name appears at most once per page.
 - Motion owns the desktop nav's layout-spring thumbs and the copy-email label swap.
 - GSAP owns orchestrated timelines.
-- ScrollTrigger owns the selected-work pinned sequence and its progress mapping.
+- ScrollTrigger owns the selected-work pinned sequence and its progress mapping, plus two scrubbed progress values: the About statement's word ink (`ScrollInk`) and the experience rail (`TimelineProgress`).
+- `DecodeText` owns the split-flap label decode: a requestAnimationFrame overlay only, while the real label keeps the layout and stays in the accessibility tree.
+- `PointerSpot` maps fine-pointer position to `--mx`/`--my`; CSS draws the light (dark-panel dot grids, project-card glare). `DotMatrix404` owns its 2D canvas and pauses off-screen.
 - Three.js owns ambient scene motion and rendering.
 - GSAP may animate named camera/group pose values for narrative transitions; the renderer consumes those values.
 - Do not add Motion/framer-motion to v1 unless a new requirement specifically needs its layout/presence/spring model. Never install legacy `framer-motion`; the current package would be `motion`.

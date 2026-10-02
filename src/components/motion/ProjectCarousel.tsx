@@ -58,6 +58,9 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     const entrance = !entered.current && window.scrollY < window.innerHeight * 0.5;
     entered.current = true;
     const entranceOffsets: (number | undefined)[] = [];
+    // The fan opens along its radius while each card fades in; whichever
+    // finishes last ends the entrance.
+    const entranceEnd = ENTRANCE_DELAY + Math.max(1.9, (cards.length - 1) * 0.08 + 0.85);
     let introTime = entrance ? 0 : Infinity;
     let launched = !entrance;
     let intersecting = false;
@@ -86,6 +89,11 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
       });
     };
 
+    // Hover and focus hold the idle rotation still so a card can be read or
+    // clicked, but never freeze the entrance: a pointer resting where the
+    // cards fly in would otherwise leave them half-faded.
+    const paused = () => (hovering || focused) && introTime >= entranceEnd;
+
     const tick = (now: number) => {
       const elapsed = Math.min((now - lastTime) / 1000, 0.064);
       lastTime = now;
@@ -100,17 +108,23 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
       momentum *= Math.exp(-MOMENTUM_DECAY * elapsed);
       phase.current = (phase.current - (IDLE_SPEED + momentum) * elapsed) % TURN;
       draw();
+      if (paused()) {
+        frame = 0;
+        return;
+      }
       frame = requestAnimationFrame(tick);
     };
 
     const sync = () => {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      momentum = 0;
-      if (intersecting && !document.hidden && !hovering && !focused) {
+      const run = intersecting && !document.hidden && !paused();
+      if (run && !frame) {
         lastTime = performance.now();
         lastScroll = window.scrollY;
+        momentum = 0;
         frame = requestAnimationFrame(tick);
+      } else if (!run && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
       }
     };
     const onEnter = () => {

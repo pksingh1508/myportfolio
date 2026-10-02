@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { contact, profile, site } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import Container from "./Container";
@@ -10,7 +11,8 @@ import Reveal from "../motion/Reveal";
  * Reference-inspired composition: the shared navbar brand (same 44px mark
  * plus pill-reveal hover), positioning line, and the primary conversion
  * pair on the left; two link columns on the right; and an oversized
- * first-name backdrop that softens into the copyright baseline.
+ * first-name backdrop that softens into the copyright baseline. Its
+ * letters rise one after another when the footer arrives (CSS).
  *
  * Social labels stay short in the visible UI ("Email", "LinkedIn",
  * "GitHub") with the contact-section arrow affordance, while the
@@ -85,7 +87,11 @@ export default function SiteFooter() {
         <Reveal className="footer-giant">
           <div aria-hidden="true" className="footer-wordmark">
             {Array.from(profile.firstName).map((letter, index) => (
-              <span className="footer-letter" key={`${letter}-${index}`}>
+              <span
+                className="footer-letter"
+                key={`${letter}-${index}`}
+                style={{ "--i": index } as CSSProperties}
+              >
                 <span className="footer-letter-glyph">
                   <span className="footer-wordmark-sharp">{letter}</span>
                   <span className="footer-wordmark-blur">{letter}</span>

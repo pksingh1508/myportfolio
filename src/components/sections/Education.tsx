@@ -1,5 +1,6 @@
 import { education } from "../../constant/data";
 import Container from "../layout/Container";
+import DecodeText from "../motion/DecodeText";
 import Reveal from "../motion/Reveal";
 
 /** Education list. Institutions are omitted until the owner supplies them. */
@@ -8,7 +9,9 @@ export default function Education() {
     <section id="education" aria-labelledby="education-heading">
       <Container className="section-grid">
         <Reveal className="section-heading" stagger>
-          <p className="eyebrow">Learning path</p>
+          <p className="eyebrow">
+            <DecodeText text="Learning path" />
+          </p>
           <h2 id="education-heading">Education</h2>
         </Reveal>
         <Reveal delay={120}>

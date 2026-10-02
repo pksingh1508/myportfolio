@@ -1,5 +1,7 @@
 import { projects } from "../../constant/data";
+import { PROJECT_OPEN } from "../../lib/view-transitions";
 import Container from "../layout/Container";
+import DecodeText from "../motion/DecodeText";
 import Reveal from "../motion/Reveal";
 import WorkExpand from "../motion/WorkExpand";
 import WorkStory from "../motion/WorkStory";
@@ -13,7 +15,9 @@ export default function SelectedWork() {
     <WorkExpand>
       <Container className="work-shell">
         <Reveal className="work-heading-grid" stagger>
-          <p className="eyebrow">A few things I’ve built</p>
+          <p className="eyebrow">
+            <DecodeText text="A few things I’ve built" />
+          </p>
           <h2 id="work-heading">Selected work</h2>
           <p className="work-intro">
             Web platforms, mobile experiences, and the engineering behind them.
@@ -26,6 +30,7 @@ export default function SelectedWork() {
                 key={project.slug}
                 href={`/work/${project.slug}`}
                 className="project-index-link"
+                transitionTypes={[PROJECT_OPEN]}
               >
                 <span className="project-index-num" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
@@ -50,7 +55,9 @@ export default function SelectedWork() {
                     <span className="tnum">{project.date.slice(0, 4)}</span>
                   </p>
                   <h3 id={`${project.slug}-title`}>
-                    <SmartLink href={`/work/${project.slug}`}>{project.title}</SmartLink>
+                    <SmartLink href={`/work/${project.slug}`} transitionTypes={[PROJECT_OPEN]}>
+                      {project.title}
+                    </SmartLink>
                   </h3>
                   <p className="project-summary">{project.summary}</p>
                   <p className="project-contribution">{project.highlights[0]}</p>
@@ -74,6 +81,7 @@ export default function SelectedWork() {
                     href={`/work/${project.slug}`}
                     arrow
                     ariaLabel={`Read the ${project.title} case study`}
+                    transitionTypes={[PROJECT_OPEN]}
                   >
                     View case study
                   </SmartLink>
@@ -82,8 +90,9 @@ export default function SelectedWork() {
                   className="project-art-link"
                   href={`/work/${project.slug}`}
                   ariaLabel={`Explore ${project.title}`}
+                  transitionTypes={[PROJECT_OPEN]}
                 >
-                  <ProjectArtwork project={project} />
+                  <ProjectArtwork project={project} shared />
                   <span className="art-open" aria-hidden="true">
                     <ArrowIcon />
                   </span>

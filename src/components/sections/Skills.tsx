@@ -1,5 +1,6 @@
 import { skillGroups } from "../../constant/data";
 import Container from "../layout/Container";
+import DecodeText from "../motion/DecodeText";
 import Reveal from "../motion/Reveal";
 
 /**
@@ -11,7 +12,9 @@ export default function Skills() {
     <section id="skills" aria-labelledby="skills-heading">
       <Container className="section-grid">
         <Reveal className="section-heading" stagger>
-          <p className="eyebrow">How I build</p>
+          <p className="eyebrow">
+            <DecodeText text="How I build" />
+          </p>
           <h2 id="skills-heading">Skills</h2>
           <p className="section-lede">
             The languages, frameworks, and services behind the work above.
