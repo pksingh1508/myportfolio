@@ -12,6 +12,11 @@ type SmartLinkProps = {
   readonly arrow?: boolean | ArrowDirection;
   /** Decorative leading mark (for example a platform logo); the text stays the name. */
   readonly icon?: ReactNode;
+  /**
+   * View-transition types for internal navigations (see Next's Link
+   * `transitionTypes`), for example "project-open" to morph a project shot.
+   */
+  readonly transitionTypes?: string[];
 };
 
 /** Two stacked arrows that trade places on hover (CSS owns the motion). */
@@ -36,6 +41,7 @@ export default function SmartLink({
   ariaLabel,
   arrow = false,
   icon,
+  transitionTypes,
 }: SmartLinkProps) {
   const direction = arrow === true ? "up-right" : arrow || null;
   const label = icon ? (
@@ -70,7 +76,12 @@ export default function SmartLink({
     );
   }
   return (
-    <Link href={href} className={className} aria-label={ariaLabel}>
+    <Link
+      href={href}
+      className={className}
+      aria-label={ariaLabel}
+      transitionTypes={transitionTypes}
+    >
       {content}
     </Link>
   );

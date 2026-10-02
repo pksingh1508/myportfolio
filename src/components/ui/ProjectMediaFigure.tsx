@@ -3,6 +3,8 @@ import type { ProjectMedia } from "../../types/portfolio";
 
 type ProjectMediaFigureProps = {
   readonly media: ProjectMedia;
+  /** Project slug when this figure is the target of the project-open morph. */
+  readonly shot?: string;
 };
 
 /** Decorative browser chrome shared with the homepage project cards. */
@@ -27,10 +29,11 @@ function WindowBar() {
  */
 export default function ProjectMediaFigure({
   media,
+  shot,
 }: ProjectMediaFigureProps) {
   if (media.type === "video") {
     return (
-      <figure>
+      <figure data-shot={shot}>
         <WindowBar />
         <video
           src={media.src}
@@ -51,7 +54,7 @@ export default function ProjectMediaFigure({
 
   if (media.decorative) {
     return (
-      <figure aria-hidden="true">
+      <figure aria-hidden="true" data-shot={shot}>
         <WindowBar />
         <Image
           src={media.src}
@@ -65,7 +68,7 @@ export default function ProjectMediaFigure({
   }
 
   return (
-    <figure>
+    <figure data-shot={shot}>
       <WindowBar />
       <Image
         src={media.src}

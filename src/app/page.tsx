@@ -1,7 +1,9 @@
+import About from "../components/sections/About";
 import ContactFinale from "../components/sections/ContactFinale";
 import Education from "../components/sections/Education";
 import Experience from "../components/sections/Experience";
 import Hero from "../components/sections/Hero";
+import ImpactStrip from "../components/sections/ImpactStrip";
 import PageTransition from "../components/motion/PageTransition";
 import SelectedWork from "../components/sections/SelectedWork";
 import Skills from "../components/sections/Skills";
@@ -35,8 +37,10 @@ export default function Home() {
       <PageTransition>
         <main id="main-content">
           <Hero />
+          <ImpactStrip />
           <SelectedWork />
           <Skills />
+          <About />
           <Experience />
           <Education />
           <ContactFinale />

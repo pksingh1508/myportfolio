@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode, type Ref } from "react";
 
 type RevealProps = {
   readonly children: ReactNode;
@@ -9,6 +9,8 @@ type RevealProps = {
   readonly stagger?: boolean;
   /** Extra delay in milliseconds before the first element moves. */
   readonly delay?: number;
+  /** Render a list so staggered items keep their list semantics. */
+  readonly as?: "div" | "ul" | "ol";
 };
 
 /**
@@ -23,8 +25,9 @@ export default function Reveal({
   className,
   stagger = false,
   delay = 0,
+  as: Tag = "div",
 }: RevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const element = ref.current;
@@ -55,13 +58,16 @@ export default function Reveal({
     : undefined;
 
   return (
-    <div
-      ref={ref}
+    <Tag
+      // One ref serves all three tags; each is an HTMLElement.
+      ref={ref as Ref<HTMLDivElement & HTMLUListElement & HTMLOListElement>}
+      // Unstyled lists lose their semantics in Safari; keep them announced.
+      role={Tag === "div" ? undefined : "list"}
       className={className}
       data-reveal={stagger ? "stagger" : "self"}
       style={style}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

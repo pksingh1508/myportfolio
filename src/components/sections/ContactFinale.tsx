@@ -1,6 +1,8 @@
 import { contact, profile } from "../../constant/data";
 import { describeLink } from "../../lib/describe-link";
 import CopyEmail from "../motion/CopyEmail";
+import DecodeText from "../motion/DecodeText";
+import PointerSpot from "../motion/PointerSpot";
 import Reveal from "../motion/Reveal";
 import Container from "../layout/Container";
 import SmartLink from "../ui/SmartLink";
@@ -18,8 +20,11 @@ export default function ContactFinale() {
     <section id="contact" aria-labelledby="contact-heading">
       <Container>
         <div className="finale-panel" data-header-theme="dark">
+          <PointerSpot className="panel-spot" />
           <Reveal className="finale-copy" stagger>
-            <p className="eyebrow">Contact</p>
+            <p className="eyebrow">
+              <DecodeText text="Contact" />
+            </p>
             <h2 id="contact-heading" className="finale-title">
               {contact.heading}
             </h2>
