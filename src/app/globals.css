@@ -1885,7 +1885,13 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 
 @media (min-width: 1024px) {
   .project-index {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .project-index {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
 
@@ -2118,6 +2124,37 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   letter-spacing: -0.045em;
 }
 
+/* App identity artwork: real icons, without simulated product screens. */
+.art-app-plate {
+  align-content: center;
+  gap: 0.75rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  text-align: center;
+}
+
+.art-app-icon {
+  display: block;
+  width: clamp(5rem, 10vw, 8rem);
+  height: auto;
+  border: 1px solid var(--color-night-line);
+  border-radius: 24px;
+  filter: grayscale(1);
+}
+
+.art-app-title {
+  max-width: 16ch;
+  font-size: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  line-height: 1.1;
+}
+
+.art-app-tagline {
+  color: var(--color-fog);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
 .art-open {
   position: absolute;
   right: clamp(1rem, 2vw, 1.5rem);
@@ -2226,8 +2263,13 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   }
 
   .work-story[data-enhanced="true"] .project-index {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     flex: 0 0 auto;
     margin-block: 0 clamp(1.5rem, 4vh, 2.75rem);
+  }
+
+  .work-story[data-enhanced="true"] .project-slide-copy {
+    gap: 1rem;
   }
 
   .work-story[data-enhanced="true"] .project-slides {
@@ -3167,6 +3209,14 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   font-variant-numeric: tabular-nums;
 }
 
+.case-prose p {
+  max-width: 60ch;
+  color: var(--color-muted);
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.6;
+  letter-spacing: -0.018em;
+}
+
 .case-index {
   flex: 0 0 auto;
   color: var(--color-graphite);
@@ -3305,8 +3355,8 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 
 /* Items rise in once their section arrives; the head leads. */
 @media (prefers-reduced-motion: no-preference) {
-  html.js:not([data-hydrated="fallback"]) .case-section:not([data-revealing]) .case-section-head,
-  html.js:not([data-hydrated="fallback"]) .case-section:not([data-revealing]) li {
+  html.js:not([data-hydrated="fallback"]) .case-section:not(.case-section-static):not([data-revealing]) .case-section-head,
+  html.js:not([data-hydrated="fallback"]) .case-section:not(.case-section-static):not([data-revealing]) li {
     opacity: 0;
   }
 

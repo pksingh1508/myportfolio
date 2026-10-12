@@ -7,7 +7,8 @@ import SharedShot from "../motion/SharedShot";
  * Editorial card cover: a dark raised card with category and year on top,
  * the product screenshot in a neutral browser frame, and the core stack
  * below. The frame keeps each screenshot's intrinsic ratio, so dashboards
- * keep their sidebars. Projects without an image show a title plate.
+ * keep their sidebars. Apps without screenshots use their real identity
+ * artwork; other projects without media show a title plate.
  *
  * `shared` names the browser frame for the project-open morph. A page may
  * set it on only one element per project (the shot's name must be unique).
@@ -21,6 +22,7 @@ export default function ProjectArtwork({
 }) {
   const shot = project.media[0];
   const showShot = shot !== undefined && shot.type === "image";
+  const artwork = project.artwork;
   const frame = showShot ? (
     <div className="art-window" data-shot={shared ? project.slug : undefined}>
       <div className="art-window-bar">
@@ -37,6 +39,19 @@ export default function ProjectArtwork({
           sizes="(max-width: 767px) 92vw, (max-width: 1023px) 80vw, 640px"
         />
       </div>
+    </div>
+  ) : artwork ? (
+    <div className="art-plate art-app-plate" data-shot={shared ? project.slug : undefined}>
+      <Image
+        className="art-app-icon"
+        src={artwork.icon.src}
+        alt=""
+        width={artwork.icon.width}
+        height={artwork.icon.height}
+        sizes="(max-width: 767px) 96px, 128px"
+      />
+      <span className="art-app-title">{project.title}</span>
+      <span className="art-app-tagline">{artwork.tagline}</span>
     </div>
   ) : null;
   return (

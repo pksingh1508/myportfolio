@@ -133,7 +133,7 @@ export type Project = {
   readonly slug: string;
   readonly title: string;
   readonly category: "Full-stack web" | "Mobile application" | "EdTech platform";
-  readonly status: "Live";
+  readonly status: "Live" | "In development";
   readonly date: `${number}-${number}`;
   readonly dateLabel: string;
   readonly role: string;
@@ -145,6 +145,18 @@ export type Project = {
   readonly featured: boolean;
   /** Approved portfolio media; empty until the owner supplies visuals. */
   readonly media: readonly ProjectMedia[];
+  /** App identity artwork, kept separate from actual product screenshots. */
+  readonly artwork?: {
+    readonly icon: ProjectMediaBase & { readonly alt: string };
+    readonly tagline: string;
+  };
+  /** Source-verified narrative; omitted for projects without approved prose. */
+  readonly caseStudy?: {
+    readonly context: string;
+    readonly constraints: readonly string[];
+    readonly implementation: readonly string[];
+    readonly outcome: string;
+  };
 };
 
 export type EducationItem = {
