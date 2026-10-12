@@ -46,9 +46,10 @@ const contactLinks = {
 } as const satisfies Record<string, SocialLink>;
 
 /**
- * Canonical portfolio content extracted from the two resumes supplied at the
- * repository root. Keep professional facts here instead of duplicating them
- * inside components.
+ * Canonical portfolio content from the supplied resumes and owner-authorized
+ * local project review. DHH and MJ were checked against their READMEs,
+ * package manifests, feature screens, and data/backend implementations on
+ * 2026-10-12. Keep facts here instead of duplicating them inside components.
  *
  * Deliberately omitted: the LearniFi test password printed in the resume. Login
  * credentials do not belong in a client-delivered portfolio bundle.
@@ -255,6 +256,110 @@ export const portfolioData = {
   ],
 
   projects: [
+    {
+      slug: "dhh-health-fitness",
+      title: "DHH Health & Fitness",
+      category: "Mobile application",
+      status: "In development",
+      date: "2026-10",
+      dateLabel: "2026 · Ongoing",
+      role: "Mobile developer · Personal project",
+      summary:
+        "A personal health and fitness journal for iOS and Android, bringing food, workouts, water, and weight into one daily view.",
+      techStack: [
+        "React Native", "Expo", "TypeScript", "SQLite", "Supabase", "Clerk",
+        "NativeWind", "Reanimated", "Expo Widgets", "OpenRouter",
+      ],
+      highlights: [
+        "Built an offline journal with local SQLite storage and queued changes that sync to Supabase when connectivity returns.",
+        "Connected food search, barcode lookups, flexible portions, reusable meals, and calorie and macro tracking in one food diary.",
+        "Created strength and cardio logging with reusable routines, set history, rest timers, and resumable workout sessions.",
+        "Added water and weight tracking, optional goals, progress charts, configurable reminders, and home-screen widgets.",
+        "Implemented CSV export, passphrase-protected backup and restore, and in-app journal and account deletion.",
+        "Added a meal-photo flow that produces editable AI estimates for review before any food is added to the journal.",
+      ],
+      metrics: [],
+      links: [],
+      featured: true,
+      media: [],
+      artwork: {
+        icon: {
+          src: "/images/project/dhh-icon.png",
+          width: 1024,
+          height: 1024,
+          alt: "DHH Health & Fitness app icon",
+        },
+        tagline: "Food, movement, and daily habits.",
+      },
+      caseStudy: {
+        context:
+          "DHH brings everyday health logging into a single journal. The Today dashboard combines meals, movement, hydration, and weight, while reusable meals and workout routines reduce the effort of recording a familiar day.",
+        constraints: [
+          "Everyday entries need to remain usable offline after sign-in and setup. Online food search and new barcode lookups still require a connection.",
+          "Nutrition sources can be incomplete. Missing values remain distinct from zero, and progress averages use recorded days rather than treating unlogged days as results.",
+          "Goals, reminders, units, and the visibility of weight tracking need to adapt to the person using the journal.",
+        ],
+        implementation: [
+          "SQLite stores the journal on the device. An outbox queues mutations for Supabase; the sync engine pushes changes in batches, pulls revision pages, retries network failures with backoff, and keeps rejected changes available for retry.",
+          "Typed domain logic handles portions, nutrition, units, energy balance, and progress. Feature screens connect that model to meal logging, strength sessions, cardio, water, and weigh-ins.",
+          "Clerk handles account identity. Export and restore use CSV and encrypted archives with a passphrase-derived key. Widgets and quick actions provide shortcuts into daily logging.",
+          "A Supabase Edge Function sends meal photos to OpenRouter and returns a draft of foods, portions, and estimated nutrition. The app lets the person edit, remove, or match each item to a catalog food before saving.",
+        ],
+        outcome:
+          "The daily journal, workout flows, sync engine, progress views, widgets, and data-management features are implemented, with tests for domain logic and sync scenarios. The app remains in development, with store-release preparation still underway.",
+      },
+    },
+    {
+      slug: "mj-movie-journal",
+      title: "MJ — Movie Journal",
+      category: "Mobile application",
+      status: "In development",
+      date: "2026-10",
+      dateLabel: "2026 · Ongoing",
+      role: "Mobile developer · Personal project",
+      summary:
+        "A personal movie journal for iOS and Android to discover films, plan movie nights, and preserve the memories of every viewing.",
+      techStack: [
+        "React Native", "Expo", "TypeScript", "Convex", "Better Auth", "TMDB",
+        "Cloudflare R2", "RevenueCat", "Expo Widgets", "Reanimated",
+      ],
+      highlights: [
+        "Built a viewing-based journal where every rewatch keeps its own rating, notes, companions, photos, and ticket stubs.",
+        "Connected TMDB discovery, watchlists, custom and automatic collections, and rules-based Watch Tonight recommendations with reasons for each pick.",
+        "Implemented real-time movie-night plans, friend invitations, nominations, voting, and marathon schedules with Convex.",
+        "Added private-by-default sharing controls and spoiler-safe notes that unlock after the viewer logs the film.",
+        "Created On this day memories, movie capsules, recaps, taste insights, import and export, and iPhone widgets.",
+      ],
+      metrics: [],
+      links: [],
+      featured: true,
+      media: [],
+      artwork: {
+        icon: {
+          src: "/images/project/mj-icon.png",
+          width: 1024,
+          height: 1024,
+          alt: "MJ Movie Journal app icon",
+        },
+        tagline: "Plan. Watch. Remember.",
+      },
+      caseStudy: {
+        context:
+          "MJ treats a movie and a viewing as different things. A film can be watched many times, with different people and different reactions. Each journal entry preserves that occasion, connecting discovery and planning to a personal history of movie nights.",
+        constraints: [
+          "A rewatch must add a new memory rather than overwrite an earlier viewing. Ratings, dates, notes, and companions belong to each journal entry.",
+          "Sharing needs explicit privacy controls. Friends can only see the categories shared with them, and written reactions stay hidden until they have logged the movie themselves.",
+          "Recommendations need understandable reasons. Watch Tonight uses journal history, available time, mood, and exclusions through rules rather than an AI model.",
+        ],
+        implementation: [
+          "Expo Router organizes the React Native app. Convex stores journal entries, movie snapshots, watchlists, collections, friendships, and plans, with server functions and real-time updates for group coordination.",
+          "TMDB supplies movie discovery and metadata. Better Auth handles sign-in, Cloudflare R2 holds private photos, and RevenueCat supports the subscription integration.",
+          "The backend separates viewing records from movie state and enforces ownership and friendship checks. Memories, capsules, recaps, and taste profiles build on that journal, while calendar integration and iPhone widgets bring upcoming plans outside the app.",
+        ],
+        outcome:
+          "The repository implements the core journal and planning loop alongside memories, social coordination, insights, and data portability, with backend tests for these features. MJ is in active development and is not yet released on the App Store or Google Play.",
+      },
+    },
     {
       slug: "eu-career-serwis",
       title: "EU Career Serwis",

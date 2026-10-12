@@ -85,8 +85,8 @@ export async function generateMetadata({
 
 /**
  * Launch-quality case study rendered entirely from the typed model.
- * Context, constraints, approach, and reflection sections stay omitted until
- * the owner supplies that prose; nothing here is invented. Motion stays
+ * Context, constraints, implementation, and development state render when
+ * the model includes a verified narrative. Missing prose stays omitted. Motion stays
  * quiet so reading remains primary: a CSS entrance on load, then each
  * section's items rise in as it arrives.
  */
@@ -193,6 +193,13 @@ export default async function ProjectPage({
             </section>
           ) : null}
 
+          {project.caseStudy ? (
+            <section className="case-section case-section-static" aria-labelledby="context-heading">
+              <SectionHead id="context-heading" title="Context" meta="The product" />
+              <div className="case-prose"><p>{project.caseStudy.context}</p></div>
+            </section>
+          ) : null}
+
           <ProjectSectionReveal labelledBy="contribution-heading">
             <SectionHead
               id="contribution-heading"
@@ -210,6 +217,37 @@ export default async function ProjectPage({
               ))}
             </ol>
           </ProjectSectionReveal>
+
+          {project.caseStudy ? (
+            <>
+              <section className="case-section case-section-static" aria-labelledby="constraints-heading">
+                <SectionHead id="constraints-heading" title="Constraints" meta="Design decisions" />
+                <ul className="contribution-list" role="list">
+                  {project.caseStudy.constraints.map((constraint, itemIndex) => (
+                    <li key={constraint}>
+                      <span className="case-index" aria-hidden="true">{pad(itemIndex + 1)}</span>
+                      <p>{constraint}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <section className="case-section case-section-static" aria-labelledby="implementation-heading">
+                <SectionHead id="implementation-heading" title="Implementation" meta="How it works" />
+                <ol className="contribution-list" role="list">
+                  {project.caseStudy.implementation.map((detail, itemIndex) => (
+                    <li key={detail}>
+                      <span className="case-index" aria-hidden="true">{pad(itemIndex + 1)}</span>
+                      <p>{detail}</p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+              <section className="case-section case-section-static" aria-labelledby="development-heading">
+                <SectionHead id="development-heading" title="Current state" meta={project.status} />
+                <div className="case-prose"><p>{project.caseStudy.outcome}</p></div>
+              </section>
+            </>
+          ) : null}
 
           {project.metrics.length > 0 ? (
             <ProjectSectionReveal labelledBy="outcome-heading">

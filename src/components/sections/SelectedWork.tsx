@@ -53,6 +53,9 @@ export default function SelectedWork() {
                   <p className="project-meta-row">
                     <span>{project.category}</span>
                     <span className="tnum">{project.date.slice(0, 4)}</span>
+                    {project.status === "In development" ? (
+                      <span>{project.status}</span>
+                    ) : null}
                   </p>
                   <h3 id={`${project.slug}-title`}>
                     <SmartLink href={`/work/${project.slug}`} transitionTypes={[PROJECT_OPEN]}>
