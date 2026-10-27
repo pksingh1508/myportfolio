@@ -17,7 +17,8 @@ type NavState = "center" | "split";
  *
  * - data-scrolled: any scroll away from the top.
  * - data-theme: "dark" while a [data-header-theme="dark"] surface sits
- *   under the header, so the glass turns smoke.
+ *   under the header, so the glass turns smoke. (In the dark color mode CSS
+ *   applies the smoke glass itself, keyed off <html data-mode>.)
  * - data-nav: "center" over the homepage hero (the hero already names the
  *   owner), "split" once it ends and on every other page.
  *

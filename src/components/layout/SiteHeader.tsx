@@ -2,12 +2,14 @@ import { profile, site } from "../../constant/data";
 import DesktopNav from "../motion/DesktopNav";
 import HeaderState from "../motion/HeaderState";
 import SiteMenu from "../motion/SiteMenu";
+import ThemeToggle from "../motion/ThemeToggle";
 import Container from "./Container";
 import SmartLink from "../ui/SmartLink";
 
 /**
  * Static global header shell. Scroll backdrop lives in HeaderState and the
- * mobile disclosure in SiteMenu; brand and desktop nav stay server-rendered.
+ * mobile disclosure in SiteMenu, the color mode in ThemeToggle; brand and
+ * desktop nav stay server-rendered.
  */
 export default function SiteHeader() {
   const items = site.navigation.map((item) => ({
@@ -27,6 +29,7 @@ export default function SiteHeader() {
           </span>
         </SmartLink>
         <DesktopNav items={items} />
+        <ThemeToggle />
         <SiteMenu items={items} />
       </Container>
     </HeaderState>

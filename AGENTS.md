@@ -88,6 +88,8 @@ Strictly monochrome (owner request, 2026-09-24): a premium black-and-white theme
 - Raised night surfaces: `#131313` / `#1A1A1A`; night hairline `#262626`
 - Fog: `#A3A3A3` (secondary text on dark); mist `#D4D4D4` (body text on dark)
 
+Dark mode (owner request, 2026-10-27): `<html data-mode="dark">` remaps the light tokens once (paper `#0A0A0A`, ink `#F5F5F5`, muted `#A8A8A8`, graphite `#8F8F8F`, hairline `#222222`/`#333333`). Dark chapters step up to `#121212` with a hairline edge so they still read as their own surfaces. Use the semantic tokens (`--color-raised`, `--color-on-ink`, `--color-on-light`, `--edge-light`, `--tint-ring`) instead of literal white or black on light sections, so both modes stay correct. The header stays in its smoke-glass state in dark mode, and buttons use the dark-chapter variants. An inline script in the root layout applies the stored choice, or the system preference, before first paint; without JavaScript the page stays light.
+
 Emphasis comes from contrast, scale, and weight, never from hue. Project screenshots are the only color on the page. Focus rings, progress, and active states use ink on light surfaces and white on dark ones.
 
 ### Surfaces, depth, and glass
@@ -155,6 +157,7 @@ Richer motion (owner request, 2026-10-03): details adapted from vibrant.design r
 - CSS owns the odometer roll (`Odometer`, now used on case studies) and the footer wordmark's letter rise; both key off the reveal attributes and rest on their final pose by default.
 - React `<ViewTransition>` (through `PageTransition` in each page) owns route cross-fades; the header stays anchored. `SharedShot` adds one shared-element morph: a selected-work browser frame flies into the case-study hero frame, only for navigations tagged `PROJECT_OPEN` (`src/lib/view-transitions.ts`). Each project's shot name appears at most once per page.
 - Motion owns the desktop nav's layout-spring thumbs and the copy-email label swap.
+- `ThemeToggle` owns the color-mode switch: a document view transition whose new snapshot grows as a circle from the button (WAAPI `clip-path`). The header joins the page snapshot, and the toggle stays live above the wipe so its CSS icon morph plays. Without view transitions, colors cross-fade (explicit properties only); reduced motion swaps instantly.
 - GSAP owns orchestrated timelines.
 - ScrollTrigger owns the selected-work deck settle (`WorkStack`, after vibrant.design's gallery-stack motion): as the next card rises to its docking line, the covered card scales toward its top edge and a shade dims it. Triggers are measured from the stack's natural layout, never from the sticky cards. It also owns two scrubbed progress values: the About statement's word ink (`ScrollInk`) and the experience rail (`TimelineProgress`).
 - `DecodeText` owns the split-flap label decode: a requestAnimationFrame overlay only, while the real label keeps the layout and stays in the accessibility tree.

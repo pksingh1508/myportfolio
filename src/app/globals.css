@@ -79,6 +79,19 @@
 
   --focus-ring: var(--color-ink);
 
+  /* Semantic roles that the dark color mode remaps (see "Dark mode"). */
+  --color-on-ink: #ffffff; /* text and icons on an ink fill */
+  --color-on-light: #0a0a0a; /* text on white controls; never remapped */
+  --color-raised: #ffffff; /* cards lifted off the page */
+  --edge-light: rgb(255 255 255 / 0.9); /* top-edge highlight on raised fills */
+  --tint-ring: rgb(0 0 0 / 0.07); /* soft halo around solid status dots */
+  --hero-glow: #efefef;
+  --hero-glow-soft: #f6f6f6;
+  --grid-line: rgb(0 0 0 / 0.045);
+  --wordmark: #efefef;
+  --wordmark-hover: #e3e3e3;
+  --dot-idle: #dedede;
+
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -155,7 +168,7 @@ p {
 
 ::selection {
   background: var(--color-ink);
-  color: var(--color-white);
+  color: var(--color-on-ink);
 }
 
 :focus-visible {
@@ -316,7 +329,7 @@ video {
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-pill);
   background: var(--color-ink);
-  color: var(--color-white);
+  color: var(--color-on-ink);
   font-weight: 500;
   text-decoration: none;
   box-shadow: var(--shadow-lg);
@@ -388,17 +401,17 @@ video {
 }
 
 /* Inverted controls for dark surfaces. */
-:is(.night, .finale-panel, .project-cta) .btn-primary {
+:is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-primary {
   border-color: var(--color-white);
   background: linear-gradient(180deg, #ffffff 0%, #e9e9e9 100%);
-  color: var(--color-ink);
+  color: var(--color-on-light);
   box-shadow:
     inset 0 -1px 0 rgb(0 0 0 / 0.08),
     0 1px 2px rgb(0 0 0 / 0.5),
     0 10px 30px -8px rgb(255 255 255 / 0.22);
 }
 
-:is(.night, .finale-panel, .project-cta) .btn-secondary {
+:is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-secondary {
   border-color: rgb(255 255 255 / 0.14);
   background: rgb(255 255 255 / 0.05);
   color: var(--color-white);
@@ -504,11 +517,11 @@ video {
   background: rgb(0 0 0 / 0.06);
 }
 
-:is(.night, .finale-panel, .project-cta) .btn-primary .link-arrow {
+:is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-primary .link-arrow {
   background: rgb(0 0 0 / 0.08);
 }
 
-:is(.night, .finale-panel, .project-cta) .btn-secondary .link-arrow {
+:is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-secondary .link-arrow {
   background: rgb(255 255 255 / 0.1);
 }
 
@@ -563,14 +576,14 @@ video {
     box-shadow: var(--shadow-md);
   }
 
-  :is(.night, .finale-panel, .project-cta) .btn-primary:hover {
+  :is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-primary:hover {
     box-shadow:
       inset 0 -1px 0 rgb(0 0 0 / 0.08),
       0 2px 4px rgb(0 0 0 / 0.5),
       0 16px 40px -8px rgb(255 255 255 / 0.3);
   }
 
-  :is(.night, .finale-panel, .project-cta) .btn-secondary:hover {
+  :is(.night, .finale-panel, .project-cta, [data-mode="dark"]) .btn-secondary:hover {
     border-color: rgb(255 255 255 / 0.3);
     background: rgb(255 255 255 / 0.1);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
@@ -875,12 +888,14 @@ html:not(.js) .site-header::before {
   }
 }
 
-/* Dark chapter underneath: the glass turns smoke and the thumb inverts. */
-.site-header[data-theme="dark"] {
+/* Dark chapter underneath, or the dark color mode: the glass turns smoke and
+   the thumb inverts. Dark mode is keyed off <html data-mode> here in CSS, so
+   the header can never fall out of step with the page. */
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) {
   --focus-ring: var(--color-white);
 }
 
-.site-header[data-theme="dark"] .desktop-nav-list {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .desktop-nav-list {
   border-color: var(--glass-night-border);
   background: var(--glass-night-bg);
   box-shadow:
@@ -888,26 +903,27 @@ html:not(.js) .site-header::before {
     inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
-.site-header[data-theme="dark"] .desktop-nav-list a {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .desktop-nav-list a {
   color: var(--color-fog);
 }
 
-.site-header[data-theme="dark"] .desktop-nav-list a[aria-current="location"] {
-  color: var(--color-ink);
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .desktop-nav-list a[aria-current="location"] {
+  color: var(--color-on-light);
 }
 
-.site-header[data-theme="dark"] .nav-hover {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .nav-hover {
   background: rgb(255 255 255 / 0.09);
 }
 
-.site-header[data-theme="dark"] .nav-active {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .nav-active {
   background: linear-gradient(180deg, #ffffff 0%, #e6e6e6 100%);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
 }
 
-.site-header[data-theme="dark"] .brand-mark,
-.site-header[data-theme="dark"] .brand::before,
-.site-header[data-theme="dark"] .menu-trigger {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .brand-mark,
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .brand::before,
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .menu-trigger,
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .theme-toggle {
   border-color: var(--glass-night-border);
   background-color: var(--glass-night-bg);
   box-shadow:
@@ -916,18 +932,18 @@ html:not(.js) .site-header::before {
   color: var(--color-white);
 }
 
-.site-header[data-theme="dark"] .brand {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .brand {
   color: var(--color-white);
 }
 
-.site-header[data-theme="dark"] .brand:focus-visible .brand-mark {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .brand:focus-visible .brand-mark {
   border-color: transparent;
   background-color: transparent;
   box-shadow: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .site-header[data-theme="dark"] .brand:hover .brand-mark {
+  :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .brand:hover .brand-mark {
     border-color: transparent;
     background-color: transparent;
     box-shadow: none;
@@ -935,12 +951,130 @@ html:not(.js) .site-header::before {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .site-header[data-theme="dark"] .desktop-nav-list a:hover {
+  :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .desktop-nav-list a:hover {
     color: var(--color-white);
   }
 
-  .site-header[data-theme="dark"] .desktop-nav-list a[aria-current="location"]:hover {
-    color: var(--color-ink);
+  :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .desktop-nav-list a[aria-current="location"]:hover {
+    color: var(--color-on-light);
+  }
+}
+
+/* Color-mode switch (ThemeToggle): a 44px glass disc like the brand mark.
+   The icon is CSS-owned: in dark mode the sun's rays fold away, its core
+   swells, and a mask disc slides over it to cut the crescent. Desktop pins
+   it to the right edge so the centered nav never shifts; mobile sets it
+   beside the menu trigger. It needs JavaScript, so it is hidden without. */
+.theme-toggle {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-start: auto;
+  padding: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  background: var(--glass-bg-strong);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 var(--edge-light);
+  color: var(--color-ink);
+  cursor: pointer;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-press) var(--ease-press);
+}
+
+html:not(.js) .theme-toggle {
+  display: none;
+}
+
+.theme-toggle:active {
+  transform: scale(0.92);
+}
+
+.theme-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+}
+
+.theme-icon-core,
+.theme-icon-rays,
+.theme-icon-cutout {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.theme-icon-core {
+  transition: transform 600ms var(--ease-out-expo);
+}
+
+.theme-icon-rays {
+  transition:
+    transform 600ms var(--ease-out-expo),
+    opacity 300ms var(--ease-out);
+}
+
+/* Parked outside the core in light mode. */
+.theme-icon-cutout {
+  transform: translate(9px, -9px);
+  transition: transform 600ms var(--ease-out-expo);
+}
+
+[data-mode="dark"] .theme-icon-core {
+  transform: scale(1.55);
+}
+
+[data-mode="dark"] .theme-icon-rays {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+[data-mode="dark"] .theme-icon-cutout {
+  transform: translate(0, 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .theme-toggle:hover {
+    border-color: rgb(255 255 255 / 0.22);
+  }
+
+  .theme-toggle:hover .theme-icon-rays {
+    transform: rotate(45deg);
+  }
+
+  [data-mode="dark"] .theme-toggle:hover .theme-icon-rays {
+    transform: rotate(-90deg) scale(0.4);
+  }
+}
+
+@media (min-width: 768px) {
+  html.js .theme-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -22px;
+  }
+
+  /* The nav travels right once the brand appears; keep it clear of the switch. */
+  html.js .site-header[data-nav="split"] .site-header-inner {
+    padding-inline-end: calc(44px + 0.75rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .site-header-inner {
+    gap: 0.5rem;
   }
 }
 
@@ -1163,7 +1297,7 @@ html.js .menu-panel[data-open="true"] .menu-item {
   }
 }
 
-html.js .site-header[data-theme="dark"] .menu-panel {
+html.js :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .menu-panel {
   border-color: var(--glass-night-border);
   background: rgb(22 22 22 / 0.82);
   box-shadow:
@@ -1172,12 +1306,12 @@ html.js .site-header[data-theme="dark"] .menu-panel {
   color: var(--color-white);
 }
 
-.site-header[data-theme="dark"] .menu-link-index {
+:is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .menu-link-index {
   color: var(--color-fog);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .site-header[data-theme="dark"] .menu-link:hover {
+  :is(.site-header[data-theme="dark"], [data-mode="dark"] .site-header) .menu-link:hover {
     background-color: rgb(255 255 255 / 0.07);
   }
 }
@@ -1231,14 +1365,14 @@ html:not(.js) .site-header .brand {
 
 .hero-section::before {
   background:
-    radial-gradient(55% 60% at 82% 50%, #efefef 0%, rgb(239 239 239 / 0) 72%),
-    radial-gradient(45% 45% at 0% 0%, #f6f6f6 0%, rgb(246 246 246 / 0) 70%);
+    radial-gradient(55% 60% at 82% 50%, var(--hero-glow) 0%, transparent 72%),
+    radial-gradient(45% 45% at 0% 0%, var(--hero-glow-soft) 0%, transparent 70%);
 }
 
 .hero-section::after {
   background-image:
-    linear-gradient(to right, rgb(0 0 0 / 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(0 0 0 / 0.045) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-position: center top;
   background-size: 72px 72px;
   -webkit-mask-image: radial-gradient(75% 65% at 30% 35%, #000 0%, transparent 72%);
@@ -1364,7 +1498,7 @@ html:not(.js) .site-header .brand {
   inset: 0 0 0 auto;
   z-index: 150;
   width: min(11rem, 30%);
-  background: linear-gradient(to right, rgb(255 255 255 / 0), var(--color-paper));
+  background: linear-gradient(to right, transparent, var(--color-paper));
   content: "";
   pointer-events: none;
 }
@@ -2363,7 +2497,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   height: 8px;
   border-radius: 50%;
   background: var(--color-ink);
-  box-shadow: 0 0 0 4px rgb(0 0 0 / 0.07);
+  box-shadow: 0 0 0 4px var(--tint-ring);
 }
 
 .now-dot::after {
@@ -2412,7 +2546,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 
 .timeline-item:last-child::before {
   bottom: 0;
-  background: linear-gradient(var(--color-line-strong), rgb(217 217 217 / 0));
+  background: linear-gradient(var(--color-line-strong), transparent);
 }
 
 .timeline-marker {
@@ -2424,7 +2558,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   height: 15px;
   border: 1px solid var(--color-line-strong);
   border-radius: 50%;
-  background: var(--color-white);
+  background: var(--color-raised);
   box-shadow: var(--shadow-xs);
   transition: border-color var(--dur-slow) var(--ease-out);
 }
@@ -2455,7 +2589,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 .timeline-item[data-current="true"] .timeline-marker {
   border-color: var(--color-ink);
   background: var(--color-ink);
-  box-shadow: 0 0 0 4px rgb(0 0 0 / 0.07);
+  box-shadow: 0 0 0 4px var(--tint-ring);
 }
 
 .timeline-item[data-current="true"] .timeline-marker::after {
@@ -2554,7 +2688,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   border: 1px solid var(--color-line);
   border-radius: 8px;
   background: var(--color-surface);
-  box-shadow: inset 0 1px 0 var(--color-white);
+  box-shadow: inset 0 1px 0 var(--edge-light);
   color: var(--color-ink);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -2591,7 +2725,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   padding-inline: 0.5rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
-  background: var(--color-white);
+  background: var(--color-raised);
   box-shadow: var(--shadow-xs), inset 0 -1px 0 rgb(0 0 0 / 0.03);
   font-size: 0.75rem;
   font-weight: 600;
@@ -2877,7 +3011,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   position: relative;
   display: flex;
   justify-content: center;
-  color: #efefef;
+  color: var(--wordmark);
   font-size: clamp(6rem, 27vw, 25rem);
   font-weight: 600;
   line-height: 0.85;
@@ -2952,7 +3086,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   }
 
   .footer-letter:hover .footer-letter-glyph {
-    color: #e3e3e3;
+    color: var(--wordmark-hover);
     transform: translateY(-0.015em) scale(1.12);
   }
 }
@@ -3094,7 +3228,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   height: 7px;
   border-radius: 50%;
   background: var(--color-ink);
-  box-shadow: 0 0 0 3px rgb(0 0 0 / 0.08);
+  box-shadow: 0 0 0 3px var(--tint-ring);
 }
 
 .project-hero .btn-row {
@@ -3269,8 +3403,8 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   padding: 1.375rem 1.375rem 1.25rem;
   border: 1px solid var(--color-line);
   border-radius: 20px;
-  background: linear-gradient(180deg, var(--color-white) 0%, var(--color-surface) 100%);
-  box-shadow: var(--shadow-xs), inset 0 1px 0 var(--color-white);
+  background: linear-gradient(180deg, var(--color-raised) 0%, var(--color-surface) 100%);
+  box-shadow: var(--shadow-xs), inset 0 1px 0 var(--edge-light);
 }
 
 .outcome-value {
@@ -3296,7 +3430,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   padding: 0.75rem 1.125rem;
   border: 1px solid var(--color-line);
   border-radius: 14px;
-  background: var(--color-white);
+  background: var(--color-raised);
   box-shadow: var(--shadow-xs);
   font-size: 1rem;
   font-weight: 500;
@@ -3407,7 +3541,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   padding: 1.5rem 1.75rem;
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
-  background: var(--color-white);
+  background: var(--color-raised);
   box-shadow: var(--shadow-xs);
   text-decoration: none;
   transition:
@@ -3500,7 +3634,10 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   container-type: size;
   width: 100%;
   aspect-ratio: 2 / 1;
-  background-image: radial-gradient(circle, #dedede 1px, transparent 1.5px);
+  --dot-ink: var(--color-ink);
+  --dot-idle-tone: 222;
+  --dot-lit-tone: 120;
+  background-image: radial-gradient(circle, var(--dot-idle) 1px, transparent 1.5px);
   background-position: center;
   background-size: 12px 12px;
   -webkit-mask-image: radial-gradient(75% 80% at 50% 50%, #000 62%, transparent 100%);
@@ -3685,6 +3822,157 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   40% {
     filter: blur(2px);
   }
+}
+
+/* ---- Dark mode ------------------------------------------------------------- */
+
+/* <html data-mode="dark"> remaps the light palette once; components read the
+   tokens, so most rules need no dark twin. The page becomes ink, text turns
+   near-white, and the dark chapters (selected work, contact panels) step up
+   to a raised charcoal so they still read as their own surfaces. Measured
+   WCAG 2.x contrast: ink/paper 18.1, muted/paper 8.3, graphite/paper 6.1,
+   fog/night 7.4. The header stays in its smoke-glass state throughout (see
+   "Dark chapter underneath"), and buttons use the same inverted variants as the dark
+   chapters. Light values are the defaults; nothing here applies without
+   JavaScript, which keeps the page light. */
+:root[data-mode="dark"] {
+  color-scheme: dark;
+
+  --color-paper: #0a0a0a;
+  --color-ink: #f5f5f5;
+  --color-ink-soft: #e5e5e5;
+  --color-surface: #111111;
+  --color-surface-2: #161616;
+  --color-line: #222222;
+  --color-line-strong: #333333;
+  --color-graphite: #8f8f8f;
+  --color-muted: #a8a8a8;
+  --color-night: #121212;
+  --color-night-raised: #181818;
+  --color-night-surface: #1f1f1f;
+  --color-night-line: #2b2b2b;
+
+  --color-on-ink: #0a0a0a;
+  --color-raised: #141414;
+  --edge-light: rgb(255 255 255 / 0.05);
+  --tint-ring: rgb(255 255 255 / 0.1);
+  --hero-glow: #171717;
+  --hero-glow-soft: #121212;
+  --grid-line: rgb(255 255 255 / 0.05);
+  --wordmark: #151515;
+  --wordmark-hover: #202020;
+  --dot-idle: #262626;
+
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5), 0 2px 8px -2px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.5), 0 6px 16px -4px rgb(0 0 0 / 0.55),
+    0 16px 32px -12px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 28px -8px rgb(0 0 0 / 0.6),
+    0 36px 72px -20px rgb(0 0 0 / 0.7);
+  --shadow-xl: 0 4px 10px rgb(0 0 0 / 0.4), 0 28px 56px -14px rgb(0 0 0 / 0.7),
+    0 72px 128px -32px rgb(0 0 0 / 0.8);
+
+  --glass-bg: rgb(28 28 28 / 0.62);
+  --glass-bg-strong: rgb(24 24 24 / 0.78);
+  --glass-border: rgb(255 255 255 / 0.1);
+}
+
+/* The 404 dot matrix reads these on every mode change. */
+[data-mode="dark"] .dot-404 {
+  --dot-idle-tone: 38;
+  --dot-lit-tone: 150;
+}
+
+/* The scrim tints dark in dark mode whatever sits underneath; there are no
+   white margins to smear. */
+[data-mode="dark"] .site-header::before {
+  background-color: rgb(10 10 10 / 0.72);
+}
+
+/* Dark panels on a dark page: a hairline edge keeps their outline. */
+[data-mode="dark"] :is(.finale-panel, .project-cta) {
+  box-shadow: inset 0 0 0 1px var(--color-night-line), var(--shadow-lg);
+}
+
+[data-mode="dark"] .night {
+  box-shadow:
+    inset 0 1px 0 var(--color-night-line),
+    inset 0 -1px 0 var(--color-night-line);
+}
+
+[data-mode="dark"] .project-carousel-surface {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.08),
+    0 2px 4px rgb(0 0 0 / 0.4),
+    0 24px 48px -16px rgb(0 0 0 / 0.8);
+}
+
+[data-mode="dark"] .row-fill::before {
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.04);
+}
+
+[data-mode="dark"] .edu-badge {
+  box-shadow: var(--shadow-xs), inset 0 1px 0 var(--edge-light);
+}
+
+/* Case-study screenshots keep their own colors; only the chrome turns dark. */
+[data-mode="dark"] .project-media .art-window-bar {
+  border-bottom-color: var(--color-line);
+  background: var(--color-surface-2);
+}
+
+[data-mode="dark"] .project-media .art-window-bar i {
+  background: #3a3a3a;
+}
+
+/* Switching modes. ThemeToggle wraps the swap in a view transition and
+   grows the new theme as a circle from the button (WAAPI on the new root
+   snapshot); here the default cross-fade is switched off and the header
+   joins the page snapshot so it is revealed with everything else. The
+   toggle itself stays live on top, so its icon morph plays during the
+   wipe. Without view transitions, colors cross-fade instead
+   (data-theme-fade), with explicit properties only. */
+:root[data-theme-switch]::view-transition-old(root),
+:root[data-theme-switch]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root[data-theme-switch] .site-header {
+  view-transition-name: none !important;
+}
+
+:root[data-theme-switch] .theme-toggle {
+  view-transition-name: theme-toggle;
+}
+
+:root[data-theme-switch]::view-transition-group(theme-toggle) {
+  z-index: 101;
+  animation: none;
+}
+
+:root[data-theme-switch]::view-transition-old(theme-toggle) {
+  display: none;
+}
+
+:root[data-theme-switch]::view-transition-new(theme-toggle) {
+  animation: none;
+}
+
+:root[data-theme-fade],
+:root[data-theme-fade] *,
+:root[data-theme-fade] *::before,
+:root[data-theme-fade] *::after {
+  transition:
+    background-color 420ms var(--ease-out),
+    border-color 420ms var(--ease-out),
+    color 420ms var(--ease-out),
+    fill 420ms var(--ease-out),
+    stroke 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out),
+    text-decoration-color 420ms var(--ease-out),
+    transform 600ms var(--ease-out-expo),
+    opacity 300ms var(--ease-out) !important;
 }
 
 /* ---- Preferences ------------------------------------------------------------ */
