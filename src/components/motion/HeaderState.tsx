@@ -59,7 +59,8 @@ export default function HeaderState({ children }: HeaderStateProps) {
         }
         return;
       }
-      const nav = el.querySelector<HTMLElement>(".desktop-nav");
+      // The nav and the color-mode switch travel together as one group.
+      const nav = el.querySelector<HTMLElement>(".header-controls");
       const desktop = window.matchMedia("(min-width: 768px)").matches;
       const canAnimate =
         initialized &&

@@ -960,18 +960,32 @@ html:not(.js) .site-header::before {
   }
 }
 
-/* Color-mode switch (ThemeToggle): a 44px glass disc like the brand mark.
-   The icon is CSS-owned: in dark mode the sun's rays fold away, its core
-   swells, and a mask disc slides over it to cut the crescent. Desktop pins
-   it to the right edge so the centered nav never shifts; mobile sets it
-   beside the menu trigger. It needs JavaScript, so it is hidden without. */
+/* Nav, color-mode switch, and mobile menu form one group, so the switch sits
+   just right of the nav (after Contact) and glides with it when the header
+   moves from centered to split (HeaderState FLIPs the whole group). On
+   mobile the group holds the switch and the menu trigger. */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 767px) {
+  .header-controls {
+    margin-inline-start: auto;
+  }
+}
+
+/* Color-mode switch (ThemeToggle): a glass disc like the brand mark, as tall
+   as the nav pill on desktop. The icon is CSS-owned: in dark mode the sun's
+   rays fold away, its core swells, and a mask disc slides over it to cut the
+   crescent. It needs JavaScript, so it is hidden without. */
 .theme-toggle {
   display: inline-grid;
   flex: 0 0 auto;
   place-items: center;
   width: 44px;
   height: 44px;
-  margin-inline-start: auto;
   padding: 0;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
@@ -1058,23 +1072,18 @@ html:not(.js) .theme-toggle {
   }
 }
 
+/* Desktop: match the pill (40px links + 4px padding + 1px border). */
 @media (min-width: 768px) {
-  html.js .theme-toggle {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    margin-top: -22px;
-  }
-
-  /* The nav travels right once the brand appears; keep it clear of the switch. */
-  html.js .site-header[data-nav="split"] .site-header-inner {
-    padding-inline-end: calc(44px + 0.75rem);
+  .theme-toggle {
+    width: 50px;
+    height: 50px;
   }
 }
 
-@media (max-width: 767px) {
-  .site-header-inner {
-    gap: 0.5rem;
+@media (min-width: 768px) and (pointer: coarse) {
+  .theme-toggle {
+    width: 54px;
+    height: 54px;
   }
 }
 
@@ -1331,6 +1340,7 @@ html:not(.js) .site-header .brand {
 }
 
 @media (max-width: 767px) {
+  html:not(.js) .header-controls,
   html:not(.js) .site-menu {
     width: 100%;
   }

@@ -28,9 +28,12 @@ export default function SiteHeader() {
             <span className="brand-name">{profile.fullName}</span>
           </span>
         </SmartLink>
-        <DesktopNav items={items} />
-        <ThemeToggle />
-        <SiteMenu items={items} />
+        {/* One unit: the switch rides beside the nav wherever it travels. */}
+        <div className="header-controls">
+          <DesktopNav items={items} />
+          <ThemeToggle />
+          <SiteMenu items={items} />
+        </div>
       </Container>
     </HeaderState>
   );
