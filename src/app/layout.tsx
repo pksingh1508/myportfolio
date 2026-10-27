@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { site } from "../constant/data";
+import { THEME_COLORS, themeScript } from "../lib/theme";
 import SiteFooter from "../components/layout/SiteFooter";
 import SiteHeader from "../components/layout/SiteHeader";
 import "./globals.css";
@@ -42,9 +43,14 @@ export const metadata: Metadata = {
   },
 };
 
+// Both schemes are supported; <html data-mode> picks one before first paint
+// (see themeScript) and ThemeToggle keeps theme-color in step with it.
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
-  colorScheme: "light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLORS.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLORS.dark },
+  ],
+  colorScheme: "light dark",
 };
 
 /*
@@ -65,6 +71,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: enhancementScript }} />
       </head>
       <body id="top" className="min-h-full flex flex-col">

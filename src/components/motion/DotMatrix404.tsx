@@ -10,8 +10,10 @@ type Dot = {
   level: number;
 };
 
-const INK = "#0a0a0a";
-const IDLE = "#dedede";
+/** Light-mode palette; the live values come from CSS (see `.dot-404`). */
+const FALLBACK_INK = "#0a0a0a";
+const FALLBACK_IDLE_TONE = 222;
+const FALLBACK_LIT_TONE = 120;
 /** Influence radius around the pointer, in CSS pixels. */
 const REACH = 150;
 /** Width of the ambient diagonal beam, in CSS pixels. */
@@ -54,6 +56,21 @@ export default function DotMatrix404() {
     let last = 0;
     let visible = false;
     let alive = true;
+    let ink = FALLBACK_INK;
+    let idleTone = FALLBACK_IDLE_TONE;
+    let litTone = FALLBACK_LIT_TONE;
+
+    // Colors follow the color mode through custom properties on the host.
+    const readPalette = () => {
+      const style = getComputedStyle(host);
+      const tone = (name: string, fallback: number) => {
+        const value = Number.parseFloat(style.getPropertyValue(name));
+        return Number.isFinite(value) ? value : fallback;
+      };
+      ink = style.getPropertyValue("--dot-ink").trim() || FALLBACK_INK;
+      idleTone = tone("--dot-idle-tone", FALLBACK_IDLE_TONE);
+      litTone = tone("--dot-lit-tone", FALLBACK_LIT_TONE);
+    };
 
     const layout = () => {
       const rect = host.getBoundingClientRect();
@@ -104,7 +121,7 @@ export default function DotMatrix404() {
       const base = gap * 0.085;
       const full = gap * 0.34;
       // Resting dots share one path; lit dots draw on their own.
-      context.fillStyle = IDLE;
+      context.fillStyle = `rgb(${idleTone} ${idleTone} ${idleTone})`;
       context.beginPath();
       for (const dot of dots) {
         if (dot.inside || dot.level > 0.02) continue;
@@ -114,13 +131,13 @@ export default function DotMatrix404() {
       context.fill();
       for (const dot of dots) {
         if (dot.inside || dot.level <= 0.02) continue;
-        const tone = mix(222, 120, dot.level);
+        const tone = mix(idleTone, litTone, dot.level);
         context.fillStyle = `rgb(${tone} ${tone} ${tone})`;
         context.beginPath();
         context.arc(dot.x, dot.y, base * (1 + 2.4 * dot.level), 0, Math.PI * 2);
         context.fill();
       }
-      context.fillStyle = INK;
+      context.fillStyle = ink;
       context.beginPath();
       for (const dot of dots) {
         if (!dot.inside) continue;
@@ -184,8 +201,15 @@ export default function DotMatrix404() {
       else stop();
     });
 
+    const modeObserver = new MutationObserver(() => {
+      readPalette();
+      draw();
+    });
+
     void document.fonts.ready.then(() => {
       if (!alive) return;
+      readPalette();
+      modeObserver.observe(document.documentElement, { attributeFilter: ["data-mode"] });
       layout();
       draw();
       host.dataset.live = "";
@@ -201,6 +225,7 @@ export default function DotMatrix404() {
       stop();
       resizeObserver.disconnect();
       viewObserver.disconnect();
+      modeObserver.disconnect();
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
