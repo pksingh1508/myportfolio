@@ -16,10 +16,15 @@ type CarouselImage = {
 
 const SLOT_COUNT = 10;
 const TURN = Math.PI * 2;
-const IDLE_SPEED = 0.1; // radians/second, independent of frame rate
-const SCROLL_IMPULSE = 0.004;
-const MAX_MOMENTUM = 5;
-const MOMENTUM_DECAY = 1.6;
+const IDLE_SPEED = 0.16; // radians/second (one turn in ~40s), independent of frame rate
+const SCROLL_IMPULSE = 0.006; // radians/second of boost per scrolled pixel
+const MAX_MOMENTUM = 6;
+const MOMENTUM_DECAY = 1.1; // per second; the scroll boost glides out over ~2s
+// The spin speed eases toward idle + boost instead of jumping to it: quick to
+// pick up a scroll, slower to settle back, so both directions read as one
+// continuous motion.
+const SPEED_RISE = 7;
+const SPEED_FALL = 2.4;
 const ENTRANCE_DELAY = 0.8;
 
 const easeOut = (progress: number) => 1 - (1 - Math.max(0, Math.min(1, progress))) ** 3;
@@ -35,7 +40,12 @@ function cardPose(angle: number, radiusScale = 1, scale = 1) {
   };
 }
 
-/** A circular fan entering from the right, driven by native-scroll momentum. */
+/**
+ * A circular fan entering from the right. It idles at a steady spin and
+ * native scrolling adds momentum; the spin speed eases toward that target,
+ * so scroll boosts swell and settle smoothly and a pause (hover, focus,
+ * off-screen) resumes from rest rather than snapping back to full speed.
+ */
 export default function ProjectCarousel({ images }: { readonly images: readonly CarouselImage[] }) {
   const stage = useRef<HTMLDivElement>(null);
   const phase = useRef(Math.PI);
@@ -70,6 +80,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
     let lastTime = 0;
     let lastScroll = window.scrollY;
     let momentum = 0;
+    let speed = 0;
 
     const draw = () => {
       const age = introTime - ENTRANCE_DELAY;
@@ -106,7 +117,10 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
         launched = true;
       }
       momentum *= Math.exp(-MOMENTUM_DECAY * elapsed);
-      phase.current = (phase.current - (IDLE_SPEED + momentum) * elapsed) % TURN;
+      const target = IDLE_SPEED + momentum;
+      const rate = target > speed ? SPEED_RISE : SPEED_FALL;
+      speed += (target - speed) * (1 - Math.exp(-rate * elapsed));
+      phase.current = (phase.current - speed * elapsed) % TURN;
       draw();
       if (paused()) {
         frame = 0;
@@ -121,6 +135,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
         lastTime = performance.now();
         lastScroll = window.scrollY;
         momentum = 0;
+        speed = 0;
         frame = requestAnimationFrame(tick);
       } else if (!run && frame) {
         cancelAnimationFrame(frame);
