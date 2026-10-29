@@ -1,84 +1,27 @@
-import Image from "next/image";
 import type { CSSProperties } from "react";
 import { projects } from "../../constant/data";
-import type { Project } from "../../types/portfolio";
 import { PROJECT_OPEN } from "../../lib/view-transitions";
 import Container from "../layout/Container";
 import DecodeText from "../motion/DecodeText";
+import DeckShot from "../motion/DeckShot";
 import PointerSpot from "../motion/PointerSpot";
 import Reveal from "../motion/Reveal";
-import SharedShot from "../motion/SharedShot";
 import WorkExpand from "../motion/WorkExpand";
 import WorkStack from "../motion/WorkStack";
+import ProjectFrame from "../ui/ProjectFrame";
 import SmartLink from "../ui/SmartLink";
-
-/** Bare host of a live link, shown in the frame's address bar. */
-function hostOf(href: string): string {
-  try {
-    return new URL(href).hostname.replace(/^www\./, "");
-  } catch {
-    return href;
-  }
-}
-
-/**
- * The card's evidence: the product screenshot in a browser frame, or the
- * app's real identity artwork. The frame carries the project-open morph, so
- * it is the only element on the homepage named for this project's shot.
- */
-function StackFrame({ project }: { readonly project: Project }) {
-  const shot = project.media[0];
-  const live = project.links.find((link) => link.kind === "live");
-  const view =
-    shot !== undefined && shot.type === "image" ? (
-      <Image
-        className="stack-shot"
-        src={shot.src}
-        alt=""
-        width={shot.width}
-        height={shot.height}
-        sizes="(max-width: 1023px) 92vw, 680px"
-      />
-    ) : project.artwork ? (
-      <div className="stack-plate">
-        <Image
-          className="stack-plate-icon"
-          src={project.artwork.icon.src}
-          alt=""
-          width={project.artwork.icon.width}
-          height={project.artwork.icon.height}
-          sizes="128px"
-        />
-        <span className="stack-plate-title">{project.title}</span>
-        <span className="stack-plate-tagline">{project.artwork.tagline}</span>
-      </div>
-    ) : (
-      <div className="stack-plate">
-        <span className="stack-plate-title">{project.title}</span>
-      </div>
-    );
-  return (
-    <SharedShot slug={project.slug}>
-      <div className="stack-frame" data-shot={project.slug} aria-hidden="true">
-        <div className="stack-bar">
-          <i />
-          <i />
-          <i />
-          {live ? <span>{hostOf(live.href)}</span> : null}
-        </div>
-        <div className="stack-view">{view}</div>
-      </div>
-    </SharedShot>
-  );
-}
 
 /**
  * Selected work as a deck of sticky project cards: each card docks a little
  * below the one before it, so scrolling lays the projects on top of each
  * other and the earlier ones stay visible as stacked edges. CSS owns the
- * sticky layout; WorkStack only lets covered cards settle back into the deck.
- * Without JavaScript, below desktop, on short viewports, or with reduced
- * motion the cards are a plain list. Server Component.
+ * sticky layout on phones, tablets, and desktops; WorkStack only lets
+ * covered cards settle back into the deck. On short viewports or with
+ * reduced motion the cards are a plain list.
+ *
+ * Each card opens its case study in the project modal (an intercepted
+ * `/work/[slug]` route) and its browser frame flies into the modal. Without
+ * JavaScript the same link loads the full case-study page. Server Component.
  */
 export default function SelectedWork() {
   const featured = projects.filter((project) => project.featured);
@@ -139,8 +82,9 @@ export default function SelectedWork() {
                         className="btn btn-primary stack-cta"
                         href={`/work/${project.slug}`}
                         arrow
-                        ariaLabel={`Read the ${project.title} case study`}
+                        ariaLabel={`Open the ${project.title} case study`}
                         transitionTypes={[PROJECT_OPEN]}
+                        scroll={false}
                       >
                         View case study
                       </SmartLink>
@@ -157,7 +101,9 @@ export default function SelectedWork() {
                       ) : null}
                     </div>
                   </div>
-                  <StackFrame project={project} />
+                  <DeckShot slug={project.slug}>
+                    <ProjectFrame project={project} />
+                  </DeckShot>
                   <span className="stack-shade" aria-hidden="true" />
                 </div>
               </article>

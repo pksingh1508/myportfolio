@@ -1,6 +1,5 @@
 import PageTransition from "../../../components/motion/PageTransition";
 import PointerSpot from "../../../components/motion/PointerSpot";
-import ProjectSectionReveal from "../../../components/motion/ProjectSectionReveal";
 import SharedShot from "../../../components/motion/SharedShot";
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
@@ -10,9 +9,9 @@ import { contact, profile, projects, site } from "../../../constant/data";
 import type { Project } from "../../../types/portfolio";
 import Container from "../../../components/layout/Container";
 import { ArrowIcon, PlatformIcon } from "../../../components/ui/Icons";
-import Odometer from "../../../components/ui/Odometer";
 import ProjectMediaFigure from "../../../components/ui/ProjectMediaFigure";
 import ProjectArtwork from "../../../components/ui/ProjectArtwork";
+import ProjectStory from "../../../components/sections/ProjectStory";
 import SmartLink from "../../../components/ui/SmartLink";
 
 type ProjectParams = {
@@ -21,29 +20,6 @@ type ProjectParams = {
 
 /** Stagger slot for the CSS page-load entrance (see `.intro` in globals.css). */
 const step = (index: number) => ({ "--i": index }) as CSSProperties;
-
-const pad = (value: number) => String(value).padStart(2, "0");
-
-const countLabel = (count: number, one: string, many: string) =>
-  `${count} ${count === 1 ? one : many}`;
-
-/** Label column shared by every case-study section, so all lists align. */
-function SectionHead({
-  id,
-  title,
-  meta,
-}: {
-  readonly id: string;
-  readonly title: string;
-  readonly meta: string;
-}) {
-  return (
-    <div className="case-section-head">
-      <h2 id={id}>{title}</h2>
-      <p className="case-section-meta">{meta}</p>
-    </div>
-  );
-}
 
 export async function generateStaticParams(): Promise<ProjectParams[]> {
   return projects.map((project) => ({ slug: project.slug }));
@@ -193,99 +169,7 @@ export default async function ProjectPage({
             </section>
           ) : null}
 
-          {project.caseStudy ? (
-            <section className="case-section case-section-static" aria-labelledby="context-heading">
-              <SectionHead id="context-heading" title="Context" meta="The product" />
-              <div className="case-prose"><p>{project.caseStudy.context}</p></div>
-            </section>
-          ) : null}
-
-          <ProjectSectionReveal labelledBy="contribution-heading">
-            <SectionHead
-              id="contribution-heading"
-              title="Contribution"
-              meta={countLabel(project.highlights.length, "highlight", "highlights")}
-            />
-            <ol className="contribution-list" role="list">
-              {project.highlights.map((highlight, itemIndex) => (
-                <li key={highlight}>
-                  <span className="case-index" aria-hidden="true">
-                    {pad(itemIndex + 1)}
-                  </span>
-                  <p>{highlight}</p>
-                </li>
-              ))}
-            </ol>
-          </ProjectSectionReveal>
-
-          {project.caseStudy ? (
-            <>
-              <section className="case-section case-section-static" aria-labelledby="constraints-heading">
-                <SectionHead id="constraints-heading" title="Constraints" meta="Design decisions" />
-                <ul className="contribution-list" role="list">
-                  {project.caseStudy.constraints.map((constraint, itemIndex) => (
-                    <li key={constraint}>
-                      <span className="case-index" aria-hidden="true">{pad(itemIndex + 1)}</span>
-                      <p>{constraint}</p>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <section className="case-section case-section-static" aria-labelledby="implementation-heading">
-                <SectionHead id="implementation-heading" title="Implementation" meta="How it works" />
-                <ol className="contribution-list" role="list">
-                  {project.caseStudy.implementation.map((detail, itemIndex) => (
-                    <li key={detail}>
-                      <span className="case-index" aria-hidden="true">{pad(itemIndex + 1)}</span>
-                      <p>{detail}</p>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-              <section className="case-section case-section-static" aria-labelledby="development-heading">
-                <SectionHead id="development-heading" title="Current state" meta={project.status} />
-                <div className="case-prose"><p>{project.caseStudy.outcome}</p></div>
-              </section>
-            </>
-          ) : null}
-
-          {project.metrics.length > 0 ? (
-            <ProjectSectionReveal labelledBy="outcome-heading">
-              <SectionHead
-                id="outcome-heading"
-                title="Outcome"
-                meta={countLabel(project.metrics.length, "result", "results")}
-              />
-              <ul className="outcome-grid" role="list">
-                {project.metrics.map((metric) => (
-                  <li key={`${metric.value}-${metric.label}`} className="outcome-card">
-                    <strong className="outcome-value">
-                      <Odometer value={metric.value} />
-                    </strong>{" "}
-                    <span className="outcome-label">{metric.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </ProjectSectionReveal>
-          ) : null}
-
-          <ProjectSectionReveal labelledBy="stack-heading">
-            <SectionHead
-              id="stack-heading"
-              title="Stack"
-              meta={countLabel(project.techStack.length, "technology", "technologies")}
-            />
-            <ul className="stack-grid" role="list">
-              {project.techStack.map((technology, itemIndex) => (
-                <li key={technology}>
-                  <span className="case-index" aria-hidden="true">
-                    {pad(itemIndex + 1)}
-                  </span>
-                  {technology}
-                </li>
-              ))}
-            </ul>
-          </ProjectSectionReveal>
+          <ProjectStory project={project} />
 
           <section
             className="project-cta"
@@ -306,29 +190,32 @@ export default async function ProjectPage({
             </p>
           </section>
 
+          {/* Plain anchors: a client navigation to /work/[slug] is
+              intercepted into the project modal from any page, and here the
+              reader asked for the next full case study. */}
           {previous || next ? (
             <nav aria-label="More projects" className="project-nav">
               <ul>
                 {previous ? (
                   <li data-dir="previous">
-                    <Link href={`/work/${previous.slug}`} className="project-nav-card">
+                    <a href={`/work/${previous.slug}`} className="project-nav-card">
                       <span className="project-nav-label">
                         <ArrowIcon direction="left" />
                         Previous project
                       </span>
                       <span className="project-nav-title">{previous.title}</span>
-                    </Link>
+                    </a>
                   </li>
                 ) : null}
                 {next ? (
                   <li data-dir="next">
-                    <Link href={`/work/${next.slug}`} className="project-nav-card">
+                    <a href={`/work/${next.slug}`} className="project-nav-card">
                       <span className="project-nav-label">
                         Next project
                         <ArrowIcon direction="right" />
                       </span>
                       <span className="project-nav-title">{next.title}</span>
-                    </Link>
+                    </a>
                   </li>
                 ) : null}
               </ul>

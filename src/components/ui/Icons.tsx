@@ -67,6 +67,14 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function CloseIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 4l8 8M12 4l-8 8" />
+    </Icon>
+  );
+}
+
 /*
  * Platform marks for store links. Glyph paths from Simple Icons v16.32.0
  * (CC0-1.0); the marks are trademarks of Apple Inc. and Google LLC and are

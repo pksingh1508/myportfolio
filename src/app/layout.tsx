@@ -63,7 +63,7 @@ export const viewport: Viewport = {
  */
 const enhancementScript = `(function(){var d=document.documentElement;d.classList.add('js');setTimeout(function(){if(!d.hasAttribute('data-hydrated'))d.setAttribute('data-hydrated','fallback')},4000)})()`;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
@@ -81,6 +81,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         {children}
         <SiteFooter />
+        {modal}
         <Analytics />
       </body>
     </html>

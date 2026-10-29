@@ -103,6 +103,7 @@
 
   --z-header: 50;
   --z-menu: 60;
+  --z-modal: 80;
   --z-skip: 100;
 }
 
@@ -2076,6 +2077,29 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   color: var(--color-mist);
 }
 
+/* The card's frame slot (DeckShot) and the end of the project-modal morph.
+   While the modal holds the shot, the slot keeps its size and shows the
+   faint outline of the frame that lifted out of it. */
+.deck-shot {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-radius: 18px;
+}
+
+.deck-shot > .stack-frame {
+  flex: 1 1 auto;
+}
+
+.deck-shot[data-lifted] {
+  background: rgb(255 255 255 / 0.02);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.deck-shot[data-lifted] > * {
+  visibility: hidden;
+}
+
 /* Browser frame: real screenshot or app identity on a dot-grid stage. */
 .stack-frame {
   display: flex;
@@ -2185,7 +2209,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 }
 
 @media (max-width: 1023px) {
-  .stack-frame {
+  .deck-shot {
     order: -1;
   }
 }
@@ -2199,7 +2223,8 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
     border-radius: 22px;
   }
 
-  .stack-frame {
+  .stack-frame,
+  .deck-shot {
     border-radius: 14px;
   }
 
@@ -2223,8 +2248,20 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   }
 }
 
+/* The modal frame shows the whole screenshot at its own ratio; an identity
+   plate gets a stage just tall enough for the icon and its lines. */
+.stack-frame[data-fit="intrinsic"] .stack-view {
+  aspect-ratio: var(--shot-ratio, 16 / 10);
+}
+
+.stack-frame[data-fit="intrinsic"][data-kind="plate"] .stack-view {
+  aspect-ratio: auto;
+  height: clamp(17rem, 30vw, 24rem);
+}
+
 /* The deck: one docking line per card, a step apart. The card height is
-   capped so the last card still fits below its docking line. */
+   capped so the last card still fits below its docking line. WorkStack's
+   DECK_QUERY lists the same two ranges as these media queries. */
 @media (min-width: 1024px) and (min-height: 760px) and (prefers-reduced-motion: no-preference) {
   .stack-slot {
     position: sticky;
@@ -2237,6 +2274,64 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
       calc(100svh - var(--header-height) - 2.5rem - (var(--count, 1) - 1) * var(--dock-step))
     );
     min-height: 0;
+  }
+}
+
+/* Phones and tablets get the same deck with a tighter step. Each card is a
+   column of fixed height: the copy keeps its natural size and the frame
+   takes whatever is left, so the card fits under its docking line on any
+   phone. The tags give way (the modal lists the full stack), the summary
+   stops at three lines, and on shorter phones the metrics give way too. */
+@media (max-width: 1023px) and (min-height: 640px) and (prefers-reduced-motion: no-preference) {
+  .work-stack {
+    --dock-step: 0.5rem;
+  }
+
+  .stack-slot {
+    position: sticky;
+    top: calc(var(--header-height) + 0.75rem + var(--i, 0) * var(--dock-step));
+  }
+
+  .stack-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: min(
+      46rem,
+      calc(100svh - var(--header-height) - 1.5rem - (var(--count, 1) - 1) * var(--dock-step))
+    );
+  }
+
+  .deck-shot {
+    flex: 1 1 0;
+    min-height: 8rem;
+  }
+
+  .stack-card .stack-view {
+    aspect-ratio: auto;
+  }
+
+  .stack-copy {
+    flex: 0 0 auto;
+    gap: 0.875rem;
+  }
+
+  .stack-summary {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
+
+  .stack-tags {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) and (min-height: 640px) and (max-height: 759px) and (prefers-reduced-motion: no-preference) {
+  .stack-metrics {
+    display: none;
   }
 }
 
@@ -3308,7 +3403,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   gap: 0.625rem;
 }
 
-.case-section-head h2 {
+.case-section-head :is(h2, h3) {
   font-size: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);
   line-height: 1;
   letter-spacing: -0.045em;
@@ -3764,6 +3859,199 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
   }
 }
 
+/* ---- Project modal ---------------------------------------------------------- */
+
+/* The intercepted /work/[slug] route over the homepage (ProjectModal): a
+   sheet that rises from the bottom edge on phones and a centered panel on
+   larger screens. It scrolls inside itself while the page stays locked;
+   the stable gutter keeps the page from shifting when its scrollbar goes.
+   Scrim and panel are separate fixed layers (no shared wrapper), so each
+   is its own view-transition boundary. */
+html[data-modal-open] {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.project-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgb(10 10 10 / 0.55);
+}
+
+.project-modal-panel {
+  --modal-gap: max(0.75rem, env(safe-area-inset-top));
+  position: fixed;
+  inset: var(--modal-gap) 0 0;
+  z-index: var(--z-modal);
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-xl);
+  outline: none;
+}
+
+.project-modal-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding:
+    clamp(4.5rem, 9vw, 6rem)
+    clamp(1.25rem, 5vw, 4rem)
+    calc(clamp(2.5rem, 6vw, 4.5rem) + env(safe-area-inset-bottom));
+}
+
+.project-modal-close {
+  position: absolute;
+  top: clamp(0.875rem, 2vw, 1.25rem);
+  right: clamp(0.875rem, 2vw, 1.25rem);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg-strong);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+.project-modal-close .icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.project-modal-close:active {
+  transform: scale(0.94);
+  transition-duration: var(--dur-press);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-modal-close:hover {
+    background: var(--color-raised);
+    transform: rotate(90deg);
+  }
+}
+
+@media (min-width: 768px) {
+  .project-modal-panel {
+    --modal-gap: clamp(1rem, 2.5vw, 1.75rem);
+    inset: var(--modal-gap);
+    width: min(100% - 2 * var(--modal-gap), 72rem);
+    margin-inline: auto;
+    border-radius: 28px;
+  }
+}
+
+[data-mode="dark"] .project-modal-scrim {
+  background: rgb(0 0 0 / 0.7);
+}
+
+[data-mode="dark"] .project-modal-panel {
+  box-shadow: inset 0 0 0 1px var(--color-line), var(--shadow-xl);
+}
+
+/* Sheet content: identity, the landing frame, facts, links, then the same
+   case-study sections as the project page. */
+.sheet-head {
+  display: grid;
+  justify-items: start;
+  gap: 1.125rem;
+}
+
+.sheet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.sheet-category {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: 6px;
+  color: var(--color-ink);
+}
+
+.sheet-meta .sheet-category ~ span:not(.sheet-category)::before {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin-inline-end: 0.75rem;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+  vertical-align: middle;
+  opacity: 0.7;
+}
+
+.sheet-meta .sheet-category + span::before {
+  display: none;
+}
+
+.sheet-head h2 {
+  max-width: 14ch;
+  font-size: clamp(2.5rem, 1.5rem + 4vw, 5.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.sheet-head .lede {
+  max-width: 42ch;
+  color: var(--color-muted);
+}
+
+.sheet-stage {
+  margin-block-start: clamp(1.75rem, 4vw, 3rem);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.sheet-shot,
+.sheet-shot .stack-frame {
+  border-radius: 20px;
+}
+
+.sheet .project-facts {
+  margin-block-start: clamp(1.75rem, 4vw, 3rem);
+}
+
+.sheet-actions {
+  margin-block: 1.5rem 0;
+}
+
+.sheet-media {
+  margin-block-start: clamp(1.75rem, 4vw, 3rem);
+}
+
+.sheet .case-section:first-of-type {
+  margin-block-start: clamp(2rem, 5vw, 3.5rem);
+}
+
+/* Without View Transitions the panel still rises in. */
+@supports not (view-transition-class: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    .project-modal-scrim {
+      animation: modal-fade 360ms var(--ease-out) both;
+    }
+
+    .project-modal-panel {
+      animation: modal-panel-rise 620ms var(--ease-out-expo) both;
+    }
+  }
+}
+
 /* ---- Route transitions ------------------------------------------------------ */
 
 /* Pages leave quickly and arrive gently; the floating header stays anchored
@@ -3826,6 +4114,96 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 ::view-transition-new(.morph) {
   animation-duration: 420ms;
   animation-timing-function: var(--ease-out);
+  /* The card crops its shot; the modal and case study show it whole. Both
+     snapshots fill the flying box, pinned to the browser bar, so a change
+     of aspect ratio reads as a crop opening up rather than a stretch. */
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+/* Project modal: the scrim fades, the panel rises (a sheet sliding up on
+   phones), and the shot flies between the card and the panel above both.
+   All three sit above the anchored header, which the open modal covers,
+   so nothing jumps when the transition hands back to the live page. */
+::view-transition-group(project-modal-scrim) {
+  z-index: 101;
+}
+
+::view-transition-group(project-modal-panel) {
+  z-index: 102;
+}
+
+::view-transition-group(.morph) {
+  z-index: 103;
+}
+
+::view-transition-new(.modal-scrim-in) {
+  animation: modal-fade 420ms var(--ease-out) both;
+}
+
+::view-transition-old(.modal-scrim-out) {
+  animation: modal-fade 340ms var(--ease-out) reverse both;
+}
+
+::view-transition-new(.modal-panel-in) {
+  animation: modal-panel-rise 640ms var(--ease-out-expo) both;
+}
+
+::view-transition-old(.modal-panel-out) {
+  animation: modal-panel-fall 340ms cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-panel-rise {
+  from {
+    opacity: 0;
+    translate: 0 3rem;
+    scale: 0.97;
+  }
+}
+
+@keyframes modal-panel-fall {
+  to {
+    opacity: 0;
+    translate: 0 2rem;
+    scale: 0.98;
+  }
+}
+
+@media (max-width: 767px) {
+  ::view-transition-new(.modal-panel-in) {
+    animation: modal-sheet-rise 560ms var(--ease-out-expo) both;
+  }
+
+  ::view-transition-old(.modal-panel-out) {
+    animation: modal-sheet-fall 360ms cubic-bezier(0.5, 0, 0.75, 0) both;
+  }
+
+  @supports not (view-transition-class: none) {
+    @media (prefers-reduced-motion: no-preference) {
+      .project-modal-panel {
+        animation: modal-sheet-rise 560ms var(--ease-out-expo) both;
+      }
+    }
+  }
+}
+
+@keyframes modal-sheet-rise {
+  from {
+    translate: 0 100%;
+  }
+}
+
+@keyframes modal-sheet-fall {
+  to {
+    translate: 0 100%;
+  }
 }
 
 @keyframes morph-soften {

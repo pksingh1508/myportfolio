@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+import { useShowingHome } from "../../lib/use-showing-home";
 
 type HeaderStateProps = {
   readonly children: ReactNode;
@@ -28,6 +29,7 @@ type NavState = "center" | "split";
 export default function HeaderState({ children }: HeaderStateProps) {
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
+  const home = useShowingHome();
   const reducedMotion = useReducedMotionPreference();
   const reducedRef = useRef(reducedMotion);
   reducedRef.current = reducedMotion;
@@ -211,12 +213,13 @@ export default function HeaderState({ children }: HeaderStateProps) {
   }, [pathname]);
 
   // Server-render the resting state for this route so the nav never jumps
-  // on hydration: only the homepage opens over a hero.
+  // on hydration: only the homepage opens over a hero (it stays the page
+  // under the project modal, whose URL is a case study's).
   return (
     <header
       ref={ref}
       data-scrolled="false"
-      data-nav={pathname === "/" ? "center" : "split"}
+      data-nav={home ? "center" : "split"}
       className="site-header"
       style={{ viewTransitionName: "site-header" }}
     >

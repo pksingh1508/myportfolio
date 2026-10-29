@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { LayoutGroup, motion, type Transition } from "motion/react";
 import { useEffect, useState } from "react";
 import { useReducedMotionPreference } from "../../lib/use-reduced-motion";
+import { useShowingHome } from "../../lib/use-showing-home";
 import type { MenuItem } from "./SiteMenu";
 
 const ACTIVE_SPRING: Transition = {
@@ -27,12 +27,14 @@ export default function DesktopNav({ items }: { readonly items: readonly MenuIte
   // sections, so it glides from there instead of popping in.
   const [thumb, setThumb] = useState<string | null>(null);
   const reduced = useReducedMotionPreference();
-  const pathname = usePathname();
+  // The homepage stays the page under the project modal, so the active
+  // section survives opening and closing a project.
+  const home = useShowingHome();
 
   useEffect(() => {
     setActive(null);
     setThumb(null);
-    if (pathname !== "/") return;
+    if (!home) return;
     let frame = 0;
     const update = () => {
       frame = 0;
@@ -58,7 +60,7 @@ export default function DesktopNav({ items }: { readonly items: readonly MenuIte
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [items, pathname]);
+  }, [items, home]);
 
   return (
     <LayoutGroup id="desktop-navigation">

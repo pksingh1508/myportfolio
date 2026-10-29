@@ -17,6 +17,8 @@ type SmartLinkProps = {
    * `transitionTypes`), for example "project-open" to morph a project shot.
    */
   readonly transitionTypes?: string[];
+  /** `false` keeps the scroll position, for routes that open over the page (the project modal). */
+  readonly scroll?: boolean;
 };
 
 /** Two stacked arrows that trade places on hover (CSS owns the motion). */
@@ -42,6 +44,7 @@ export default function SmartLink({
   arrow = false,
   icon,
   transitionTypes,
+  scroll,
 }: SmartLinkProps) {
   const direction = arrow === true ? "up-right" : arrow || null;
   const label = icon ? (
@@ -81,6 +84,7 @@ export default function SmartLink({
       className={className}
       aria-label={ariaLabel}
       transitionTypes={transitionTypes}
+      scroll={scroll}
     >
       {content}
     </Link>
