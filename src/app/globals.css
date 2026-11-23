@@ -1616,8 +1616,31 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 }
 
 @media (max-width: 1023px) {
+  /* Stacked layouts: the fan runs out to the screen's right edge instead of
+     stopping at the page margin (the hero section clips the overflow), and
+     its top and bottom dissolve rather than cutting cards off flat. */
   .project-carousel {
+    width: auto;
+    margin-inline-end: calc(50% - 50vw);
     overflow: clip;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  }
+}
+
+/* Tablets: the fan sits below the copy across the full width, so a larger
+   circle centred further in fills the row instead of hugging the right. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .project-carousel {
+    height: 34rem;
+  }
+
+  .project-carousel-window {
+    --arc-radius: min(46cqh, 40cqw);
+  }
+
+  .project-carousel-card {
+    left: 84%;
   }
 }
 
@@ -1646,14 +1669,14 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
     gap: 0.625rem;
   }
 
+  /* A wider circle relative to the cards, so neighbours fan apart instead
+     of piling up; the outermost cards pass through the edge fades. */
   .project-carousel {
-    justify-self: center;
-    max-width: 32rem;
-    height: 24rem;
+    height: 26rem;
   }
 
   .project-carousel-window {
-    --arc-radius: min(32cqh, 55cqw);
+    --arc-radius: min(40cqh, 46cqw);
   }
 
   .project-carousel-card {

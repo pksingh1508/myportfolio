@@ -20,8 +20,14 @@ const TURN = Math.PI * 2;
 // decaying drive, and the spin speed follows idle + drive through a critically
 // damped spring, so speed and acceleration both stay continuous.
 const IDLE_SPEED = 0.16; // radians/second (one turn in ~40s)
-const MAX_BOOST = 1.3; // radians/second; ~9px/frame at the 410px radius, below strobing
-const SCROLL_IMPULSE = 0.004; // drive per scrolled pixel (signed: scrolling up reverses)
+// Gentle scrolling nudges the spin; fast scrolling hits much harder, because
+// each scrolled pixel counts for more the faster the page moves. The boost
+// saturates softly at MAX_BOOST, and the drive is capped so a long flick
+// glides out within about a second instead of pinning the top speed.
+const MAX_BOOST = 3.2; // radians/second
+const SCROLL_IMPULSE = 0.004; // drive per scrolled pixel, in either scroll direction
+const FAST_SCROLL = 1200; // px/s of scroll at which each pixel counts double
+const MAX_DRIVE = MAX_BOOST * 2;
 const DRIVE_DECAY = 1.1; // per second; a scroll boost glides out over ~2s
 const LAUNCH_DRIVE = 1.2; // the entrance's opening flick (~0.95 rad/s)
 // Spring settle times in seconds: quick to pick up a scroll, slow to coast
@@ -162,7 +168,10 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
       lastTime = now;
       introTime += elapsed;
       const scroll = window.scrollY;
-      drive += (scroll - lastScroll) * SCROLL_IMPULSE;
+      // Scrolling either way feeds the same one-way spin.
+      const scrolled = Math.abs(scroll - lastScroll);
+      const scrollSpeed = elapsed > 0 ? Math.min(scrolled / elapsed, 4000) : 0;
+      drive = Math.min(MAX_DRIVE, drive + scrolled * SCROLL_IMPULSE * (1 + scrollSpeed / FAST_SCROLL));
       lastScroll = scroll;
       if (!launched && introTime >= ENTRANCE_DELAY) {
         drive = Math.max(drive, LAUNCH_DRIVE);
@@ -172,7 +181,7 @@ export default function ProjectCarousel({ images }: { readonly images: readonly 
       const hold = held();
       // tanh saturates the boost softly instead of clipping it at a corner.
       const target = hold ? 0 : IDLE_SPEED + MAX_BOOST * Math.tanh(drive / MAX_BOOST);
-      const smoothTime = hold ? BRAKE : Math.abs(target) > Math.abs(speed) ? RISE : FALL;
+      const smoothTime = hold ? BRAKE : target > speed ? RISE : FALL;
       speed = smoothDamp(speed, target, spring, smoothTime, elapsed);
       phase.current = (phase.current - speed * elapsed) % TURN;
       draw();
