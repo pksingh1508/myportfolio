@@ -1507,7 +1507,7 @@ html:not(.js) .site-header .brand {
 .project-carousel-window::after {
   position: absolute;
   inset: 0 0 0 auto;
-  z-index: 150;
+  z-index: 2500;
   width: min(11rem, 30%);
   background: linear-gradient(to right, transparent, var(--color-paper));
   content: "";
@@ -1582,7 +1582,7 @@ html.js .project-carousel:not([data-live]) .project-carousel-window {
 
 @media (hover: hover) and (pointer: fine) {
   .project-carousel-card:hover {
-    z-index: 100 !important;
+    z-index: 2200 !important;
   }
 
   .project-carousel-card:hover .project-carousel-surface {
